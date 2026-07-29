@@ -42,6 +42,21 @@
   .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;position:relative}
   .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:22px;width:34px;height:34px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
   .step h3{margin:8px 0}
+  .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+  table.cmp{width:100%;min-width:660px;border-collapse:collapse}
+  .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmp tr:last-child th,.cmp tr:last-child td{border-bottom:none}
+  .cmp thead th{font-size:13px;color:var(--muted);font-weight:700;background:#fffdfa;border-bottom:1px solid var(--line)}
+  .cmp tbody th{font-weight:600;width:26%}
+  .cmp .us{background:var(--soft);box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent)}
+  .cmp tbody tr:last-child .us{box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 -2px 0 var(--accent)}
+  .cmp thead .us{color:var(--accent);font-weight:800;font-size:14px;background:var(--soft);box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 2px 0 var(--accent)}
+  .cmp-hint{display:none;font-size:12.5px;color:var(--muted);text-align:center;margin-top:8px}
+  @media (max-width:700px){.cmp-hint{display:block}}
+  .cmp .y{color:var(--ok);font-weight:700}
+  .cmp .n{color:#b4a396;font-weight:700}
+  .cmp .price-cell{font-weight:800}
+  .cmp-note{font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.5;text-align:center}
   .pricing{max-width:440px;margin:0 auto;text-align:center;background:var(--card);border:2px solid var(--accent);border-radius:22px;padding:36px 28px;box-shadow:0 16px 40px rgba(209,69,43,.12)}
   .pricing .price{font-size:48px;font-weight:800}
   .pricing .price small{font-size:18px;color:var(--muted);font-weight:600}
@@ -93,6 +108,84 @@
         <div class="step"><h3>We handle it</h3><p>Reviews answered, review requests sent, weekly posts drafted — done for you.</p></div>
         <div class="step"><h3>You grow</h3><p>Higher rating, more diners, zero extra work on your plate.</p></div>
       </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">How we compare</h2>
+      <p class="section-sub">There are cheaper tools and pricier agencies. The difference is who actually does the work.</p>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col" class="us" data-brand>ReplyPlate</th>
+              <th scope="col">Review software<br><small>Podium, Birdeye…</small></th>
+              <th scope="col">Google's free AI replies</th>
+              <th scope="col">A marketing agency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Monthly cost</th>
+              <td class="us price-cell"><span data-price>$199</span> flat</td>
+              <td class="price-cell">~$300–600</td>
+              <td class="price-cell">Free</td>
+              <td class="price-cell">$500–3,000</td>
+            </tr>
+            <tr>
+              <th scope="row">Who does the work</th>
+              <td class="us"><b>We do</b></td>
+              <td>You do</td>
+              <td>You do</td>
+              <td>They do</td>
+            </tr>
+            <tr>
+              <th scope="row">Replies to your Google reviews</th>
+              <td class="us"><span class="y">✓</span> Every one, in your voice</td>
+              <td>You write or edit each one</td>
+              <td>Suggests a reply — you log in and click</td>
+              <td><span class="y">✓</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Asks your diners for reviews</th>
+              <td class="us"><span class="y">✓</span> Every diner, automatically</td>
+              <td><span class="y">✓</span> You set it up</td>
+              <td><span class="n">✗</span></td>
+              <td><span class="y">✓</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Social posts written &amp; posted</th>
+              <td class="us"><span class="y">✓</span> 8 a month</td>
+              <td>Usually costs extra</td>
+              <td><span class="n">✗</span></td>
+              <td><span class="y">✓</span> Often priced separately</td>
+            </tr>
+            <tr>
+              <th scope="row">Bad reviews handled carefully</th>
+              <td class="us"><span class="y">✓</span> Always sent to you first</td>
+              <td>Up to you</td>
+              <td>Up to you</td>
+              <td>Varies</td>
+            </tr>
+            <tr>
+              <th scope="row">Runs without you remembering</th>
+              <td class="us"><span class="y">✓</span></td>
+              <td><span class="n">✗</span> You log in</td>
+              <td><span class="n">✗</span> You log in</td>
+              <td><span class="y">✓</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Contract</th>
+              <td class="us"><b>None — cancel anytime</b></td>
+              <td>Usually 12 months</td>
+              <td>—</td>
+              <td>Often 3–6 months</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cmp-hint">Swipe the table to compare →</p>
+      <p class="cmp-note">Other companies' prices are indicative, from publicly available sources as of July 2026 — Podium and Birdeye don't publish standard pricing, and both charge per location. Google's AI reply suggestions are a free Google Business Profile feature currently rolling out to some accounts.</p>
     </section>
 
     <section id="start">
