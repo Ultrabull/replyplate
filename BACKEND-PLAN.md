@@ -568,27 +568,36 @@ posts per month"** to a number you can hand-deliver for 6+ months, or **split
 into two SKUs** (reviews-only at $199, reviews+social higher) so the manual half
 is paid for.
 
-### ⚠ Pick a country before Phase 0
+### Jurisdiction: **US — decided 2026-07-29**
 
-The research priced everything in USD (A2P 10DLC, EIN, TCPA, FTC) while
-simultaneously budgeting in £ (solicitor, CMA, ICO, PECR). Two unpriced
-consequences:
+This resolves the plan's largest unpriced ambiguity. The consequences, now fixed:
 
-- **UK VAT is entirely absent.** The registration threshold is £90,000 of taxable
-  turnover (verified on gov.uk). At 50 clients you are at £90k–119k/yr —
-  registration is essentially certain. `index.html` hardcodes a single
-  `CONFIG.price` of `"$199"` with no VAT handling. Absorbing rather than adding
-  it is a ~16.7% revenue haircut — roughly **$1,660/mo at 50 clients, four times
-  your entire stated all-in cost**.
-- **A2P 10DLC does not exist in the UK**, and a UK entity must file Form SS-4 by
-  fax or international phone for an EIN (multi-week), not the "free, takes
-  minutes" online path.
+**In scope:**
+- **A2P 10DLC applies** — keep the Phase 0 registration item. EIN is free from
+  the IRS online and takes minutes (needs an SSN/ITIN).
+- **TCPA governs any SMS to diners** — $500–$1,500 damages **per message**, and
+  class-actionable. This is why Phase 6 says email-first and *do not build diner
+  SMS*. That guidance now applies with full force.
+- **FTC Act §5** covers deceptive review practices — up to ~$53,088 per
+  violation. The §1 review-gating fix is what keeps you clear of it.
+- **State privacy law** (CCPA/CPRA in California and its equivalents) rather than
+  GDPR. Thresholds are high enough that a solo operator at 50 clients is very
+  likely out of scope, but the client agreement should still name a data-handling
+  standard. Get a **US attorney**, not a UK solicitor — budget ~$800–2,000 for
+  the client agreement + auto-post authorisation wording.
+- **Sales tax:** most US states do not tax SaaS or marketing services, but a
+  minority do (e.g. NY, TX, and others treat some digital services as taxable).
+  Check your state of incorporation before your first invoice. Nothing to build
+  yet: `CONFIG.price` staying a flat `"$199"` is correct for now.
 
-**If UK:** delete the 10DLC/EIN items, add the ICO data protection fee
-(~£52–60/yr, legally required), model VAT at 20% with an explicit absorb-vs-add
-decision, and make `CONFIG.price` carry a tax-inclusive/exclusive flag.
-**If US:** delete the CMA/ICO/PECR analysis and get a US attorney.
-Do not run both compliance regimes on a solo budget.
+**Out of scope — deleted from the plan:** UK VAT (the ~$1,660/mo exposure is
+gone), the ICO data protection fee, PECR, CMA/DMCC personal liability, and the
+£-denominated solicitor budget. GDPR only re-enters if you later take an EU or
+UK client, and it is not worth pre-building for.
+
+**Still worth carrying:** professional indemnity / cyber insurance
+(~$500–1,200/yr in the US) before you publish autonomously under other people's
+brand names.
 
 ---
 

@@ -204,7 +204,7 @@
     const link = c.reviewLink || "[your Google review link]";
     setLoading(dom.grOut); dom.grGo.disabled = true;
     try {
-      const sys = `You write short, friendly messages a restaurant sends happy customers to request a Google review. Warm, no guilt-trips, easy. Always include the review link exactly as given. Match the brand voice.`;
+      const sys = `You write short, friendly messages a restaurant sends ALL its customers to request a Google review. Warm, no guilt-trips, easy. Always include the review link exactly as given. Match the brand voice. CRITICAL: never write anything that screens for satisfaction first, targets only happy customers, or offers an incentive — Google prohibits selectively soliciting positive reviews and penalises the restaurant for it.`;
       const prompt = `For ${clientContext()}, write these, clearly labelled: 1) a text/SMS (under 320 chars), 2) an email (subject + body), 3) a short table-card / receipt line. Use this review link: ${link}`;
       renderResults(dom.grOut, splitBlocks(await generate(prompt, sys)));
     } catch (e) { setError(dom.grOut, e); } finally { dom.grGo.disabled = false; }
@@ -229,8 +229,8 @@
     const channel = dom.prChannel.value;
     setLoading(dom.prOut); dom.prGo.disabled = true;
     try {
-      const sys = `You write cold outreach for a done-for-you service that handles restaurants' online reviews and social media for $199/mo. Be genuine, concise, specific, and low-pressure — lead with value, not hype. No spammy clichés. End with one easy call to action (a quick reply or a free setup). Keep it appropriately short for the channel.`;
-      const prompt = `Write a ${channel} outreach message to "${name}".` + (hook ? ` Personalise it around this observation: ${hook}.` : "") + ` The offer: we reply to all their reviews, get them more 5-star reviews, and post to their socials — done for them, from $199/mo, cancel anytime.`;
+      const sys = `You write cold outreach for a done-for-you service that handles restaurants' online reviews and social media for $199/mo. Be genuine, concise, specific, and low-pressure — lead with value, not hype. No spammy clichés. Never promise a specific rating or review-count outcome. End with one easy call to action (a quick reply or a free setup). Keep it appropriately short for the channel.`;
+      const prompt = `Write a ${channel} outreach message to "${name}".` + (hook ? ` Personalise it around this observation: ${hook}.` : "") + ` The offer: we answer every one of their Google reviews, invite all their diners to leave a review, and post to their socials — done for them, from $199/mo, cancel anytime.`;
       renderResults(dom.prOut, [await generate(prompt, sys)]);
     } catch (e) { setError(dom.prOut, e); } finally { dom.prGo.disabled = false; }
   }
@@ -243,10 +243,10 @@
   const SAMPLE_REVIEWS = [
     { source: "google", author: "Marcus T.", rating: 5, text: "Absolutely stunning meal. The pasta was fresh and the service made us feel like regulars on our first visit. Already booked to come back!" },
     { source: "google", author: "Priya S.", rating: 5, text: "Best brunch in the neighbourhood. The staff remembered our little one's name from last time — such a warm place." },
-    { source: "facebook", author: "Dan R.", rating: 4, text: "Really good food and cosy vibe. Only note is it got a bit loud when it filled up, but we'd happily return." },
+    { source: "google", author: "Dan R.", rating: 4, text: "Really good food and cosy vibe. Only note is it got a bit loud when it filled up, but we'd happily return." },
     { source: "google", author: "Helen W.", rating: 3, text: "Food was tasty but we waited nearly 40 minutes for mains on a quiet Tuesday. Nice flavours, slow kitchen." },
     { source: "google", author: "Anon", rating: 1, text: "Found a hair in my risotto and the waiter argued with me about it. Manager never came over. Won't be back and telling my friends." },
-    { source: "facebook", author: "Jordan K.", rating: 2, text: "Overpriced for what it is and my order came out wrong twice. Staff were apologetic at least, but not a great night." },
+    { source: "google", author: "Jordan K.", rating: 2, text: "Overpriced for what it is and my order came out wrong twice. Staff were apologetic at least, but not a great night." },
     { source: "google", author: "Sofia L.", rating: 5, text: "The tasting menu was a highlight of our trip. Every course was thoughtful. Cannot recommend enough." },
     { source: "google", author: "Anon", rating: 1, text: "I think I got food poisoning after eating here Saturday. Sick all night. Be careful." },
   ];

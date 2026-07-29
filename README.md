@@ -1,8 +1,12 @@
 # ReplyPlate — Restaurant reputation & social kit
 
-A ready-to-run, done-for-you service kit for restaurants: reply to reviews,
-get more 5-star reviews, and post to social — powered by your OpenRouter key.
-100% client-side, hosted free on GitHub Pages.
+A ready-to-run, done-for-you service kit for restaurants: answer every Google
+review, invite all diners to review, and post to social — powered by your
+OpenRouter key. 100% client-side, hosted free on GitHub Pages.
+
+Reviews are Google-only by design: Meta retired Page reviews/ratings, so no tool
+can reply to them. Facebook & Instagram are handled as posts and comments.
+See `BACKEND-PLAN.md` for the always-on version.
 
 Two pages:
 - **`index.html`** — the **landing page** you send to restaurant owners (public).
@@ -42,7 +46,8 @@ model. **Claude 3.5 Sonnet** writes the best replies; free models are fine for t
 1. **Clients** — add each restaurant (name, cuisine, voice, Google review link).
 2. **Autopilot** — the always-on engine (see below).
 3. **Reply to reviews** — paste a review → 3 safe, on-brand replies → copy.
-4. **Get reviews** — generate SMS/email/table-card asking happy diners to review.
+4. **Get reviews** — generate SMS/email/table-card asking **every** diner to review.
+   (Never only the happy ones — Google prohibits it and penalises the restaurant.)
 5. **Social posts** — enter a special/dish → a batch of captions + hashtags.
 6. **Find clients** — write a personalised pitch and track your pipeline.
 
