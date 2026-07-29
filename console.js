@@ -6,6 +6,7 @@
   const S = {
     key: "rp.key", model: "rp.model",
     clients: "rp.clients", active: "rp.active", leads: "rp.leads",
+    queue: "rp.queue", seen: "rp.seen",
   };
   const $ = (id) => document.getElementById(id);
   const el = (t, c) => { const n = document.createElement(t); if (c) n.className = c; return n; };
@@ -19,6 +20,8 @@
     clients: load(S.clients, []),
     activeId: load(S.active, null),
     leads: load(S.leads, []),
+    queue: load(S.queue, []),
+    seen: load(S.seen, []),
   };
 
   const dom = {
@@ -33,6 +36,7 @@
     soTopic: $("soTopic"), soCount: $("soCount"), soGo: $("soGo"), soOut: $("soOut"),
     prName: $("prName"), prHook: $("prHook"), prChannel: $("prChannel"), prGo: $("prGo"), prOut: $("prOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
+    apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
     toast: $("toast"),
   };
 
@@ -231,6 +235,150 @@
     } catch (e) { setError(dom.prOut, e); } finally { dom.prGo.disabled = false; }
   }
 
+  /* ---------- autopilot ---------- */
+  /* Connectors: the swap-in point for the live product. In production,
+     fetchNewReviews() polls the Google Business Profile / Meta Graph APIs and
+     postReply() posts back through them. For this prototype they use a local
+     sample feed and simulate posting, so the whole loop runs with no backend. */
+  const SAMPLE_REVIEWS = [
+    { source: "google", author: "Marcus T.", rating: 5, text: "Absolutely stunning meal. The pasta was fresh and the service made us feel like regulars on our first visit. Already booked to come back!" },
+    { source: "google", author: "Priya S.", rating: 5, text: "Best brunch in the neighbourhood. The staff remembered our little one's name from last time — such a warm place." },
+    { source: "facebook", author: "Dan R.", rating: 4, text: "Really good food and cosy vibe. Only note is it got a bit loud when it filled up, but we'd happily return." },
+    { source: "google", author: "Helen W.", rating: 3, text: "Food was tasty but we waited nearly 40 minutes for mains on a quiet Tuesday. Nice flavours, slow kitchen." },
+    { source: "google", author: "Anon", rating: 1, text: "Found a hair in my risotto and the waiter argued with me about it. Manager never came over. Won't be back and telling my friends." },
+    { source: "facebook", author: "Jordan K.", rating: 2, text: "Overpriced for what it is and my order came out wrong twice. Staff were apologetic at least, but not a great night." },
+    { source: "google", author: "Sofia L.", rating: 5, text: "The tasting menu was a highlight of our trip. Every course was thoughtful. Cannot recommend enough." },
+    { source: "google", author: "Anon", rating: 1, text: "I think I got food poisoning after eating here Saturday. Sick all night. Be careful." },
+  ];
+
+  const Connectors = {
+    // LIVE: GET reviews.list from Google Business Profile / Meta Graph since last poll.
+    // DEMO: return a small batch of unseen sample reviews.
+    async fetchNewReviews() {
+      const seen = new Set(state.seen);
+      const fresh = SAMPLE_REVIEWS.filter((r) => !seen.has(r.author + "|" + r.text));
+      // Deliver 1–2 at a time to feel like a real trickle; reset once exhausted.
+      if (!fresh.length) { state.seen = []; save(S.seen, state.seen); return Connectors.fetchNewReviews(); }
+      const batch = fresh.slice(0, Math.min(2, fresh.length));
+      batch.forEach((r) => state.seen.push(r.author + "|" + r.text));
+      save(S.seen, state.seen);
+      return batch.map((r) => ({ ...r }));
+    },
+    // LIVE: POST the reply back through the source's API.
+    // DEMO: simulate a successful post.
+    async postReply(item) {
+      return { posted: true, at: Date.now() };
+    },
+  };
+
+  // Decide whether a review is safe to auto-post or must go to the owner.
+  function autoPostAllowed(rating, cls) {
+    return rating >= 4 && cls.sentiment !== "negative" && cls.risk === "low";
+  }
+
+  // One AI call: draft a safe reply AND classify sentiment/risk. Returns JSON.
+  async function classifyAndDraft(review) {
+    const sys = `You handle a restaurant's public review replies. For the given review you must:
+1) Draft ONE reply in the brand voice — warm, specific, human, 2-4 sentences. Thank the reviewer by name only if given. For anything negative: apologise sincerely, do NOT argue or make excuses, and take it offline (invite them to contact the restaurant directly). Never invent facts or confirm private details.
+2) Classify it so a routing system knows whether it is safe to auto-post.
+Return ONLY minified JSON, no markdown, with exactly these keys:
+{"sentiment":"positive|neutral|negative","risk":"low|medium|high","reason":"<=12 word reason","reply":"the drafted reply"}
+Mark risk "high" for anything mentioning illness/food poisoning, legal threats, discrimination, injury, or staff conduct — these always need a human.`;
+    const prompt = `Review of ${clientContext()} — ${review.rating}★ from ${review.author} on ${review.source}:\n"""${review.text}"""`;
+    const raw = await generate(prompt, sys);
+    return parseTriage(raw);
+  }
+
+  function parseTriage(raw) {
+    let t = String(raw).trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+    const a = t.indexOf("{"), b = t.lastIndexOf("}");
+    if (a !== -1 && b !== -1) t = t.slice(a, b + 1);
+    try {
+      const o = JSON.parse(t);
+      const sentiment = ["positive", "neutral", "negative"].includes(o.sentiment) ? o.sentiment : "neutral";
+      const risk = ["low", "medium", "high"].includes(o.risk) ? o.risk : "medium";
+      return { sentiment, risk, reason: String(o.reason || "").slice(0, 80), reply: String(o.reply || "").trim() };
+    } catch {
+      // Safe fallback: if we can't parse, treat it as needing a human.
+      return { sentiment: "neutral", risk: "medium", reason: "could not auto-classify", reply: String(raw).trim() };
+    }
+  }
+
+  const STAR = (n) => "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
+  const SRC_LABEL = { google: "Google", facebook: "Facebook" };
+
+  function reloadQueue() { state.queue = load(S.queue, []); }
+
+  function updatePendingBadge() {
+    const n = state.queue.filter((q) => q.status === "pending").length;
+    if (dom.apPending) dom.apPending.textContent = n ? " (" + n + ")" : "";
+  }
+
+  function renderAutopilot() {
+    updatePendingBadge();
+    const feed = dom.apFeed;
+    feed.innerHTML = "";
+    if (!state.queue.length) {
+      const e = el("div", "ap-empty");
+      e.textContent = "No reviews processed yet. Add a client, then press “Check for new reviews”.";
+      feed.appendChild(e);
+      return;
+    }
+    [...state.queue].reverse().forEach((q) => {
+      const item = el("div", "ap-item " + q.status);
+      const head = el("div", "ap-head");
+      head.innerHTML = `<span class="ap-src">${SRC_LABEL[q.source] || q.source}</span><span class="ap-stars">${STAR(q.rating)}</span><span>${q.author}</span>`;
+      const rv = el("div", "ap-review"); rv.textContent = q.text;
+      const rep = el("div", "ap-reply");
+      const lbl = el("span", "ap-reply-lbl"); lbl.textContent = "AI reply" + (q.status === "posted" ? " · posted" : q.status === "pending" ? " · draft, awaiting owner" : "");
+      rep.appendChild(lbl); rep.appendChild(document.createTextNode(q.reply));
+      const foot = el("div", "ap-foot");
+      let badge;
+      if (q.status === "posted") { badge = el("span", "badge ok"); badge.textContent = q.postedBy === "owner" ? "✓ Approved & posted" : "✓ Auto-posted"; }
+      else if (q.status === "pending") { badge = el("span", "badge hold"); badge.textContent = "✎ Held for owner"; }
+      else { badge = el("span", "badge skip"); badge.textContent = "Skipped"; }
+      const cls = el("span", "ap-class"); cls.textContent = `${q.cls.sentiment} · ${q.cls.risk} risk — ${q.cls.reason}`;
+      foot.appendChild(badge); foot.appendChild(cls);
+      item.appendChild(head); item.appendChild(rv); item.appendChild(rep); item.appendChild(foot);
+      feed.appendChild(item);
+    });
+  }
+
+  async function checkForReviews() {
+    if (!activeClient()) { toast("Add and select a client first"); return; }
+    dom.apCheck.disabled = true; const prev = dom.apCheck.textContent; dom.apCheck.textContent = "Checking…";
+    try {
+      const reviews = await Connectors.fetchNewReviews();
+      for (const r of reviews) {
+        let cls;
+        try { cls = await classifyAndDraft(r); }
+        catch (e) { toast(e.message || "AI error"); break; }
+        const auto = autoPostAllowed(r.rating, cls);
+        const item = {
+          id: uid(), clientId: state.activeId, clientName: activeClient().name,
+          source: r.source, author: r.author, rating: r.rating, text: r.text,
+          reply: cls.reply, cls: { sentiment: cls.sentiment, risk: cls.risk, reason: cls.reason },
+          status: auto ? "posted" : "pending", postedBy: auto ? "auto" : null,
+          createdAt: Date.now(),
+        };
+        if (auto) { await Connectors.postReply(item); item.postedAt = Date.now(); }
+        state.queue.push(item); save(S.queue, state.queue);
+        renderAutopilot();
+      }
+      const held = reviews.length && state.queue.filter((q) => q.status === "pending").length;
+      toast(reviews.length ? `Processed ${reviews.length} — ${held} awaiting owner` : "No new reviews");
+    } catch (e) { toast(e.message || "Error"); }
+    finally { dom.apCheck.disabled = false; dom.apCheck.textContent = prev; }
+  }
+
+  function clearFeed() {
+    if (!state.queue.length) return;
+    if (!confirm("Clear the Autopilot feed and reset the demo review pool?")) return;
+    state.queue = []; state.seen = [];
+    save(S.queue, state.queue); save(S.seen, state.seen);
+    renderAutopilot();
+  }
+
   /* ---------- leads ---------- */
   const STAGES = ["To contact", "Contacted", "Replied", "Client 🎉"];
   function renderLeads() {
@@ -280,11 +428,16 @@
     dom.prGo.addEventListener("click", doPitch);
     dom.leadAdd.addEventListener("click", addLead);
     dom.leadName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLead(); } });
+    dom.apCheck.addEventListener("click", checkForReviews);
+    dom.apClear.addEventListener("click", clearFeed);
+    // Reflect approvals made on the owner screen (other tab / on return).
+    window.addEventListener("storage", (e) => { if (e.key === S.queue) { reloadQueue(); renderAutopilot(); } });
+    window.addEventListener("focus", () => { reloadQueue(); renderAutopilot(); });
   }
 
   function init() {
     wire();
-    renderClients(); renderClientSelect(); renderLeads();
+    renderClients(); renderClientSelect(); renderLeads(); renderAutopilot();
     if (!state.key) setTimeout(openSettings, 400);
   }
   document.addEventListener("DOMContentLoaded", init);

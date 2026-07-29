@@ -83,3 +83,33 @@ select{margin-bottom:0;width:auto}
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:100}
 .toast[hidden]{display:none}
+
+/* ---------- autopilot ---------- */
+.ap-connectors{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:12px}
+.conn{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.conn-ico{font-size:16px;line-height:1.4}
+.conn b{font-size:14px}
+.conn small{display:block;color:var(--muted);font-size:12px;margin-top:2px;line-height:1.4}
+.ap-policy{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.5}
+.ap-policy b{display:block;margin-bottom:2px;font-size:13px}
+.ap-policy span{color:var(--muted)}
+#apPending{margin-left:6px;font-weight:800}
+.ap-feed{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+
+.ap-item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;border-left:4px solid var(--line)}
+.ap-item.posted{border-left-color:var(--ok)}
+.ap-item.pending{border-left-color:var(--accent2,#e8863b)}
+.ap-item.skipped{opacity:.6}
+.ap-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:8px}
+.ap-src{font-weight:700;color:var(--ink);background:var(--soft);padding:2px 8px;border-radius:999px;font-size:12px}
+.ap-stars{color:#e8a23b;letter-spacing:1px}
+.ap-review{font-size:15px;line-height:1.5;margin-bottom:10px}
+.ap-reply{background:var(--soft);border-radius:10px;padding:11px 13px;font-size:14.5px;line-height:1.55;white-space:pre-wrap}
+.ap-reply .ap-reply-lbl{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:5px}
+.ap-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px}
+.badge.ok{background:#e4f3ea;color:var(--ok)}
+.badge.hold{background:#fbe6da;color:#b05e17}
+.badge.skip{background:#eee;color:#777}
+.ap-class{font-size:12px;color:var(--muted)}
+.ap-empty{color:var(--muted);font-size:14px;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:12px}

@@ -40,10 +40,31 @@ model. **Claude 3.5 Sonnet** writes the best replies; free models are fine for t
 
 ## Deliver the service (console)
 1. **Clients** — add each restaurant (name, cuisine, voice, Google review link).
-2. **Reply to reviews** — paste a review → 3 safe, on-brand replies → copy.
-3. **Get reviews** — generate SMS/email/table-card asking happy diners to review.
-4. **Social posts** — enter a special/dish → a batch of captions + hashtags.
-5. **Find clients** — write a personalised pitch and track your pipeline.
+2. **Autopilot** — the always-on engine (see below).
+3. **Reply to reviews** — paste a review → 3 safe, on-brand replies → copy.
+4. **Get reviews** — generate SMS/email/table-card asking happy diners to review.
+5. **Social posts** — enter a special/dish → a batch of captions + hashtags.
+6. **Find clients** — write a personalised pitch and track your pipeline.
+
+## Autopilot (prototype)
+The "give us the handle, we handle everything" experience. Press **Check for
+new reviews** and Autopilot will, for each incoming review:
+- **draft a safe, on-brand reply** and **classify** it (sentiment + risk) — real AI;
+- **auto-post** positive, low-risk reviews (4–5★); and
+- **hold** anything negative, low-rated, or risky for the owner.
+
+The owner opens **`approve.html`** (a clean mobile screen) and taps **Approve &
+post / Edit / Skip** — that's their entire job. Everything else is invisible.
+
+What's real vs. stubbed today:
+- **Real:** the AI drafting + triage (your OpenRouter key) and the full
+  approve/auto-post decision + owner workflow.
+- **Stubbed (demo mode):** the review *source* (a sample feed) and the *posting*
+  step. These sit behind a `Connectors` object in `console.js` (`fetchNewReviews`
+  / `postReply`) — the single place the **Google Business Profile** and **Meta
+  Graph** APIs slot in. Going fully live also needs a small backend to poll on a
+  schedule and shared storage so the owner's approvals sync across devices
+  (today the console and `approve.html` share the browser's localStorage).
 
 ## Get your first clients
 1. Open Google Maps, search "restaurants near me".

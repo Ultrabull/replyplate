@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Approve replies — ReplyPlate</title>
+<style>
+  :root{
+    --ink:#1a1410; --muted:#6b5d52; --bg:#fbf7f0; --card:#fff; --line:#e7dccb;
+    --accent:#d1452b; --accent-press:#b83a22; --ok:#1a7f4b; --soft:#fbeee6;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.5}
+  .top{background:#fff;border-bottom:1px solid var(--line);padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));position:sticky;top:0;z-index:5}
+  .brand{font-weight:800;display:flex;align-items:center;gap:8px;font-size:17px;max-width:640px;margin:0 auto}
+  .brand .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#e8863b)}
+  .brand .tagpill{font-size:11px;font-weight:700;color:var(--accent);background:var(--soft);padding:2px 8px;border-radius:999px}
+  .wrap{max-width:640px;margin:0 auto;padding:18px 16px 80px}
+  .lead{color:var(--muted);font-size:14.5px;margin-bottom:6px}
+  .count{font-weight:800;color:var(--accent)}
+
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px;border-left:4px solid #e8863b}
+  .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:10px}
+  .src{font-weight:700;color:var(--ink);background:var(--soft);padding:2px 8px;border-radius:999px;font-size:12px}
+  .stars{color:#e8a23b;letter-spacing:1px}
+  .flag{margin-left:auto;font-size:12px;font-weight:800;background:#fbe6da;color:#b05e17;padding:3px 10px;border-radius:999px}
+  .review{font-size:15px;line-height:1.55;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:12px 13px;margin-bottom:12px}
+  .reply-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:6px}
+  .reply{width:100%;font-family:inherit;font-size:15px;line-height:1.55;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px 13px;resize:vertical;min-height:92px;outline:none}
+  .reply:focus{border-color:var(--accent)}
+  .why{font-size:12px;color:var(--muted);margin-top:8px}
+  .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .btn{border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;padding:12px 18px;transition:background .15s,transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn.approve{background:var(--ok);color:#fff;flex:1;min-width:150px}
+  .btn.approve:hover{background:#166b3f}
+  .btn.skip{background:transparent;color:var(--muted);border:1.5px solid var(--line)}
+  .btn.skip:hover{background:var(--soft)}
+
+  .empty{text-align:center;padding:48px 20px;color:var(--muted)}
+  .empty .big{font-size:40px;margin-bottom:10px}
+  .empty h2{font-size:20px;color:var(--ink);margin-bottom:6px}
+  .done-note{font-size:13px;color:var(--muted);margin-top:10px}
+  .history{margin-top:26px}
+  .history h3{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px}
+  .hrow{display:flex;gap:8px;align-items:baseline;font-size:13.5px;color:var(--muted);padding:8px 0;border-top:1px solid var(--line)}
+  .hrow b{color:var(--ink);font-weight:700}
+  .hbadge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;margin-left:auto;white-space:nowrap}
+  .hbadge.ok{background:#e4f3ea;color:var(--ok)}
+  .hbadge.skip{background:#eee;color:#777}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:100}
+  .toast[hidden]{display:none}
+</style>
+</head>
+<body>
+  <div class="top"><div class="brand"><span class="dot"></span> ReplyPlate <span class="tagpill">Owner approvals</span></div></div>
+  <div class="wrap">
+    <p class="lead" id="lead">Loading…</p>
+    <div id="list"></div>
+    <div class="history" id="history"></div>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+  const KEY = "rp.queue";
+  const $ = (id) => document.getElementById(id);
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
+  const persist = (q) => { try { localStorage.setItem(KEY, JSON.stringify(q)); } catch {} };
+  const STAR = (n) => "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
+  const SRC = { google: "Google", facebook: "Facebook" };
+  let queue = load();
+
+  let toastT;
+  function toast(m) { const t = $("toast"); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 1800); }
+
+  function update(id, fn) { const it = queue.find((q) => q.id === id); if (it) fn(it); persist(queue); render(); }
+
+  function render() {
+    const pending = queue.filter((q) => q.status === "pending");
+    const handled = queue.filter((q) => q.status !== "pending").slice(-8).reverse();
+
+    $("lead").innerHTML = pending.length
+      ? `<span class="count">${pending.length}</span> repl${pending.length === 1 ? "y" : "ies"} need your OK. Everything else was handled automatically.`
+      : "You're all caught up. Positive reviews are being answered automatically — you'll only see the ones that need a human.";
+
+    const list = $("list"); list.innerHTML = "";
+    if (!pending.length) {
+      const e = document.createElement("div"); e.className = "empty";
+      e.innerHTML = `<div class="big">✅</div><h2>All caught up</h2><div class="done-note">Nothing waiting. New reviews that need your judgment will show up here.</div>`;
+      list.appendChild(e);
+    }
+    pending.forEach((q) => {
+      const card = document.createElement("div"); card.className = "item";
+      const flag = q.cls && q.cls.risk === "high" ? "Needs care" : "Please review";
+      card.innerHTML =
+        `<div class="meta"><span class="src">${SRC[q.source] || q.source}</span>`
+        + `<span class="stars">${STAR(q.rating)}</span><span>${esc(q.author)}</span>`
+        + `<span class="flag">${flag}</span></div>`
+        + `<div class="review">${esc(q.text)}</div>`
+        + `<div class="reply-lbl">Suggested reply — edit if you like</div>`
+        + `<textarea class="reply" id="t-${q.id}">${esc(q.reply)}</textarea>`
+        + (q.cls ? `<div class="why">Flagged: ${esc(q.cls.sentiment)} · ${esc(q.cls.risk)} risk — ${esc(q.cls.reason || "")}</div>` : "")
+        + `<div class="actions">`
+        + `<button class="btn approve" data-approve="${q.id}">Approve &amp; post</button>`
+        + `<button class="btn skip" data-skip="${q.id}">Skip</button>`
+        + `</div>`;
+      list.appendChild(card);
+    });
+
+    const hist = $("history"); hist.innerHTML = "";
+    if (handled.length) {
+      hist.innerHTML = "<h3>Recently handled</h3>";
+      handled.forEach((q) => {
+        const r = document.createElement("div"); r.className = "hrow";
+        const posted = q.status === "posted";
+        const who = q.postedBy === "owner" ? "Approved by you" : posted ? "Auto-posted" : "Skipped";
+        r.innerHTML = `<b>${STAR(q.rating)}</b><span>${esc(q.author)} · ${SRC[q.source] || q.source}</span>`
+          + `<span class="hbadge ${posted ? "ok" : "skip"}">${who}</span>`;
+        hist.appendChild(r);
+      });
+    }
+  }
+
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+  document.addEventListener("click", (e) => {
+    const ap = e.target.closest("[data-approve]");
+    const sk = e.target.closest("[data-skip]");
+    if (ap) {
+      const id = ap.getAttribute("data-approve");
+      const ta = $("t-" + id);
+      const edited = ta ? ta.value.trim() : "";
+      update(id, (it) => { if (edited) it.reply = edited; it.status = "posted"; it.postedBy = "owner"; it.postedAt = Date.now(); });
+      toast("Posted ✓");
+    } else if (sk) {
+      update(sk.getAttribute("data-skip"), (it) => { it.status = "skipped"; });
+      toast("Skipped");
+    }
+  });
+
+  // Live-update if the console adds new items in another tab.
+  window.addEventListener("storage", (e) => { if (e.key === KEY) { queue = load(); render(); } });
+  window.addEventListener("focus", () => { queue = load(); render(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

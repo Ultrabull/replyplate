@@ -18,6 +18,7 @@
 
   <nav class="tabs" id="tabs">
     <button class="tab active" data-tab="clients">Clients</button>
+    <button class="tab" data-tab="autopilot">Autopilot ⚡</button>
     <button class="tab" data-tab="replies">Reply to reviews</button>
     <button class="tab" data-tab="getreviews">Get reviews</button>
     <button class="tab" data-tab="social">Social posts</button>
@@ -42,6 +43,30 @@
           <button class="btn ghost" id="cClear" type="button">Clear</button>
         </div>
       </div>
+    </section>
+
+    <!-- AUTOPILOT -->
+    <section class="panel" id="panel-autopilot">
+      <h2>Autopilot</h2>
+      <p class="hint">The always-on engine. It watches for new reviews, drafts a safe on-brand reply, and <b>auto-posts the easy ones</b> — holding anything negative or risky for the owner to approve with one tap. This is the "give us the handle, we handle everything" experience. AI drafting is live; the review sources and posting are in demo mode until the Google/Meta connectors are wired up.</p>
+
+      <div class="ap-connectors">
+        <div class="conn"><span class="conn-ico">🟢</span><div><b>Google Business Profile</b><small>Demo mode — sample reviews. Connect the Google API to go live.</small></div></div>
+        <div class="conn"><span class="conn-ico">🔵</span><div><b>Facebook Page</b><small>Demo mode — sample reviews. Connect the Meta API to go live.</small></div></div>
+      </div>
+
+      <div class="ap-policy">
+        <b>Auto-post policy</b>
+        <span>Positive, low-risk reviews (4–5★) post automatically. Negative, low-rated, or risky reviews are held for the owner's approval.</span>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="apCheck" type="button">Check for new reviews</button>
+        <a class="btn ghost" id="apApprove" href="./approve.html" target="_blank" rel="noopener">Open owner approval screen<span id="apPending"></span></a>
+        <button class="btn ghost sm" id="apClear" type="button">Clear feed</button>
+      </div>
+
+      <div class="ap-feed" id="apFeed"></div>
     </section>
 
     <!-- REPLIES -->
