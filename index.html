@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ReplyPlate — Reviews & Social, Handled for Your Restaurant</title>
-<meta name="description" content="We reply to every review and keep your social fresh — so you can run your restaurant. Done for you, from $199/mo." />
+<title>ReplyPlate: Google reviews answered and social posts written, for restaurants</title>
+<meta name="description" content="We draft a reply to every Google review, ask every diner to leave one, and write 8 social posts a month. Anything negative waits for your OK. $199 a month, no contract." />
 <style>
   :root{
     --ink:#1a1410; --muted:#6b5d52; --bg:#fffaf3; --card:#fff; --line:#eaddcd;
@@ -27,13 +27,14 @@
   .hero{padding:64px 0 40px;text-align:center}
   .hero h1{font-size:clamp(30px,6vw,50px);line-height:1.1;letter-spacing:-.5px;margin-bottom:16px}
   .hero h1 span{color:var(--accent)}
-  .hero p.sub{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:620px;margin:0 auto 28px}
+  .hero p.sub{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:640px;margin:0 auto 28px}
   .hero .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
   .trust{margin-top:18px;font-size:14px;color:var(--muted)}
   section{padding:44px 0}
   .section-title{font-size:clamp(24px,4vw,34px);text-align:center;margin-bottom:10px;letter-spacing:-.3px}
-  .section-sub{text-align:center;color:var(--muted);max-width:560px;margin:0 auto 34px}
+  .section-sub{text-align:center;color:var(--muted);max-width:580px;margin:0 auto 34px}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .grid.two{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
   .card h3{font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
   .card p{color:var(--muted);font-size:15px}
@@ -42,27 +43,42 @@
   .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;position:relative}
   .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:22px;width:34px;height:34px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
   .step h3{margin:8px 0}
+  .step p{color:var(--muted);font-size:15px}
+
+  .honest{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
+  .honest p{color:var(--muted);font-size:15px;margin-bottom:14px}
+  .honest p:last-child{margin-bottom:0}
+  .honest b{color:var(--ink)}
+
+  .sample .card h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px}
+  .sample .quote{font-size:15.5px;line-height:1.6}
+  .sample .reply{border-color:var(--accent)}
+
   .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
-  table.cmp{width:100%;min-width:660px;border-collapse:collapse}
-  .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.cmp{width:100%;min-width:760px;border-collapse:collapse}
+  .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
   .cmp tr:last-child th,.cmp tr:last-child td{border-bottom:none}
   .cmp thead th{font-size:13px;color:var(--muted);font-weight:700;background:#fffdfa;border-bottom:1px solid var(--line)}
-  .cmp tbody th{font-weight:600;width:26%}
-  .cmp .us{background:var(--soft);box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent)}
+  .cmp tbody th{font-weight:600;width:22%}
+  .cmp .us{background:#fbeee6;box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent)}
   .cmp tbody tr:last-child .us{box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 -2px 0 var(--accent)}
-  .cmp thead .us{color:var(--accent);font-weight:800;font-size:14px;background:var(--soft);box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 2px 0 var(--accent)}
-  .cmp-hint{display:none;font-size:12.5px;color:var(--muted);text-align:center;margin-top:8px}
-  @media (max-width:700px){.cmp-hint{display:block}}
-  .cmp .y{color:var(--ok);font-weight:700}
-  .cmp .n{color:#b4a396;font-weight:700}
-  .cmp .price-cell{font-weight:800}
-  .cmp-note{font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.5;text-align:center}
-  .pricing{max-width:440px;margin:0 auto;text-align:center;background:var(--card);border:2px solid var(--accent);border-radius:22px;padding:36px 28px;box-shadow:0 16px 40px rgba(209,69,43,.12)}
+  .cmp thead .us{color:var(--accent);font-weight:800;font-size:14px;background:#fbeee6;box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 2px 0 var(--accent)}
+  .cmp-note{font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.6}
+  .cmp-note.mid{text-align:center;max-width:720px;margin-left:auto;margin-right:auto}
+  .cmp-hint{display:none;font-size:13px;color:var(--accent);font-weight:700;text-align:center;margin-top:10px;cursor:pointer;background:none;border:none;font-family:inherit}
+  @media (max-width:700px){
+    table.cmp{min-width:0}
+    .cmp .opt{display:none}
+    .cmp.show-all .opt{display:table-cell}
+    .cmp-hint{display:block}
+  }
+
+  .pricing{max-width:460px;margin:0 auto;text-align:center;background:var(--card);border:2px solid var(--accent);border-radius:22px;padding:36px 28px;box-shadow:0 16px 40px rgba(209,69,43,.12)}
   .pricing .price{font-size:48px;font-weight:800}
   .pricing .price small{font-size:18px;color:var(--muted);font-weight:600}
   .pricing ul{list-style:none;text-align:left;margin:22px 0;display:flex;flex-direction:column;gap:10px}
   .pricing li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
-  .pricing li::before{content:"✓";color:var(--ok);font-weight:800}
+  .pricing li::before{content:"✓";color:var(--ok);font-weight:800;flex:0 0 auto}
   .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
   .faq summary{font-weight:700;cursor:pointer;font-size:16px}
   .faq p{color:var(--muted);margin-top:10px;font-size:15px}
@@ -76,153 +92,196 @@
 <body>
   <header><div class="wrap nav">
     <div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div>
-    <a class="btn" data-cta href="#start">Get started</a>
+    <a class="btn" data-cta href="#start">Start for <span data-price>$199</span>/mo</a>
   </div></header>
 
   <main class="wrap">
     <section class="hero">
-      <h1>Every review answered. Your social, always fresh. <span>Without you lifting a finger.</span></h1>
-      <p class="sub">We answer every Google review and keep your Facebook & Instagram fresh every week — so you can focus on the food. Built for <b>restaurants</b>.</p>
+      <h1>The reviews you meant to answer <span>are still sitting there.</span></h1>
+      <p class="sub">We draft a reply to every Google review, ask every diner to leave one, and write 8 social posts a month. Anything negative waits for your one-tap OK before it posts. <b><span data-price>$199</span> a month</b>, flat, and you can cancel any month.</p>
       <div class="cta-row">
-        <a class="btn" data-cta href="#start">Start today</a>
+        <a class="btn" data-cta href="#start">Start for <span data-price>$199</span>/mo</a>
         <a class="btn ghost" data-book href="#start">Book a free 15-min setup</a>
       </div>
-      <p class="trust">No contracts • Cancel anytime • Set up in 24 hours</p>
+      <p class="trust">No contract • Cancel any month • Usually live within two business days</p>
     </section>
 
     <section>
-      <h2 class="section-title">Reviews make or break a restaurant</h2>
-      <p class="section-sub">90% of diners read reviews before choosing where to eat — and businesses that reply win more of them. But who has the time?</p>
+      <h2 class="section-title">You know the feeling</h2>
       <div class="grid">
-        <div class="card"><h3><span class="emoji">⭐</span> Reply to every review</h3><p>Warm, on-brand responses to 5-stars and calm, professional recovery for the tough ones — usually same day.</p></div>
-        <div class="card"><h3><span class="emoji">📈</span> Get more reviews</h3><p>We invite <b>every</b> diner to leave a review — never just the happy ones, exactly as Google requires. More reviews, more trust.</p></div>
-        <div class="card"><h3><span class="emoji">📱</span> Fresh social posts</h3><p>Ready-to-post captions for your specials and events, in your restaurant's voice.</p></div>
-        <div class="card"><h3><span class="emoji">🧠</span> You set the rules</h3><p>Approve every reply yourself, or let us auto-post the positive ones. Anything negative always comes to you first.</p></div>
+        <div class="card"><h3><span class="emoji">🌙</span> It's 11pm and you're not doing this</h3><p>Service is finally over, you're counting the till, and a notification says someone reviewed you. You'll deal with it tomorrow. You said that last week too.</p></div>
+        <div class="card"><h3><span class="emoji">😐</span> The bad one sits the longest</h3><p>The five-star ones are easy. The one that stings is the one you keep meaning to answer properly, when you're calm, when you have ten minutes.</p></div>
+        <div class="card"><h3><span class="emoji">🚪</span> Nobody's asking</h3><p>Your happiest table of the week walked out and nobody asked them for anything. The review you did get is from the one guy who waited too long for his check.</p></div>
+        <div class="card"><h3><span class="emoji">📅</span> Same story on social</h3><p>You meant to post the special. It sold out. You never posted. The last thing on the page is from a Tuesday in May.</p></div>
+      </div>
+      <p class="cmp-note mid">89% of people who leave a review expect the business to reply. 81% expect to hear back within a week, and 32% want a response by the next day. 80% of consumers are more likely to use a business that replies to every review, and 42% say they're unlikely to use one that never replies. Half say a generic or templated reply puts them off, which is the whole reason we don't send them. BrightLocal Local Consumer Review Survey 2026, a panel of 1,002 US adults.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">What changes</h2>
+      <p class="section-sub">Same four jobs. They just stop being yours to remember.</p>
+      <div class="grid">
+        <div class="card"><h3><span class="emoji">⭐</span> The pile gets answered</h3><p>Every new Google review gets a reply drafted, in the words you'd actually use, naming the thing the diner actually wrote about. You decide what posts.</p></div>
+        <div class="card"><h3><span class="emoji">🙋</span> Every diner gets asked, not just the happy ones</h3><p>We invite everyone who dined with you to leave a review. Google prohibits cherry-picking your happy customers, so we don't do it. More reviews, honestly collected.</p></div>
+        <div class="card"><h3><span class="emoji">📱</span> Eight posts a month, written and put up</h3><p>Your specials, your events, your room. Written for your restaurant and posted to your Facebook and Instagram, so the page doesn't go quiet for three weeks at a time.</p></div>
+        <div class="card"><h3><span class="emoji">✋</span> Nothing rough goes out without you</h3><p>Low ratings, complaints, anything sensitive: it goes to your phone first and waits. One tap to approve, or edit it, or tell us to leave that one alone. There's no setting that turns this off.</p></div>
       </div>
     </section>
 
     <section>
       <h2 class="section-title">How it works</h2>
       <div class="steps">
-        <div class="step"><h3>Quick setup</h3><p>15 minutes. We learn your voice, menu, and links. That's it.</p></div>
-        <div class="step"><h3>We handle it</h3><p>Reviews answered, review requests sent, weekly posts drafted — done for you.</p></div>
-        <div class="step"><h3>You grow</h3><p>Higher rating, more diners, zero extra work on your plate.</p></div>
+        <div class="step"><h3>Fifteen minutes, once</h3><p>A short call. You tell us how your place talks, what you'd never say, and how tight you want the leash. You add us as a manager on your Google Business Profile, which takes about 30 seconds. You never share a password. Fifteen minutes, once: after that it knows your GM's name, your Tuesday deal, and that you'd rather close than use the word artisanal.</p></div>
+        <div class="step"><h3>We do the work</h3><p>Replies get drafted under the rules you set, and posted or held according to them. Review requests go out to your diners. Eight posts a month get written and put up.</p></div>
+        <div class="step"><h3>It stops being your problem to remember</h3><p>You get a message when something needs your OK, and one page at month end on where your rating sits and what people are actually saying. That's the whole relationship.</p></div>
       </div>
     </section>
 
     <section>
-      <h2 class="section-title">How we compare</h2>
-      <p class="section-sub">There are cheaper tools and pricier agencies. The difference is who actually does the work.</p>
+      <h2 class="section-title">Before you buy, the honest version</h2>
+      <div class="honest">
+        <p><b>AI writes the first draft. A person checks it.</b> That is the whole arrangement. Drafts come from your menu, your past replies and the words you give us at setup. Straightforward positive reviews can post on their own if you choose that. Anything negative, low-starred or awkward is held until you approve it, every time, and there is no setting that turns that off.</p>
+        <p><b>Nothing posts under an invented employee name.</b> There is no character called Ava or Max on our side. Replies go out as your restaurant, because that's whose name is on them.</p>
+        <p><b>And you should know our size.</b> ReplyPlate is run by one person, and today a good part of the work is delivered by hand rather than fully automated. Your reviews get worked every business day, not within a minute of landing. Those are different promises and we're only making one of them. As more of it automates we'll tell you which parts, before it changes, and the rule that negative reviews wait for your OK will not change. If we're at capacity we'll say so and put you on a list, rather than take <span data-price>$199</span> and get to you in a couple of weeks.</p>
+        <p><b>What we don't do.</b> We don't photograph tonight's special, answer your phone, or walk your dining room, and if that's what you need, you need a person and not us. We don't cover Yelp, TripAdvisor or OpenTable. Facebook retired star ratings, so reviews here means Google reviews. We don't touch anything outside the access you grant, we can't change who owns your profile, and you can pull it in two clicks.</p>
+        <p><b>And we won't promise your rating will go up.</b> Nobody honest will. Google will even draft you a reply free on some accounts, and the writing is fine. It also needs you to log in, read the review and press send, every time, forever. If logging in every day is realistic for you, use the free one. We're honestly not for you.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">What it costs to keep not doing this</h2>
+      <p class="section-sub">Software isn't your real competition. Your real options are to leave it, do it after close, hire someone, or pay a freelancer. Here's what each one costs.</p>
       <div class="cmp-wrap">
-        <table class="cmp">
+        <table class="cmp" id="cmpTable">
           <thead>
             <tr>
               <th scope="col"></th>
-              <th scope="col" class="us" data-brand>ReplyPlate</th>
-              <th scope="col">Review software<br><small>Podium, Birdeye…</small></th>
-              <th scope="col">Google's free AI replies</th>
-              <th scope="col">A marketing agency</th>
+              <th scope="col" class="us"><span data-brand>ReplyPlate</span><br><small><span data-price>$199</span> flat</small></th>
+              <th scope="col" class="opt">Nobody does it<br><small>where you are now</small></th>
+              <th scope="col">You do it after close</th>
+              <th scope="col">Hire someone part-time<br><small>about $950/mo</small></th>
+              <th scope="col" class="opt">A freelance social person<br><small>$300 to $500/mo</small></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <th scope="row">Monthly cost</th>
-              <td class="us price-cell"><span data-price>$199</span> flat</td>
-              <td class="price-cell">~$300–600</td>
-              <td class="price-cell">Free</td>
-              <td class="price-cell">$500–3,000</td>
+              <th scope="row">What it costs you</th>
+              <td class="us"><b><span data-price>$199</span> a month, flat</b></td>
+              <td class="opt">Nothing on a bill</td>
+              <td>Free, if your Sunday night is free. Call it 8 to 12 hours a month.</td>
+              <td>About $950, plus payroll, taxes, workers comp and finding cover when they quit</td>
+              <td class="opt">$300 to $500, for the posts only</td>
             </tr>
             <tr>
-              <th scope="row">Who does the work</th>
-              <td class="us"><b>We do</b></td>
-              <td>You do</td>
-              <td>You do</td>
-              <td>They do</td>
+              <th scope="row">Google review replies</th>
+              <td class="us">Every review gets a reply drafted. You decide what posts.</td>
+              <td class="opt">None</td>
+              <td>The ones you get to. Most owners fall behind by week two.</td>
+              <td>Yes, once you've trained them on your voice</td>
+              <td class="opt">Usually not in scope. Ask before you sign.</td>
             </tr>
             <tr>
-              <th scope="row">Replies to your Google reviews</th>
-              <td class="us"><span class="y">✓</span> Every one, in your voice</td>
-              <td>You write or edit each one</td>
-              <td>Suggests a reply — you log in and click</td>
-              <td><span class="y">✓</span></td>
+              <th scope="row">Asks every diner for a review</th>
+              <td class="us">Yes. Every diner, never only the happy ones.</td>
+              <td class="opt">No</td>
+              <td>Almost never happens</td>
+              <td>Only if you set the system up for them</td>
+              <td class="opt">Rarely included</td>
             </tr>
             <tr>
-              <th scope="row">Asks your diners for reviews</th>
-              <td class="us"><span class="y">✓</span> Every diner, automatically</td>
-              <td><span class="y">✓</span> You set it up</td>
-              <td><span class="n">✗</span></td>
-              <td><span class="y">✓</span></td>
+              <th scope="row">Social posts written and put up</th>
+              <td class="us">8 a month</td>
+              <td class="opt">None</td>
+              <td>When there's a quiet Tuesday</td>
+              <td>Yes, and they can shoot the photo</td>
+              <td class="opt">Yes, often 8 to 12. More than us.</td>
             </tr>
             <tr>
-              <th scope="row">Social posts written &amp; posted</th>
-              <td class="us"><span class="y">✓</span> 8 a month</td>
-              <td>Usually costs extra</td>
-              <td><span class="n">✗</span></td>
-              <td><span class="y">✓</span> Often priced separately</td>
+              <th scope="row">Notices the review without you logging in</th>
+              <td class="us">Yes. That's the whole product.</td>
+              <td class="opt">No</td>
+              <td>No. You are the notification.</td>
+              <td>Yes</td>
+              <td class="opt">Not for reviews</td>
             </tr>
             <tr>
-              <th scope="row">Bad reviews handled carefully</th>
-              <td class="us"><span class="y">✓</span> Always sent to you first</td>
-              <td>Up to you</td>
-              <td>Up to you</td>
-              <td>Varies</td>
-            </tr>
-            <tr>
-              <th scope="row">Runs without you remembering</th>
-              <td class="us"><span class="y">✓</span></td>
-              <td><span class="n">✗</span> You log in</td>
-              <td><span class="n">✗</span> You log in</td>
-              <td><span class="y">✓</span></td>
-            </tr>
-            <tr>
-              <th scope="row">Contract</th>
-              <td class="us"><b>None — cancel anytime</b></td>
-              <td>Usually 12 months</td>
-              <td>—</td>
-              <td>Often 3–6 months</td>
+              <th scope="row">What it takes to stop</th>
+              <td class="us"><b>Nothing. Cancel any month, no contract.</b></td>
+              <td class="opt">Nothing</td>
+              <td>Nothing</td>
+              <td>A hard conversation and final payroll</td>
+              <td class="opt">Notice period</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="cmp-hint">Swipe the table to compare →</p>
-      <p class="cmp-note">Other companies' prices are indicative, from publicly available sources as of July 2026 — Podium and Birdeye don't publish standard pricing, and both charge per location. Google's AI reply suggestions are a free Google Business Profile feature currently rolling out to some accounts.</p>
+      <button class="cmp-hint" id="cmpHint" type="button">Tap to see all five options →</button>
+      <p class="cmp-note"><b>How we got these numbers.</b> Hiring someone part-time: 10 hours a week at $20 an hour is about $865 a month in wages, plus about 11% for employer payroll taxes and workers compensation, which comes to roughly $960. We call it about $950. No health insurance and no paid leave is assumed, which is normal for a part-time hire at an independent restaurant. If you did offer those, the real figure is a lot higher. $20 an hour is the middle of the published US market for a marketing assistant in 2026: Indeed $20.02, Payscale $19.59, Salary.com about $21, ZipRecruiter $21.85. At the bottom of that band the figure is about $850 a month. At 12 hours a week it is about $1,150. The 11% is the employer's 7.65% FICA match, 0.6% federal unemployment after the standard credit, roughly 2.7% state unemployment at the typical new-employer rate, and roughly $0.35 per $100 of payroll for clerical workers comp. Employer payroll taxes generally run 8% to 15% of gross pay depending on your state and industry, so treat 11% as an approximation. And ten hours a week is not how long this job takes. It is the smallest job a real person will accept, so you would be paying for someone to be available rather than for hours used. Freelance figures are published 2026 social media pricing guides, where entry packages start around $300 to $500 a month for basic posting and scheduling and do not usually include Google review replies or review requests. Diner figures are from BrightLocal's Local Consumer Review Survey 2026, a panel of 1,002 US adults. One thing this table cannot show: a person you hire can shoot fresh photos of tonight's special, answer the phone and walk the dining room, and we cannot do any of that. We are comparing the typing, not the whole job. <span data-price>$199</span> is our real price, not an introductory rate. Wages and prices checked July 2026, and they vary by market.</p>
+    </section>
+
+    <section class="sample">
+      <h2 class="section-title">Here's a reply. Judge the writing yourself.</h2>
+      <p class="section-sub">This is the only question that actually matters, so we're not going to describe it to you.</p>
+      <div class="grid two">
+        <div class="card">
+          <h4>The review (2 stars)</h4>
+          <p class="quote">"Waited 35 minutes for our food on a Tuesday with maybe six other tables in the room. Fries were cold when they finally came. Our server Marcus was lovely, that's the only reason this isn't one star."</p>
+        </div>
+        <div class="card reply">
+          <h4>What we'd draft, for you to approve</h4>
+          <p class="quote">"Thirty-five minutes on a quiet Tuesday isn't right, and cold fries after that wait is worse. That's on the kitchen, not on Marcus, and I'm glad he looked after you. I've walked the timing through with the line this week. If you'll give us another go, ask for me at the door and I'll make sure it lands better."</p>
+        </div>
+      </div>
+      <p class="cmp-note mid">An example, written for a restaurant that doesn't exist. Note what it does: it names the wait, the fries and Marcus, and it doesn't thank anyone for their valued feedback. That's the tell people actually notice. A reply like this one would never post on its own. It would go to your phone and wait.</p>
     </section>
 
     <section id="start">
-      <h2 class="section-title">Simple pricing</h2>
-      <p class="section-sub">One plan. Everything included. Cancel anytime.</p>
+      <h2 class="section-title">One price. <span data-price>$199</span> a month.</h2>
+      <p class="section-sub">No setup fee. No contract. No per-location upcharge. Cancel any month.</p>
       <div class="pricing">
         <div class="price"><span data-price>$199</span><small>/month</small></div>
         <ul>
-          <li>A reply to every Google review, in your voice</li>
-          <li>Automated review requests to all your diners</li>
-          <li>8 social posts per month, in your voice</li>
-          <li>Monthly rating & review report</li>
-          <li>You choose: approve everything, or auto-post the positive ones</li>
+          <li>A reply drafted to every new Google review, in the words you'd actually use</li>
+          <li>Review requests to every diner, never only the happy ones</li>
+          <li>8 social posts a month, written and put up</li>
+          <li>One page each month on your rating and what your reviews are saying</li>
+          <li>Your rules: approve everything, or let the positive replies post on their own</li>
+          <li>Anything negative always waits for your OK, on every setting</li>
         </ul>
-        <a class="btn" data-cta href="#" style="width:100%">Start now →</a>
-        <p style="margin-top:14px;font-size:13px;color:var(--muted)">Prefer to talk first? <a data-book href="#" style="color:var(--accent);font-weight:700">Book a free call</a></p>
+        <a class="btn" data-cta href="#" style="width:100%">Start for <span data-price>$199</span>/mo →</a>
+        <p style="margin-top:14px;font-size:13px;color:var(--muted)">Want the five sample replies first? Send us your Google listing and we'll write replies to your last five reviews so you can judge the writing yourself. No card, no call, and no follow-up if you say nothing. I do a handful of these a week, because I write them myself. <a data-book href="#" style="color:var(--accent);font-weight:700">Ask for yours</a></p>
       </div>
     </section>
 
     <section class="faq">
       <h2 class="section-title">Questions</h2>
-      <details><summary>Isn't Google's reply feature free?</summary><p>It writes generic replies for Google only — you still have to log in and do each one, and it won't get you new reviews or post to social. We handle everything, everywhere, in your voice.</p></details>
-      <details><summary>Do I approve what gets posted?</summary><p>That's your call. By default every reply waits for your OK — one tap on your phone. If you'd rather, you can let us auto-post replies to your positive reviews. Anything negative or sensitive always comes to you first, either way.</p></details>
-      <details><summary>What do you need from me?</summary><p>You add us as a manager on your Google Business Profile — takes 30 seconds, you never share a password, and you can remove us in two clicks. Plus a couple of minutes to describe your vibe.</p></details>
-      <details><summary>What about Facebook reviews?</summary><p>Facebook retired star ratings and reviews — they're recommendations now, and no tool can reply to them automatically. So we focus reviews on Google, where they actually move the needle, and handle your Facebook & Instagram posts and comments.</p></details>
-      <details><summary>Can I cancel?</summary><p>Anytime, no contract. If it's not helping, you stop.</p></details>
+      <details><summary>Google will draft the reply for me free. Why pay you?</summary><p>It will, on some accounts, and the writing is fine. It also needs you to log in, read the review and press send, on every review, forever. That click is exactly the thing that doesn't happen at 11pm. Google's feature also won't ask your diners for reviews and won't post to your social, and it's still a limited rollout, so plenty of restaurants in the same town don't have it at all. The free tool solves typing. It doesn't solve noticing.</p></details>
+      <details><summary>I already pay for ChatGPT. Why not just do it myself?</summary><p>ChatGPT can write a good reply. It can't see that a review arrived and it can't post one. You still have to notice, copy, paste and send, every time, and that's the part that stops by week two. The other thing worth knowing: the standard advice for doing this yourself is to build a set of reply templates and tweak them, and half of consumers say a templated reply puts them off (BrightLocal 2026). That failure mode is the one we're built to avoid.</p></details>
+      <details><summary>Isn't this just software like Podium or Birdeye?</summary><p>Those are capable tools that you log into and operate. A tool you operate is still a job you have. We're the other arrangement: no dashboard to learn, no habit to build, and one person whose name is on the work. You get a message when something needs a yes. If you want software, buy software.</p></details>
+      <details><summary>Why not just pay a freelancer $400 a month?</summary><p>If posts are all you want, hire the freelancer, and we won't pretend otherwise. A $300 to $500 package usually gets you 8 to 12 posts, which is as many as or more than our eight. What those packages almost never include is your Google reviews: a reply drafted to every one, and a request sent to every diner. That's the half that's actually sitting undone, and it's the half a stranger sees when they search your name at 6pm on a Friday. If you're talking to a freelancer, ask whether review replies are in scope and what happens on a one-star at 11pm on a Saturday.</p></details>
+      <details><summary>Where does the $950 figure come from?</summary><p>Ten hours a week at $20 an hour is about $865 a month in wages, plus about 11% for employer payroll taxes and workers comp, which comes to roughly $960. We round it down and say about $950. $20 an hour is the middle of the published market for a US marketing assistant in 2026: Indeed says $20.02, Payscale $19.59, Salary.com about $21, ZipRecruiter $21.85. At the bottom of that band it's about $850 a month. No health insurance and no paid leave is assumed. The full arithmetic and every source is in the note under the comparison table.</p></details>
+      <details><summary>Ten hours a week seems like a lot for eight posts. Isn't this really a few hours a month?</summary><p>It is, and we'd rather say so than have you work it out. Eight posts is four to six hours, a month of review replies is one to three, requests and the report are about an hour each. Call it eight to twelve hours a month, which at $20 an hour plus payroll taxes would be around $220. That's still more than <span data-price>$199</span>, but barely, and it isn't the real point. Those hours only exist if somebody is watching for the reviews in the first place, and they land whenever a stranger decides to post about your restaurant. Nobody takes a ten-hour-a-month job on that schedule. You're not buying hours, you're buying the fact that it's covered on a Saturday you'd have forgotten.</p></details>
+      <details><summary>Will my guests be able to tell a reply was written by AI?</summary><p>Some people are sharp about this and it's a fair thing to worry about in 2026. Two things help. Replies name the specific thing the diner wrote about instead of thanking them for their valued feedback, which is the tell people actually notice. And a person reads the ones that matter before they go out. There's a real example on this page, and if you want five written against your own reviews before you pay anything, send us your listing.</p></details>
+      <details><summary>What happens on a one-star? That's the reply that gets screenshotted.</summary><p>That's the right fear. A defensive reply on a one-star is the screenshot that travels, which is why every negative, low-starred or sensitive review is held for you, every time. This one isn't configurable, and it isn't a setting that can drift. It lands on your phone, you read it, and you approve it, edit it, or tell us to leave that one alone.</p></details>
+      <details><summary>Will this improve my rating?</summary><p>We won't promise that, and be careful with anyone who does. Your rating comes from your food and your service, not from us. What we can tell you is that more of your diners get asked and your reviews get answers instead of silence, which is what 89% of your reviewers say they're expecting.</p></details>
+      <details><summary>Who's touching my Google profile, and can I take it back?</summary><p>You add us as a manager on your Google Business Profile. It takes about 30 seconds, you never share a password, and you can remove us in two clicks whenever you like. We can't change who owns the profile. We don't need your POS, your bookings or your bank, and we don't ask for them.</p></details>
+      <details><summary>What about Facebook reviews?</summary><p>Facebook retired star ratings and reviews, so no tool can reply to them. We focus reviews on Google, where they actually move the needle, and handle your Facebook and Instagram posts.</p></details>
+      <details><summary>I'm already paying Toast, the delivery apps and a booking system. Why another subscription?</summary><p>Fair. You already pay all of those and none of them are doing this job. But if <span data-price>$199</span> is the difference between tight and fine this month, don't buy it. It'll still be <span data-price>$199</span> in the autumn, and <span data-price>$199</span> is our real price, not an introductory rate we plan to raise on you.</p></details>
+      <details><summary>How big is ReplyPlate?</summary><p>Small, and new. One person runs it, and today a good part of the work is done by hand rather than fully automated. That means a human genuinely reads your reviews. It also means there's no support queue, so you get the founder's email. As more of it automates we'll tell you which parts before it changes, and the rule that negative reviews wait for your OK won't change.</p></details>
+      <details><summary>Do you only ask the diners who seemed happy?</summary><p>No, and we won't. Every diner gets the same invitation. Google prohibits filtering, and the FTC's rule on consumer reviews treats review suppression as deceptive, so cherry-picking your happy customers is the kind of shortcut that gets a profile wiped. You get real reviews or none.</p></details>
+      <details><summary>What if I hate a reply?</summary><p>Edit it or kill it, one tap, and tell us why in a line. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us. Rejections are the fastest way for us to learn how you actually talk. If we keep getting it wrong, cancel.</p></details>
+      <details><summary>Can I cancel?</summary><p>Any month. No contract, no notice period, no cancellation call. Email us and it stops at the end of the month, and we take ourselves off your Google profile the same day so you're not left wondering who still has access.</p></details>
     </section>
 
     <div class="final">
-      <h2>Ready to never worry about reviews again?</h2>
-      <p>Set up in 24 hours. Cancel anytime.</p>
-      <a class="btn" data-cta href="#">Get started</a>
+      <h2>Get it off your list this week.</h2>
+      <p>Fifteen minutes to set up. <span data-price>$199</span> a month. Cancel any month. Usually live within two business days.</p>
+      <a class="btn" data-cta href="#">Start for <span data-price>$199</span>/mo</a>
     </div>
   </main>
 
   <footer class="wrap">
-    <p><b data-brand>ReplyPlate</b> — Reviews & social, handled for restaurants.</p>
+    <p><b data-brand>ReplyPlate</b>. Google reviews answered and social posts written, for independent restaurants. <span data-price>$199</span> a month, no contract. Run from the US by one person who answers his own email.</p>
     <p style="margin-top:6px"><a data-email href="#">hello@example.com</a></p>
   </footer>
 
@@ -242,7 +301,7 @@
       email:  "hello@example.com",
     };
     (function(){
-      document.title = CONFIG.brand + " — Reviews & Social, Handled for Your Restaurant";
+      document.title = CONFIG.brand + ": Google reviews answered and social posts written, for restaurants";
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
       document.querySelectorAll("[data-price]").forEach(function(n){ n.textContent = CONFIG.price; });
       var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=I%27d%20like%20to%20start");
@@ -250,6 +309,11 @@
       var bookUrl = CONFIG.book || ("mailto:" + CONFIG.email + "?subject=Free%20setup%20call");
       document.querySelectorAll("[data-book]").forEach(function(a){ a.href = bookUrl; });
       document.querySelectorAll("[data-email]").forEach(function(a){ a.href = "mailto:"+CONFIG.email; a.textContent = CONFIG.email; });
+      var hint = document.getElementById("cmpHint"), tbl = document.getElementById("cmpTable");
+      if (hint && tbl) hint.addEventListener("click", function(){
+        tbl.classList.toggle("show-all");
+        hint.textContent = tbl.classList.contains("show-all") ? "Show fewer options" : "Tap to see all five options →";
+      });
     })();
   </script>
 </body>
