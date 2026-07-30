@@ -14,12 +14,16 @@ summaries. They are load-bearing. Open them in a normal browser before acting.
 
 ## 0. The three things that matter most
 
-**1. The critical path is paperwork, not code.** The entire backend can be built
-in a few weeks. It cannot go live until Google approves API access — a human
-review with no status page and no escalation channel. Every new Google Cloud
-project sits at **0 QPM**, where *every call fails*, until a person approves it.
-Phases are therefore sequenced so a real $199/mo service is deliverable with the
-Google connector still stubbed.
+**1. Google's approval is no longer on the launch critical path.** It used to be.
+Every new Google Cloud project sits at **0 QPM**, where *every call fails*, until
+a human at Google approves it, with no status page and no escalation channel.
+
+The way around it: **Google emails you when a new review arrives**, provided you
+are a Manager on the listing. That notification is the alarm bell the API was
+going to provide, and it needs no approval at all. Phase 1b builds on it, so the
+service runs always-on with a person doing only the final paste. Apply for API
+access anyway on day one, but **do not wait for it** — when it lands it deletes
+one manual step and changes nothing else. See Phase 1b and Phase 4.
 
 **2. Three claims on the live site are currently undeliverable or unsafe.** These
 are business problems, not engineering ones, and they are free to fix today. See
@@ -320,6 +324,64 @@ hand — paste a review into the console, AI drafts and triages, the owner appro
 from their own phone, you paste the approved text into Google manually. A
 genuinely deliverable $199/mo service requiring zero external approvals.
 
+### Phase 1b — Google, without waiting for Google (3–4 days nominal)
+
+**The unlock in this whole plan.** Google sends a notification email to every
+Owner and Manager on a listing when a new review arrives. Be a Manager, and you
+learn about every review across every client without one API call. This replaces
+review *detection*, which was the only part of the loop that genuinely needed
+approved API access. Drafting, triage, owner approval and the audit trail all
+work already; only the final publish stays manual.
+
+**⚠ Validate before building — this phase rests entirely on it.** Create a spare
+Gmail, add it as a Manager on any listing you control, leave a review, and record
+(a) that the email arrives, (b) how fast, (c) whether it contains the review
+**text** or only "you have a new review", and (d) whether it carries a
+deep link to the review. If the body is truncated, the phase still works as an
+alarm bell; the operator clicks through to read. If no email arrives at all,
+check the account's notification settings before concluding anything.
+
+Deliverables:
+
+- **One shared ops mailbox** (`hello@yourdomain.com`) that every client adds as a
+  Manager. One inbox, all clients, no per-client credentials to store.
+- **`EmailConnector` implementing the same `Connectors` interface as the fixture
+  and the future API connector.** This is the whole point of the seam: three
+  implementations, one interface, swapped by config per client.
+- **Inbox reader.** Read your own mailbox over IMAP, or forward to an
+  email-to-webhook endpoint on the Worker. Reading a mailbox you own needs no
+  Google review-API approval. Prefer forwarding: it is a plain HTTP POST, avoids
+  storing mail credentials, and fails loudly.
+- **Parser** extracting business name, star rating, reviewer name, review text
+  and the deep link. Match the business name to `clients.slug`; **quarantine and
+  alert on any unmatched sender rather than guessing**, because a wrong match
+  posts a reply about the wrong restaurant.
+- **Dedupe on message-id** into the existing `jobs.dedupe_key`. Notification
+  mail gets re-delivered; the pipeline must be idempotent here exactly as it is
+  everywhere else.
+- **Operator publish queue.** For each approved draft: the reply text, a copy
+  button, and the deep link to the review, in one click-through. Track
+  `published_at` so nothing is pasted twice or missed.
+- **The manager-invite guide as a real page**, six screenshots, one step each:
+  Business Profile → menu → Business Profile settings → People and access → Add →
+  enter the ops email → **Manager** → Invite. End it with a **"Did it work?"**
+  button that checks whether the invitation actually arrived, so a failed
+  connection surfaces in seconds instead of on day four.
+- **Pre-flight check before payment.** If the listing is unverified, unclaimed,
+  or held by an agency, say so and do not take the card. This is the largest
+  single source of refunds in a self-serve flow.
+
+**Unblocks:** an always-on service with **zero Google approvals**. Reviews are
+noticed, drafted, triaged and approved automatically; a human spends roughly
+20 seconds per review pasting. At 10 clients and ~200 reviews/month that is
+about 70 minutes a month — the pasting was never the bottleneck, the noticing
+and the writing were.
+
+**Known limits, stated honestly:** notification mail can lag or be
+rate-limited, so this is minutes-to-hours latency rather than near-real-time;
+edited reviews may not re-notify; and if the owner removes your Manager access
+the emails stop, which the daily reconciliation in §8 must catch.
+
 ### Phase 2 — The durable pipeline and guardrails (7–9 days nominal)
 
 Build and harden the whole `fetch → draft → guardrail → publish-or-hold → notify
@@ -404,11 +466,21 @@ and confirm nothing publishes.
   → cancellation. Then one real $199 charge on your own card in live mode,
   verified end to end, then refunded.
 
-### Phase 4 — Google connector live (5–7 days code + supervised soak)
+### Phase 4 — Delete the manual paste: the API connector (5–7 days code + supervised soak)
 
-**Hard gate on the Phase 0 approval.** Until it lands every call returns 429 —
-no sandbox, no test mode, no partial access. Write this code during the wait
-against fixtures.
+**No longer a launch gate — an efficiency upgrade.** Phase 1b already delivers
+the service. This phase swaps `EmailConnector` for `GoogleConnector` behind the
+same interface, which removes the operator's ~20-seconds-per-review paste and
+tightens latency from minutes-to-hours down to the poll interval. Everything
+else — drafting, guardrails, approval, audit — is unchanged and already proven.
+
+**Still gated on the Phase 0 approval**, but nothing revenue-generating waits on
+it. Until it lands every call returns 429: no sandbox, no test mode, no partial
+access. Write this code against fixtures while you wait.
+
+**Run both connectors in parallel for the first week.** Email notification and
+API poll should surface the same reviews; any divergence is a bug in one of them
+and you want to find it before the email path is switched off.
 
 - Confirm approval: Cloud Console → IAM & Admin → Quotas, filter My Business.
   **0 QPM = still pending. 300 QPM = approved.** There is no status page and no
@@ -626,15 +698,25 @@ conjunction of four things already named as base cases:
    sold pre-automation is ~80 posts/month plus every reply pasted by hand —
    30–40 hrs/month straight out of build velocity.
 
-**Publish two dates and hold yourself to them:**
+**Publish these dates and hold yourself to them:**
 
 | Milestone | Base case | Bad case |
 |---|---|---|
-| Google autopilot live | ~4–5 months | **8–11 months** from a zero-GBP start with one rejection |
-| Full offer as advertised | ~8 months | **12–18 months** |
+| **Always-on service live (Phase 1b, no approvals)** | **3–5 weeks** | 7–8 weeks |
+| Manual paste removed (Phase 4, API approval) | ~4–5 months | 8–11 months from a zero-GBP start with one rejection |
+| Full offer as advertised (incl. Meta) | ~8 months | 12–18 months |
 
-**Then gate sales on it: cap the number of clients you sell before automation
-lands**, because each one taxes the build that would free you.
+**Phase 1b is what changed.** Risks 1 and 2 above — the 60-day profile wait and a
+Google rejection — used to sit in front of every dollar of revenue. They now sit
+in front of an efficiency gain instead. Risk 4, the vicious loop, shrinks the
+same way: pasting ~200 replies a month is roughly an hour, not the 30–40 hrs/month
+that hand-writing them costs.
+
+**Sell freely once Phase 1b is live.** The old advice was to cap client count
+before automation landed; that was correct when every review meant hand-writing a
+reply. With detection, drafting and approval automated, marginal cost per client
+is minutes a month. The remaining reason to pace sales is social posting (§6),
+which is still genuinely manual until Meta App Review clears.
 
 Scope cut that buys the most time: for Phase 2 v1 ship the guardrail validator,
 reserve-then-call idempotency and the approval-token split (all load-bearing) and
@@ -709,24 +791,29 @@ each, and it teaches you what the report should actually say).
 
 ## 9. Verify these before committing calendar or money
 
-1. **The `account_id` discovery gap** (§2) — validate end-to-end with one real
+1. **That Google actually emails Managers about new reviews** — the entire
+   Phase 1b unlock rests on it, and it is a five-minute test: spare Gmail, add as
+   Manager on a listing you control, leave a review, see what arrives and how
+   fast. Check whether the body carries the review **text** or only a "you have a
+   new review" nudge. **Do this before anything else in this document.**
+2. **The `account_id` discovery gap** (§2) — validate end-to-end with one real
    restaurant. If manager-added locations don't surface with an account segment,
    the "no per-client OAuth" premise collapses and Phases 0/4 need re-planning.
-2. **Google's prerequisites verbatim** at
+3. **Google's prerequisites verbatim** at
    `developers.google.com/my-business/content/prereqs`, `/limits`, `/faq` —
    especially the 60-day-verified-profile rule, which is the most
    calendar-expensive item in the plan.
-3. **The Facebook Recommendations deprecation** — one authenticated
+4. **The Facebook Recommendations deprecation** — one authenticated
    `GET /v25.0/{page-id}/ratings` call, before you withdraw a sold feature.
-4. **Whether `business.manage` is a *restricted* scope** (triggering an annual
+5. **Whether `business.manage` is a *restricted* scope** (triggering an annual
    CASA assessment at $500–$4,500/yr) or merely *sensitive*. Restricted scopes are
    documented as the Gmail/Drive/Calendar/Contacts class, which suggests you're
    safe, and operator-as-manager likely sidesteps it by never involving external
    OAuth users — but confirm in the Cloud Console Verification Center, because a
    Tier 2 requirement roughly doubles annual compliance cost.
-5. **Cloudflare's included request/CPU allotments** — sources disagreed (10M vs
+6. **Cloudflare's included request/CPU allotments** — sources disagreed (10M vs
    20M). At your volume no plausible allotment produces an overage, but confirm.
-6. **Stripe's 0.7% Billing line** on your own Dashboard fee breakdown after the
+7. **Stripe's 0.7% Billing line** on your own Dashboard fee breakdown after the
    first live charge.
 
 ---
