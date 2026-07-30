@@ -6,6 +6,8 @@ Use **simple, plain words** and **always give examples**. The owner is building
 a business, not reading a technical document.
 
 Do this:
+- **Keep answers short.** Say the thing, show one example, stop. Do not write
+  an essay when five lines will do. No long lists of options.
 - Short sentences. One idea per sentence.
 - Explain any technical word the moment you use it, or don't use it.
 - Give a concrete example for every point. Show a real scenario, a sample
