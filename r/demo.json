@@ -1,0 +1,131 @@
+{
+  "name": "The Olive Table",
+  "subtitle": "Answers, day or night",
+  "phone": "01234 567890",
+  "greeting": "Hello! Ask me anything about The Olive Table. I'll only tell you things the team has actually confirmed.",
+  "buttonText": "Ask us a question",
+  "answers": [
+    {
+      "chip": "Opening hours",
+      "q": [
+        "what are your opening hours",
+        "when are you open",
+        "are you open on sunday",
+        "what time do you close",
+        "are you open today",
+        "opening times",
+        "what time do you open"
+      ],
+      "a": "We're open Tuesday to Thursday 5pm to 10pm, Friday and Saturday 12pm to 11pm, and Sunday 12pm to 8pm.\n\nWe're closed on Mondays."
+    },
+    {
+      "chip": "Vegan and vegetarian",
+      "q": [
+        "do you have vegan options",
+        "is there vegetarian food",
+        "vegan menu",
+        "plant based",
+        "veggie options",
+        "do you cater for vegans"
+      ],
+      "a": "Yes. We have a separate vegan menu with five mains, and most of our starters are vegetarian.\n\nIf you have a specific allergy, please tell your server when you arrive so the kitchen can check the dish for you properly."
+    },
+    {
+      "chip": "Parking",
+      "q": [
+        "is there parking",
+        "where can i park",
+        "do you have a car park",
+        "parking nearby"
+      ],
+      "a": "There's free street parking on Mill Lane after 6pm, and a pay and display car park about two minutes' walk away on Bridge Street."
+    },
+    {
+      "chip": "Booking a table",
+      "q": [
+        "can i book a table",
+        "do you take bookings",
+        "how do i reserve",
+        "booking for 10 people",
+        "large group booking",
+        "reservations"
+      ],
+      "a": "Yes, we take bookings. For groups up to 8 you can book online or give us a ring.\n\nFor 9 or more, please call us so we can sort the seating properly."
+    },
+    {
+      "chip": "Dogs",
+      "q": [
+        "can i bring my dog",
+        "are you dog friendly",
+        "pets allowed",
+        "do you allow dogs"
+      ],
+      "a": "Dogs are very welcome in the bar area and outside on the terrace. We just ask that they're not in the main dining room."
+    },
+    {
+      "chip": "Children",
+      "q": [
+        "do you have a kids menu",
+        "are children welcome",
+        "high chairs",
+        "is it family friendly",
+        "children's food"
+      ],
+      "a": "Children are welcome. We have a kids' menu, high chairs, and a baby changing table in the accessible toilet."
+    }
+  ],
+  "order": {
+    "enabled": true,
+    "method": "whatsapp",
+    "phone": "+441234567890",
+    "currency": "$",
+    "chip": "Order for collection",
+    "title": "Order for collection",
+    "subtitle": "Tap what you'd like",
+    "mode": "For collection",
+    "note": "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
+  },
+  "menu": [
+    {
+      "section": "Pizzas",
+      "items": [
+        {
+          "name": "Margherita",
+          "price": 12
+        },
+        {
+          "name": "Pepperoni",
+          "price": 13.5
+        },
+        {
+          "name": "Vegan Special",
+          "price": 14,
+          "note": "cashew base, no dairy"
+        }
+      ]
+    },
+    {
+      "section": "Sides",
+      "items": [
+        {
+          "name": "Garlic Bread",
+          "price": 5
+        },
+        {
+          "name": "Olives",
+          "price": 4
+        }
+      ]
+    },
+    {
+      "section": "Drinks",
+      "items": [
+        {
+          "name": "San Pellegrino",
+          "price": 3
+        }
+      ]
+    }
+  ],
+  "pageSub": "Questions answered, and order for collection."
+}

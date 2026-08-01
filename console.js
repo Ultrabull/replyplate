@@ -411,6 +411,39 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     row.appendChild(cp);
     out.appendChild(code); out.appendChild(row);
     container.appendChild(out);
+
+    // The no-website route: their own page, one link, one QR code.
+    const link = el("div", "card form");
+    const slug = slugify(c.name);
+    const url = `https://reply-plate.com/r.html?c=${slug}`;
+    link.innerHTML = "<h3>Or: no code at all</h3><p class='hint'>For owners who can't get into their website, or don't really have one. " +
+      "This is their own page. It goes in an Instagram bio, on their Google listing, or on a QR sticker for the tables.</p>";
+    const urlBox = el("input", "in"); urlBox.readOnly = true; urlBox.value = url;
+    const cfgBox = el("textarea", "ta mono"); cfgBox.rows = 6; cfgBox.readOnly = true;
+    cfgBox.value = JSON.stringify(pageConfig(chatKB, c), null, 2);
+    const lrow = el("div", "row");
+    const cu = el("button", "btn sm"); cu.type = "button"; cu.textContent = "Copy the link";
+    cu.addEventListener("click", () => copy(url, cu));
+    const cq = el("a", "btn sm ghost"); cq.textContent = "Make a QR code";
+    cq.href = "https://www.qr-code-generator.com/"; cq.target = "_blank"; cq.rel = "noopener";
+    cq.style.textDecoration = "none"; cq.style.display = "inline-block";
+    const cc = el("button", "btn sm ghost"); cc.type = "button"; cc.textContent = "Copy the page file";
+    cc.addEventListener("click", () => { cfgBox.value = JSON.stringify(pageConfig(chatKB, c), null, 2); copy(cfgBox.value, cc); });
+    lrow.appendChild(cu); lrow.appendChild(cq); lrow.appendChild(cc);
+    const note = el("p", "hint");
+    note.innerHTML = `<b>To switch it on:</b> send me the page file below and I'll add <code>r/${slug}.json</code> to the site. The link works from then on.`;
+    link.appendChild(urlBox); link.appendChild(lrow); link.appendChild(note); link.appendChild(cfgBox);
+    container.appendChild(link);
+  }
+
+  function slugify(s) {
+    return String(s || "restaurant").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "restaurant";
+  }
+
+  function pageConfig(kb, client) {
+    const cfg = JSON.parse(chatSnippet(kb, client).match(/window\.RP_CHAT = ([\s\S]*?);<\/script>/)[1]);
+    cfg.pageSub = "Questions answered, and order for collection.";
+    return cfg;
   }
 
   async function doChat() {

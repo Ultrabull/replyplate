@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Ask us anything</title>
+<meta name="robots" content="noindex" />
+<style>
+  :root{--ink:#1a1410;--muted:#6b5d52;--bg:#fffaf3;--line:#eaddcd;--accent:#d1452b;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.5;
+    padding:18px 14px max(18px,env(safe-area-inset-bottom));min-height:100vh}
+  .wrap{max-width:460px;margin:0 auto}
+  h1{font-size:24px;letter-spacing:-.3px;margin-bottom:2px}
+  .sub{color:var(--muted);font-size:14.5px;margin-bottom:16px}
+  #chat{margin-bottom:14px}
+  .links{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .links a{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 15px;
+    text-decoration:none;color:var(--accent);font-weight:600;font-size:14px}
+  .foot{text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+  .foot a{color:var(--muted)}
+  .err{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="rName">Loading</h1>
+    <p class="sub" id="rSub"></p>
+    <div id="chat"></div>
+    <div class="links" id="rLinks"></div>
+    <p class="foot" id="rFoot"></p>
+  </div>
+
+<script>
+/* One page per restaurant, for owners who can't or won't paste code into their
+   website. The whole thing is a link they can put in an Instagram bio, on their
+   Google listing, or on a QR sticker for the tables.
+
+   Config lives in r/<slug>.json so the URL stays short enough to make a QR code
+   that scans easily from a table card. */
+(function () {
+  var slug = new URLSearchParams(location.search).get("c") || "";
+  var safe = /^[a-z0-9-]{1,60}$/.test(slug);   // no path traversal, no surprises
+  var chat = document.getElementById("chat");
+
+  function fail(msg) {
+    document.getElementById("rName").textContent = "Not found";
+    document.getElementById("rSub").textContent = "";
+    chat.innerHTML = '<div class="err">' + msg + "</div>";
+  }
+  if (!safe) return fail("This link looks wrong. Check it and try again.");
+
+  fetch("r/" + slug + ".json", { cache: "no-cache" })
+    .then(function (r) { if (!r.ok) throw new Error("missing"); return r.json(); })
+    .then(function (cfg) {
+      document.title = "Ask " + (cfg.name || "us");
+      document.getElementById("rName").textContent = cfg.name || "Ask us";
+      document.getElementById("rSub").textContent = cfg.pageSub || "Questions answered, and order for collection.";
+
+      var links = document.getElementById("rLinks");
+      if (cfg.phone) links.insertAdjacentHTML("beforeend", '<a href="tel:' + cfg.phone.replace(/\s/g, "") + '">Call us</a>');
+      if (cfg.website) links.insertAdjacentHTML("beforeend", '<a href="' + cfg.website + '" target="_blank" rel="noopener">Our website</a>');
+      if (cfg.mapsUrl) links.insertAdjacentHTML("beforeend", '<a href="' + cfg.mapsUrl + '" target="_blank" rel="noopener">Find us</a>');
+
+      document.getElementById("rFoot").textContent = "Answers written by " + (cfg.name || "the restaurant") + ".";
+
+      cfg.embed = "chat";
+      window.RP_CHAT = cfg;
+      var s = document.createElement("script");
+      s.src = "chat-widget.js";
+      document.body.appendChild(s);
+    })
+    .catch(function () {
+      fail("We couldn't find this page. If you scanned a code, ask the restaurant for the current one.");
+    });
+})();
+</script>
+</body>
+</html>

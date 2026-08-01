@@ -28,6 +28,10 @@
   if (!C || !C.answers || !C.answers.length) return;
 
   var ORDER = C.order && C.order.enabled && C.menu && C.menu.length ? C.order : null;
+  // Embed mode: render inline on a page of its own instead of floating over a
+  // restaurant's site. Used by r.html, the link-and-QR version for owners who
+  // cannot or will not paste code into their website.
+  var MOUNT = C.embed ? document.getElementById(C.embed) : null;
   var CUR = (ORDER && ORDER.currency) || "$";
 
   var STOP = "a an and are as at be but by can could do does for from get had has have how i if in is it its me my of on or our so than that the their them there they this to was we what when where which who will with would you your".split(" ");
@@ -113,7 +117,8 @@
     + '.rpc-go{width:100%;background:' + accent + ';color:#fff;border:none;border-radius:11px;padding:12px;font:700 15px inherit;cursor:pointer}'
     + '.rpc-go:disabled{opacity:.45;cursor:default}'
     + '.rpc-hint{font-size:11.5px;color:#8a7b6e;text-align:center;margin-top:7px;line-height:1.45}'
-    + '@media (max-width:420px){.rpc-panel{right:8px;left:8px;bottom:8px;width:auto;height:calc(100vh - 16px)}.rpc-btn{right:12px;bottom:12px}}';
+    + '.rpc-embed{position:static;right:auto;bottom:auto;width:100%;height:min(620px,calc(100vh - 150px));display:flex;box-shadow:0 6px 24px rgba(0,0,0,.10);border:1px solid #eaddcd}'
+    + '@media (max-width:420px){.rpc-panel{right:8px;left:8px;bottom:8px;width:auto;height:calc(100vh - 16px)}.rpc-btn{right:12px;bottom:12px}.rpc-embed{right:auto;left:auto;bottom:auto;height:min(620px,calc(100vh - 190px))}}';
 
   var style = document.createElement("style"); style.textContent = css;
   document.head.appendChild(style);
@@ -146,8 +151,14 @@
     + '  </div>'
     + '</div>';
 
-  document.body.appendChild(btn);
-  document.body.appendChild(panel);
+  if (MOUNT) {
+    panel.classList.add("rpc-embed", "open");
+    panel.querySelector(".rpc-x").style.display = "none";
+    MOUNT.appendChild(panel);
+  } else {
+    document.body.appendChild(btn);
+    document.body.appendChild(panel);
+  }
 
   var log = panel.querySelector("#rpcLog"), input = panel.querySelector("#rpcIn");
   var chatView = panel.querySelector("#rpcChatView"), orderView = panel.querySelector("#rpcOrderView");
@@ -290,7 +301,7 @@
 
   var opened = false;
   function open() {
-    panel.classList.add("open"); btn.style.display = "none";
+    panel.classList.add("open"); if (!MOUNT) btn.style.display = "none";
     if (!opened) {
       opened = true;
       bubble(C.greeting || ("Hi! Ask me anything about " + (C.name || "us") + "."), "bot");
@@ -298,9 +309,10 @@
     }
     if (chatView.classList.contains("on")) input.focus();
   }
-  function close() { panel.classList.remove("open"); btn.style.display = "flex"; }
+  function close() { if (MOUNT) return; panel.classList.remove("open"); btn.style.display = "flex"; }
 
   btn.addEventListener("click", open);
+  if (MOUNT) open();
   panel.querySelector(".rpc-x").addEventListener("click", close);
   backBtn.addEventListener("click", showChat);
   panel.querySelector(".rpc-form").addEventListener("submit", function (e) { e.preventDefault(); ask(input.value); });
