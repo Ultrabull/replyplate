@@ -208,22 +208,23 @@
     /* Keep this block matching index.html's CONFIG. */
     const CONFIG = {
       brand: "ReplyPlate",
-      email: "hello@example.com",
-      fbName: "ReplyPlate",   // the Facebook account name owners should search for
+      email: "hello@reply-plate.com",          // public contact address
+      managerEmail: "reviews@reply-plate.com", // the address owners add as a Manager
+      fbName: "ReplyPlate",                    // the Facebook account name owners should search for
     };
     (function(){
       document.title = "Connect your accounts | " + CONFIG.brand;
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
-      document.querySelectorAll("[data-email-text]").forEach(function(n){ n.textContent = CONFIG.email; });
+      document.querySelectorAll("[data-email-text]").forEach(function(n){ n.textContent = CONFIG.managerEmail; });
       document.querySelectorAll("[data-fb-text]").forEach(function(n){ n.textContent = CONFIG.fbName; });
       document.querySelectorAll("[data-email]").forEach(function(a){ a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
 
       var btn = document.getElementById("copyBtn");
       btn.addEventListener("click", function(){
         var done = function(){ btn.textContent = "Copied ✓"; setTimeout(function(){ btn.textContent = "Copy email"; }, 1600); };
-        if (navigator.clipboard) { navigator.clipboard.writeText(CONFIG.email).then(done, fallback); } else { fallback(); }
+        if (navigator.clipboard) { navigator.clipboard.writeText(CONFIG.managerEmail).then(done, fallback); } else { fallback(); }
         function fallback(){
-          var t = document.createElement("textarea"); t.value = CONFIG.email;
+          var t = document.createElement("textarea"); t.value = CONFIG.managerEmail;
           document.body.appendChild(t); t.select();
           try { document.execCommand("copy"); done(); } catch(e) { btn.textContent = "Copy failed"; }
           t.remove();
@@ -235,7 +236,7 @@
       var done = document.getElementById("doneBtn");
       done.href = "mailto:" + CONFIG.email
         + "?subject=" + encodeURIComponent("I've added you as a manager")
-        + "&body=" + encodeURIComponent("Restaurant name:\n\nGoogle listing link (optional):\n\nI've added " + CONFIG.email + " as a Manager.");
+        + "&body=" + encodeURIComponent("Restaurant name:\n\nGoogle listing link (optional):\n\nI've added " + CONFIG.managerEmail + " as a Manager.");
     })();
   </script>
 </body>
