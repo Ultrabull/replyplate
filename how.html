@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="theme-color" content="#161210" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Watch it work | ReplyPlate</title>
+<meta name="description" content="See what happens when a review lands, and what happens when a customer orders. Three short walkthroughs, no sign-up." />
+<style>
+  :root{
+    --ink:#f3ecdf; --muted:#a4977f; --bg:#161210; --card:#1f1915; --line:#382d20;
+    --accent:#d0a34e; --ok:#5cb383; --warn:#e0a15a; --bad:#e0705a;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:940px;margin:0 auto;padding:0 20px}
+  header{border-bottom:1px solid var(--line);padding:16px 0}
+  .logo{font-weight:800;font-size:19px;display:flex;align-items:center;gap:9px}
+  .logo .dot{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#8a6a2c)}
+
+  h1{font-size:clamp(27px,5.4vw,40px);line-height:1.12;letter-spacing:-.4px;margin:38px 0 10px;text-align:center}
+  .lede{text-align:center;color:var(--muted);font-size:16.5px;max-width:560px;margin:0 auto 30px}
+
+  .picker{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:26px}
+  @media (min-width:720px){.picker{grid-template-columns:repeat(3,1fr)}}
+  .pick{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left;cursor:pointer;font-family:inherit;color:var(--ink);min-height:48px}
+  .pick b{display:block;font-size:15.5px}
+  .pick span{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .pick[aria-selected="true"]{border-color:var(--accent);background:#251e14}
+
+  .stage{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;min-height:430px}
+  .cols{display:grid;grid-template-columns:1fr;gap:16px}
+  @media (min-width:720px){.cols{grid-template-columns:1fr 1fr}}
+  .col h4{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .slot{min-height:200px;display:flex;flex-direction:column;gap:10px}
+
+  .bubble{border-radius:14px;padding:13px 15px;border:1px solid var(--line);background:#191410;
+    opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease}
+  .bubble.in{opacity:1;transform:none}
+  .bubble .who{font-size:12.5px;color:var(--muted);margin-bottom:5px;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .bubble .stars{color:#e8b45e;letter-spacing:1.5px}
+  .bubble p{font-size:14.5px;line-height:1.5}
+  .bubble.reply{border-color:var(--accent);background:#241d14}
+  .bubble.posted{border-color:var(--ok)}
+  .tag{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:999px}
+  .tag.hold{background:rgba(224,161,90,.18);color:var(--warn)}
+  .tag.auto{background:rgba(92,179,131,.18);color:var(--ok)}
+  .tag.bad{background:rgba(224,112,90,.18);color:var(--bad)}
+
+  .phone{border:1px solid var(--line);border-radius:22px;background:#0f0c0a;padding:14px;max-width:290px;margin:0 auto;width:100%}
+  .phone .bar{height:5px;width:52px;background:#3a2f22;border-radius:99px;margin:0 auto 12px}
+  .notif{background:#1d1712;border:1px solid var(--line);border-radius:13px;padding:11px 13px;font-size:13.5px;
+    opacity:0;transform:translateY(-8px);transition:opacity .4s,transform .4s}
+  .notif.in{opacity:1;transform:none}
+  .notif b{display:block;font-size:12px;color:var(--accent);margin-bottom:3px}
+  .approve{margin-top:11px;display:flex;gap:8px;opacity:0;transition:opacity .4s}
+  .approve.in{opacity:1}
+  .approve button{flex:1;border:none;border-radius:10px;padding:11px;font:700 13.5px inherit;cursor:default}
+  .approve .yes{background:var(--ok);color:#08160f}
+  .approve .no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .approve .yes.tapped{animation:tap .5s ease}
+  @keyframes tap{50%{transform:scale(.93);filter:brightness(1.35)}}
+
+  .caption{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;display:flex;gap:12px;align-items:flex-start;min-height:66px}
+  .capnum{flex:0 0 auto;width:27px;height:27px;border-radius:50%;background:var(--accent);color:#1a1204;font-weight:800;font-size:13.5px;display:flex;align-items:center;justify-content:center}
+  .captext{font-size:15.5px;line-height:1.5}
+  .captext em{display:block;color:var(--muted);font-size:13.5px;font-style:normal;margin-top:3px}
+
+  .controls{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+  .btn{background:var(--accent);color:#1a1204;border:none;border-radius:999px;padding:13px 26px;font:700 15px inherit;cursor:pointer;min-height:48px}
+  .btn:hover{background:#ddb45f}
+  .btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:16px}
+  .dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .3s}
+  .dots i.on{background:var(--accent)}
+
+  .foot{text-align:center;color:var(--muted);font-size:13px;margin:34px 0 60px;line-height:1.7}
+  .cta{text-align:center;margin-top:34px}
+</style>
+</head>
+<body>
+  <header><div class="wrap"><div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div></div></header>
+
+  <main class="wrap">
+    <h1>Watch it work</h1>
+    <p class="lede">Three things that happen without you. Pick one and watch it play through, or step it yourself.</p>
+
+    <div class="picker" role="tablist">
+      <button class="pick" role="tab" aria-selected="true" data-s="0"><b>A good review lands</b><span>What happens with a 5 star</span></button>
+      <button class="pick" role="tab" aria-selected="false" data-s="1"><b>A bad review lands</b><span>The one you actually worry about</span></button>
+      <button class="pick" role="tab" aria-selected="false" data-s="2"><b>Someone orders</b><span>Collection, straight to you</span></button>
+    </div>
+
+    <div class="stage">
+      <div class="cols">
+        <div class="col"><h4 id="leftTitle">On Google</h4><div class="slot" id="left"></div></div>
+        <div class="col"><h4 id="rightTitle">Your phone</h4><div class="slot" id="right"></div></div>
+      </div>
+      <div class="caption"><div class="capnum" id="capnum">1</div><div class="captext" id="captext">Press play.</div></div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="play">Play</button>
+      <button class="btn ghost" id="step">Step forward</button>
+    </div>
+
+    <div class="cta">
+      <a class="btn" href="./index.html" style="text-decoration:none;display:inline-block">See pricing</a>
+    </div>
+
+    <p class="foot">
+      Made-up reviews and a made-up restaurant. The reply shown is the sort of thing we write, and on a real account nothing
+      negative posts until you have tapped approve.<br>
+      <a href="./chat-demo.html">Try the ordering yourself</a> · <a href="./index.html">Back to ReplyPlate</a>
+    </p>
+  </main>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var left = $("left"), right = $("right"), capnum = $("capnum"), captext = $("captext"), dots = $("dots");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function bubble(where, cls, html) {
+    var d = document.createElement("div");
+    d.className = "bubble " + (cls || "");
+    d.innerHTML = html;
+    where.appendChild(d);
+    requestAnimationFrame(function () { d.classList.add("in"); });
+    return d;
+  }
+  function phone(where, inner) {
+    var d = document.createElement("div");
+    d.className = "phone";
+    d.innerHTML = '<div class="bar"></div>' + inner;
+    where.appendChild(d);
+    return d;
+  }
+  // Typing the draft is the moment people lean in, so it is worth the few lines.
+  var typeToken = 0;
+  function type(el, text) {
+    if (reduce) { el.textContent = text; return; }
+    var mine = ++typeToken, i = 0;
+    (function tick() {
+      if (mine !== typeToken || !el.isConnected) return;   // scene changed, stop
+      el.textContent = text.slice(0, i);
+      if (i++ < text.length) setTimeout(tick, 16);
+    })();
+  }
+
+  var REVIEW_GOOD = { who: "Priya S.", stars: 5, text: "Best carbonara in town. The staff remembered our little one's name from last time." };
+  var REVIEW_BAD  = { who: "Anon", stars: 2, text: "Waited 35 minutes for our food on a quiet Tuesday. Fries were cold. Our server Marcus was lovely, that's the only reason this isn't one star." };
+  var stars = function (n) { return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n); };
+  var reviewCard = function (r) {
+    return '<div class="who"><span class="stars">' + stars(r.stars) + '</span><span>' + esc(r.who) + '</span></div><p>' + esc(r.text) + '</p>';
+  };
+
+  var SCENES = [
+    { leftTitle: "On Google", rightTitle: "Your phone", steps: [
+      { cap: "A review lands at 11pm.", sub: "You are counting the till, or asleep.",
+        run: function () { bubble(left, "", reviewCard(REVIEW_GOOD)); } },
+      { cap: "We see it, because Google tells us.", sub: "No app for you to open, no dashboard to check.",
+        run: function () { bubble(right, "", '<div class="who">ReplyPlate</div><p>New 5 star review spotted for your restaurant.</p>'); } },
+      { cap: "A reply gets written in your words.", sub: "From your menu, your voice, and the reviews you have already answered.",
+        run: function () {
+          var b = bubble(left, "reply", '<div class="who">Your reply, drafted</div><p></p>');
+          type(b.querySelector("p"), "Priya, thank you. Carbonara is the one we are judged on, so that means a lot. And we will tell the team you noticed, they will be chuffed.");
+        } },
+      { cap: "5 stars, nothing sensitive, so it posts.", sub: "You chose to let the good ones go out on their own. You can also ask to see every one.",
+        run: function () {
+          var b = bubble(right, "", '<div class="who"><span class="tag auto">Auto posted</span></div><p>Nothing needed from you.</p>');
+        } },
+      { cap: "Done. You never touched it.", sub: "That is the whole point of the good ones.",
+        run: function () { var r = left.querySelector(".bubble.reply"); if (r) r.classList.add("posted"); } }
+    ]},
+
+    { leftTitle: "On Google", rightTitle: "Your phone", steps: [
+      { cap: "A 2 star lands on a Saturday night.", sub: "The one that makes your stomach drop.",
+        run: function () { bubble(left, "", reviewCard(REVIEW_BAD)); } },
+      { cap: "A careful reply gets drafted.", sub: "It names the wait, the fries and Marcus. No excuses, no arguing.",
+        run: function () {
+          var b = bubble(left, "reply", '<div class="who">Draft, not posted</div><p></p>');
+          type(b.querySelector("p"), "Thirty-five minutes on a quiet Tuesday isn't right, and cold fries after that wait is worse. That's on the kitchen, not on Marcus, and I'm glad he looked after you. Ask for me at the door next time and I'll make sure it lands better.");
+        } },
+      { cap: "It stops. It does not post.", sub: "3 stars or under always waits for you. There is no setting that turns this off.",
+        run: function () { bubble(right, "", '<div class="who"><span class="tag hold">Held for you</span></div><p>2 stars. Needs a human.</p>'); } },
+      { cap: "Your phone buzzes.", sub: "One message, with the reply ready to go.",
+        run: function () {
+          var p = phone(right, '<div class="notif" id="n1"><b>ReplyPlate</b>New 2 star review needs your OK. Tap to read.</div>' +
+            '<div class="approve" id="ap"><button class="yes">Approve and post</button><button class="no">Edit</button></div>');
+          later(reveal("n1"), 120);
+          later(reveal("ap"), 700);
+        } },
+      { cap: "You read it, you tap approve.", sub: "Fifteen seconds. Or edit a word first, plenty of owners do.",
+        run: function () { var y = document.querySelector(".approve .yes"); if (y) y.classList.add("tapped"); } },
+      { cap: "Now it posts, in your name.", sub: "Answered properly, on the night, instead of three weeks later.",
+        run: function () {
+          var r = left.querySelector(".bubble.reply");
+          if (!r) return;
+          r.classList.add("posted");
+          r.querySelector(".who").innerHTML = '<span class="tag auto">Posted</span>';
+        } }
+    ]},
+
+    { leftTitle: "Customer's phone", rightTitle: "Your WhatsApp", steps: [
+      { cap: "A regular opens your website.", sub: "Or scans the code on the table.",
+        run: function () { bubble(left, "", '<div class="who">The Olive Table</div><p>Tap what you would like. Pay when you collect.</p>'); } },
+      { cap: "They tap what they want.", sub: "Buttons, not typing, so the order is never ambiguous.",
+        run: function () { bubble(left, "", '<div class="who">Their basket</div><p>2 x Margherita<br>1 x Garlic Bread</p>'); } },
+      { cap: "The total is your prices, added up.", sub: "Never guessed, never a surprise at the till.",
+        run: function () { bubble(left, "reply", '<div class="who">Total</div><p><b>$29.00</b> for collection</p>'); } },
+      { cap: "They send it from their own phone.", sub: "Which is also what proves they are real. No codes, no card.",
+        run: function () {
+          phone(right, '<div class="notif" id="n2"><b>WhatsApp · 07700 900123</b>Order from your website:<br><br>2 x Margherita<br>1 x Garlic Bread<br><br>Total: about $29.00<br>Name: Sam<br>For collection</div>');
+          later(reveal("n2"), 120);
+        } },
+      { cap: "You reply when you get a second.", sub: "No new system to learn, no app taking a cut of the ticket.",
+        run: function () { bubble(right, "posted", '<div class="who"><span class="tag auto">You</span></div><p>Lovely, ready in 20 minutes.</p>'); } }
+    ]}
+  ];
+
+  var scene = 0, step = -1, timer = null, playing = false, pending = [];
+  function later(fn, ms) { pending.push(setTimeout(fn, ms)); }
+  function clearPending() { pending.forEach(clearTimeout); pending = []; }
+  function reveal(id) { return function () { var n = $(id); if (n) n.classList.add("in"); }; }
+
+  function reset() {
+    clearTimeout(timer); clearPending(); typeToken++; playing = false;
+    left.innerHTML = ""; right.innerHTML = "";
+    step = -1;
+    $("leftTitle").textContent = SCENES[scene].leftTitle;
+    $("rightTitle").textContent = SCENES[scene].rightTitle;
+    capnum.textContent = "1";
+    captext.innerHTML = "Press play.";
+    drawDots();
+    $("play").textContent = "Play";
+  }
+  function drawDots() {
+    dots.innerHTML = "";
+    SCENES[scene].steps.forEach(function (_, i) {
+      var d = document.createElement("i");
+      if (i <= step) d.className = "on";
+      dots.appendChild(d);
+    });
+  }
+  function advance() {
+    var s = SCENES[scene].steps;
+    if (step >= s.length - 1) return false;
+    step++;
+    var cur = s[step];
+    capnum.textContent = String(step + 1);
+    captext.innerHTML = esc(cur.cap) + (cur.sub ? "<em>" + esc(cur.sub) + "</em>" : "");
+    cur.run();
+    drawDots();
+    return true;
+  }
+  function play() {
+    if (playing) { clearTimeout(timer); playing = false; $("play").textContent = "Resume"; return; }
+    if (step >= SCENES[scene].steps.length - 1) reset();
+    playing = true; $("play").textContent = "Pause";
+    (function loop() {
+      if (!advance()) { playing = false; $("play").textContent = "Play again"; return; }
+      timer = setTimeout(loop, step === 0 ? 1500 : 2600);
+    })();
+  }
+
+  document.querySelectorAll(".pick").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".pick").forEach(function (x) { x.setAttribute("aria-selected", "false"); });
+      b.setAttribute("aria-selected", "true");
+      scene = +b.dataset.s;
+      reset();
+      if (!reduce) play();
+    });
+  });
+  $("play").addEventListener("click", play);
+  $("step").addEventListener("click", function () {
+    clearTimeout(timer); playing = false; $("play").textContent = "Play";
+    if (step >= SCENES[scene].steps.length - 1) reset();
+    advance();
+  });
+
+  reset();
+})();
+</script>
+</body>
+</html>
