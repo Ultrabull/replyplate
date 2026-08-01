@@ -34,7 +34,10 @@
     rvStars: $("rvStars"), rvText: $("rvText"), rvGo: $("rvGo"), rvOut: $("rvOut"),
     grGo: $("grGo"), grOut: $("grOut"),
     soTopic: $("soTopic"), soCount: $("soCount"), soGo: $("soGo"), soOut: $("soOut"),
-    prName: $("prName"), prHook: $("prHook"), prChannel: $("prChannel"), prGo: $("prGo"), prOut: $("prOut"),
+    ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
+    ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
+    ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
+    ocGo: $("ocGo"), ocOut: $("ocOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
     apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
     toast: $("toast"),
@@ -223,16 +226,92 @@
     } catch (e) { setError(dom.soOut, e); } finally { dom.soGo.disabled = false; }
   }
 
-  async function doPitch() {
-    const name = dom.prName.value.trim() || "the restaurant";
-    const hook = dom.prHook.value.trim();
-    const channel = dom.prChannel.value;
-    setLoading(dom.prOut); dom.prGo.disabled = true;
+  // Outreach agent: turns 60 seconds of research into a pitch that proves you looked,
+  // plus a free sample reply to their own review — the offer the landing page makes.
+  function outreachBrief() {
+    const g = (el) => el.value.trim();
+    const b = [];
+    if (g(dom.ocCity)) b.push(`Area: ${g(dom.ocCity)}`);
+    if (g(dom.ocCuisine)) b.push(`Cuisine: ${g(dom.ocCuisine)}`);
+    if (g(dom.ocRating)) b.push(`Rating: ${g(dom.ocRating)} stars`);
+    if (g(dom.ocCount)) b.push(`Review count: ${g(dom.ocCount)}`);
+    b.push(`Recent reviews with no owner reply: ${dom.ocUnanswered.value}`);
+    if (g(dom.ocLastReply)) b.push(`Owner's most recent reply: ${g(dom.ocLastReply)}`);
+    if (g(dom.ocLastPost)) b.push(`Last social post: ${g(dom.ocLastPost)}`);
+    return b.join("\n");
+  }
+
+  function renderOutreach(container, o) {
+    container.innerHTML = "";
+    const blocks = [
+      ["Why this angle", o.angle, false],
+      o.subject ? ["Subject line", o.subject, true] : null,
+      ["Message", o.message, true],
+      o.sampleReply ? ["Free sample reply to send them", o.sampleReply, true] : null,
+      o.followUp1 ? ["Follow-up, about 3 days later", o.followUp1, true] : null,
+      o.followUp2 ? ["Follow-up, about a week later", o.followUp2, true] : null,
+    ].filter(Boolean);
+    blocks.forEach(([label, text, copyable]) => {
+      const card = el("div", "result");
+      const lb = el("div", "reslabel"); lb.textContent = label;
+      const t = el("div", "txt"); t.textContent = text;
+      card.appendChild(lb); card.appendChild(t);
+      if (copyable) {
+        const bar = el("div", "bar");
+        const cp = el("button", "copy"); cp.type = "button"; cp.textContent = "Copy";
+        cp.addEventListener("click", () => copy(text, cp));
+        bar.appendChild(cp); card.appendChild(bar);
+      }
+      container.appendChild(card);
+    });
+    const saveBtn = el("button", "btn sm"); saveBtn.type = "button"; saveBtn.textContent = "+ Save as lead";
+    saveBtn.style.marginTop = "4px";
+    saveBtn.addEventListener("click", () => {
+      const name = dom.ocName.value.trim(); if (!name) return;
+      state.leads.push({ id: uid(), name, stage: 0 });
+      save(S.leads, state.leads); renderLeads();
+      saveBtn.textContent = "Saved ✓"; saveBtn.disabled = true;
+    });
+    container.appendChild(saveBtn);
+  }
+
+  async function doOutreach() {
+    const name = dom.ocName.value.trim();
+    if (!name) { toast("Restaurant name first"); return; }
+    const channel = dom.ocChannel.value;
+    const review = dom.ocReview.value.trim();
+    setLoading(dom.ocOut); dom.ocGo.disabled = true;
     try {
-      const sys = `You write cold outreach for a done-for-you service that handles restaurants' online reviews and social media for $199/mo. Be genuine, concise, specific, and low-pressure — lead with value, not hype. No spammy clichés. Never promise a specific rating or review-count outcome. End with one easy call to action (a quick reply or a free setup). Keep it appropriately short for the channel.`;
-      const prompt = `Write a ${channel} outreach message to "${name}".` + (hook ? ` Personalise it around this observation: ${hook}.` : "") + ` The offer: we answer every one of their Google reviews, invite all their diners to leave a review, and post to their socials — done for them, from $199/mo, cancel anytime.`;
-      renderResults(dom.prOut, [await generate(prompt, sys)]);
-    } catch (e) { setError(dom.prOut, e); } finally { dom.prGo.disabled = false; }
+      const sys = `You write cold outreach for a service that answers restaurants' Google reviews, invites every diner to leave a review, and writes their social posts, for $199/mo with no contract.
+
+How to write it:
+- Lead with something SPECIFIC and TRUE from the research. Generic outreach gets deleted.
+- Sound like one person who actually looked at their listing, not a company doing a mail merge.
+- Short. An email is 5 sentences at most. A DM is 3. A walk-in or phone script is what you'd really say out loud.
+- Offer the free sample: you'll answer a few of their reviews so they can judge the writing. No card, no call.
+- One easy ask at the end.
+
+Never do these:
+- Never promise their rating will go up, or a number of reviews. Nobody can promise that.
+- Never suggest asking only happy customers for reviews. Google prohibits it and it gets the restaurant penalised.
+- Never claim it is fully automatic or hands off. A person checks the work.
+- No flattery openers, no "I hope this finds you well", no "I noticed you're crushing it", no fake urgency.
+
+Return ONLY minified JSON, no markdown, with exactly these keys:
+{"angle":"one sentence on why you led with this, for the sender not the prospect","subject":"email subject line, or empty string for non-email channels","message":"the outreach message","sampleReply":"if a review was supplied, a warm on-brand reply to it they could paste straight into Google; otherwise empty string","followUp1":"short nudge about 3 days later","followUp2":"final short nudge about a week later"}`;
+
+      const prompt = `Channel: ${channel}\nRestaurant: ${name}\n${outreachBrief()}` +
+        (review ? `\n\nOne of their actual reviews:\n"""${review}"""` : "\n\n(No review supplied, so leave sampleReply empty.)");
+
+      const raw = await generate(prompt, sys);
+      let t = String(raw).trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+      const a = t.indexOf("{"), z = t.lastIndexOf("}");
+      if (a !== -1 && z !== -1) t = t.slice(a, z + 1);
+      let o;
+      try { o = JSON.parse(t); }
+      catch { o = { angle: "Could not parse the model's JSON, so here is the raw output.", message: String(raw).trim() }; }
+      renderOutreach(dom.ocOut, o);
+    } catch (e) { setError(dom.ocOut, e); } finally { dom.ocGo.disabled = false; }
   }
 
   /* ---------- autopilot ---------- */
@@ -425,7 +504,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.rvGo.addEventListener("click", doReplies);
     dom.grGo.addEventListener("click", doGetReviews);
     dom.soGo.addEventListener("click", doSocial);
-    dom.prGo.addEventListener("click", doPitch);
+    dom.ocGo.addEventListener("click", doOutreach);
     dom.leadAdd.addEventListener("click", addLead);
     dom.leadName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLead(); } });
     dom.apCheck.addEventListener("click", checkForReviews);

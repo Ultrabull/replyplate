@@ -53,6 +53,12 @@ select{margin-bottom:0;width:auto}
 .copy{border:none;background:var(--soft);color:var(--accent);font-weight:700;font-size:13px;padding:6px 12px;border-radius:8px;cursor:pointer}
 .copy:hover{background:#f6e2d6}
 .loading{color:var(--muted);font-size:14px;padding:10px 0}
+.reslabel{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px}
+.checklist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 17px;margin-bottom:14px}
+.checklist summary{font-weight:700;cursor:pointer;font-size:14.5px}
+.checklist ol{margin:12px 0 2px 18px;display:flex;flex-direction:column;gap:8px}
+.checklist li{font-size:14px;color:var(--muted);line-height:1.5}
+.checklist li b{color:var(--ink)}
 
 .clients-list{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
 .client-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}

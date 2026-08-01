@@ -107,17 +107,49 @@
     <section class="panel" id="panel-outreach">
       <h2>Find & pitch new clients</h2>
       <p class="hint">Build your list from Google Maps (search "restaurants near me"), add them below, and generate a personal pitch for each. Track who you've contacted.</p>
+      <details class="checklist">
+        <summary>What to look for (60 seconds on their Google listing)</summary>
+        <ol>
+          <li><b>Star rating and review count.</b> 3.8 to 4.4 with plenty of reviews is the sweet spot. They care, and there's room.</li>
+          <li><b>Scroll the recent reviews.</b> How many have a reply from the owner? That's your opening.</li>
+          <li><b>Find the newest reply.</b> "March" or "never" is the line that lands.</li>
+          <li><b>Copy one review, ideally a bad one.</b> You'll send them a reply to it, written for free.</li>
+          <li><b>Check their Instagram or Facebook.</b> When was the last post?</li>
+        </ol>
+      </details>
+
       <div class="card form">
-        <h3>Write a pitch</h3>
-        <input id="prName" class="in" placeholder="Restaurant name" />
-        <input id="prHook" class="in" placeholder="Something specific you noticed (e.g. 4.1★, replies to no reviews)" />
+        <h3>1. What you found</h3>
+        <input id="ocName" class="in" placeholder="Restaurant name *" />
+        <div class="row">
+          <input id="ocCity" class="in" style="flex:1;min-width:130px;margin-bottom:0" placeholder="City / area" />
+          <input id="ocCuisine" class="in" style="flex:1;min-width:130px;margin-bottom:0" placeholder="Cuisine (e.g. Thai)" />
+        </div>
+        <div class="row">
+          <input id="ocRating" class="in" style="flex:1;min-width:110px;margin-bottom:0" placeholder="Rating (e.g. 4.1)" />
+          <input id="ocCount" class="in" style="flex:1;min-width:110px;margin-bottom:0" placeholder="Reviews (e.g. 47)" />
+        </div>
+        <div class="row">
+          <label class="stars">Recent reviews with no reply:
+            <select id="ocUnanswered">
+              <option value="most">Most of them</option>
+              <option value="some">Some</option>
+              <option value="none">None, they're on it</option>
+            </select>
+          </label>
+        </div>
+        <input id="ocLastReply" class="in" placeholder="Owner's newest reply (e.g. March, or never)" />
+        <input id="ocLastPost" class="in" placeholder="Last social post (e.g. 6 weeks ago)" />
+        <textarea id="ocReview" class="ta" rows="3" placeholder="Paste one of their reviews here. A negative one works best."></textarea>
+
+        <h3 style="margin-top:18px">2. Write it</h3>
         <div class="row">
           <label class="stars">Channel:
-            <select id="prChannel"><option>Email</option><option>Instagram DM</option><option>Walk-in script</option></select>
+            <select id="ocChannel"><option>Email</option><option>Instagram DM</option><option>Walk-in script</option><option>Phone script</option></select>
           </label>
-          <button class="btn" id="prGo" type="button">Write pitch</button>
+          <button class="btn" id="ocGo" type="button">Write outreach</button>
         </div>
-        <div class="out" id="prOut"></div>
+        <div class="out" id="ocOut"></div>
       </div>
 
       <div class="card form">
