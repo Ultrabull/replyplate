@@ -54,6 +54,13 @@
   .sample .quote{font-size:15.5px;line-height:1.6}
   .sample .reply{border-color:var(--accent)}
 
+  .getstrip{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin-bottom:8px}
+  .gs-lbl{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);text-align:center;margin-bottom:14px}
+  .getstrip ul{list-style:none;display:grid;grid-template-columns:1fr;gap:11px 26px}
+  @media (min-width:640px){.getstrip ul{grid-template-columns:1fr 1fr}}
+  .getstrip li{position:relative;padding-left:26px;font-size:15.5px;line-height:1.45}
+  .getstrip li::before{content:"✓";position:absolute;left:0;top:0;color:var(--ok);font-weight:800}
+  .card.us{border-color:var(--accent);background:#fffdfb;box-shadow:0 8px 24px rgba(209,69,43,.09)}
   .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
   table.cmp{width:100%;min-width:760px;border-collapse:collapse}
   .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -105,6 +112,16 @@
       </div>
       <p class="trust">No contract • Cancel any month • Usually live within two business days</p>
     </section>
+
+    <div class="getstrip">
+      <div class="gs-lbl">What you get every month</div>
+      <ul>
+        <li>A reply drafted to <b>every</b> Google review</li>
+        <li>A review request to <b>every</b> diner</li>
+        <li><b>8</b> social posts, written and put up</li>
+        <li>One page on what your reviews are saying</li>
+      </ul>
+    </div>
 
     <section>
       <h2 class="section-title">You know the feeling</h2>
@@ -219,6 +236,26 @@
       <p class="cmp-note"><b>How we got these numbers, and where we rounded.</b> The $850 is deliberately the low end. Ten hours a week at around $18 to $20 an hour is roughly $780 to $865 a month in wages, and employer payroll taxes and workers comp add somewhere around 10% to 15% on top depending on your state, so call it about $850 at the bottom. Realistically most restaurants would pay more than that, and if you offered any health insurance or paid leave it would be far more. We used the cheapest honest version so the comparison isn't doing the arguing for us. The wage range is what part-time marketing assistant roles were advertising in the US in mid-2026, and it moves by market, so check your own. And ten hours a week is not how long this job takes: it is the smallest job a real person will accept, so you would be paying for someone to be available rather than for hours used. Freelance figures are typical entry packages for basic posting and scheduling, which do not usually include Google review replies or review requests, so ask before you sign. Diner figures are rounded from published consumer review surveys. One thing this table cannot show: a person you hire can shoot fresh photos of tonight's special, answer the phone and walk the dining room, and we cannot do any of that. We are comparing the typing, not the whole job. <span data-price>$199</span> is our real price, not an introductory rate. Treat every figure here as an estimate for comparison, not a quote.</p>
     </section>
 
+    <section>
+      <h2 class="section-title">Isn't this the same as Podium or Birdeye?</h2>
+      <p class="section-sub">No, and the difference is not the features. It's who ends up doing the work.</p>
+      <div class="grid">
+        <div class="card">
+          <h3><span class="emoji">🖥️</span> Software you operate</h3>
+          <p>Podium, Birdeye and the rest are capable tools, and they are not cheap. You log in and use them. The replies still get written by someone at your restaurant, the review requests still get set up by you, and the dashboard still needs opening. They are usually sold per location and usually on a yearly contract.</p>
+        </div>
+        <div class="card">
+          <h3><span class="emoji">🧑‍💻</span> A freelancer</h3>
+          <p>Good value if posts are all you want, and honestly they will give you as many posts as we do. What they almost never include is your Google reviews: a reply to every one, and a request sent to every diner. Ask before you sign.</p>
+        </div>
+        <div class="card us">
+          <h3><span class="emoji">✅</span> Us</h3>
+          <p><b>We do the work.</b> One flat price whatever your review volume, no contract, no charge per location, and no dashboard to learn. You get a message when something needs a yes, and that is the whole of your involvement.</p>
+        </div>
+      </div>
+      <p class="cmp-note mid">We have not put their prices here, because neither publishes a standard one and both charge per location. Ask them for a quote and compare it to <span data-price>$199</span> flat.</p>
+    </section>
+
     <section class="sample">
       <h2 class="section-title">Here's a reply. Judge the writing yourself.</h2>
       <p class="section-sub">This is the only question that actually matters, so we're not going to describe it to you.</p>
@@ -233,6 +270,23 @@
         </div>
       </div>
       <p class="cmp-note mid">An example, written for a restaurant that doesn't exist. Note what it does: it names the wait, the fries and Marcus, and it doesn't thank anyone for their valued feedback. That's the tell people actually notice. A reply like this one would never post on its own. It would go to your phone and wait.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">Two things you can bolt on</h2>
+      <p class="section-sub">Not included in the <span data-price>$199</span>. Worth knowing about, because both save you money elsewhere.</p>
+      <div class="grid two">
+        <div class="card">
+          <h3><span class="emoji">💬</span> A chat helper for your website</h3>
+          <p>Answers the questions you get asked all day. Opening hours, parking, vegan options, dogs, bookings. It only ever says what you told it, and if it doesn't know it says so and gives out your number, so it can never guess at an allergy question.</p>
+          <p style="margin-top:10px"><a href="./chat-demo.html" style="color:var(--accent);font-weight:700">See it working →</a></p>
+        </div>
+        <div class="card">
+          <h3><span class="emoji">🍕</span> Take collection orders direct</h3>
+          <p>Regulars tap what they want and send the order to you on WhatsApp, then pay when they collect. No app taking a cut, no card fees, no new system to learn. If you have no website at all we can put it on a link and a QR code for your tables.</p>
+          <p style="margin-top:10px"><a href="./chat-demo.html" style="color:var(--accent);font-weight:700">Try the ordering →</a></p>
+        </div>
+      </div>
     </section>
 
     <section id="start">
