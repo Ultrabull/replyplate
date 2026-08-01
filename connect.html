@@ -48,8 +48,12 @@
   ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:36px;height:36px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
   ol.steps h3{font-size:17px;margin-bottom:4px;padding-top:5px}
   ol.steps p{color:var(--muted);font-size:15px}
-  .shot{margin-top:12px;border:1px dashed var(--line);border-radius:12px;background:var(--card);color:var(--muted);font-size:12.5px;text-align:center;padding:26px 14px}
-  .shot img{max-width:100%;border-radius:8px;display:block}
+  .shot{display:none;margin-top:12px;border:1px dashed var(--accent);border-radius:12px;background:#fff;color:var(--muted);font-size:12.5px;padding:14px 16px;line-height:1.55}
+  .shot b{display:block;color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .shot img{max-width:100%;border-radius:8px;display:block;margin-top:8px}
+  body.shots .shot{display:block}
+  .shotbar{display:none;background:var(--accent);color:#fff;padding:11px 16px;font-size:13.5px;font-weight:600;text-align:center;line-height:1.5}
+  body.shots .shotbar{display:block}
 
   .done{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center;margin:36px 0}
   .done h2{font-size:20px;margin-bottom:6px}
@@ -67,6 +71,7 @@
 </style>
 </head>
 <body>
+  <div class="shotbar">Capture checklist. Take each shot on a real account, drop the image into the matching slot, then remove <code>?shots</code> from the link.</div>
   <header><div class="wrap"><div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div></div></header>
 
   <main class="wrap">
@@ -97,32 +102,32 @@
       <li>
         <h3>Open your Google Business Profile</h3>
         <p>Go to <a href="https://business.google.com" target="_blank" rel="noopener">business.google.com</a> and pick your restaurant. Sign in with the Google account that owns the listing.</p>
-        <div class="shot"><!-- Replace with a real screenshot: business.google.com after sign-in --><em>Screenshot goes here</em></div>
+        <div class="shot"><b>Screenshot needed</b>Your Business Profile open, restaurant name visible. Blur anything personal.</div>
       </li>
       <li>
         <h3>Open the menu</h3>
         <p>Click the three lines (☰) or the three dots, then choose <b>Business Profile settings</b>.</p>
-        <div class="shot"><!-- Replace with a real screenshot: the menu open, Business Profile settings visible --><em>Screenshot goes here</em></div>
+        <div class="shot"><b>Screenshot needed</b>The menu expanded with Business Profile settings clearly in view.</div>
       </li>
       <li>
         <h3>Click "People and access"</h3>
         <p>This is where you add anyone who helps with your listing, like a staff member.</p>
-        <div class="shot"><!-- Replace with a real screenshot: the People and access panel --><em>Screenshot goes here</em></div>
+        <div class="shot"><b>Screenshot needed</b>The People and access panel, showing who currently has access.</div>
       </li>
       <li>
         <h3>Click "Add"</h3>
         <p>Usually a button at the top of that panel.</p>
-        <div class="shot"><!-- Replace with a real screenshot: the Add button --><em>Screenshot goes here</em></div>
+        <div class="shot"><b>Screenshot needed</b>The Add button, circled or arrowed if you can.</div>
       </li>
       <li>
         <h3>Paste our email</h3>
         <p>Use the <b>Copy email</b> button above so it's exact. One wrong letter and the invite goes nowhere.</p>
-        <div class="shot"><!-- Replace with a real screenshot: the invite box with an email typed in --><em>Screenshot goes here</em></div>
+        <div class="shot"><b>Screenshot needed</b>The invite box with an email typed in. Use a fake one, not a client's.</div>
       </li>
       <li>
         <h3>Choose "Manager", then Invite</h3>
         <p>Pick <b>Manager</b>, not Owner. Manager lets us reply to your reviews. It does not let us change who owns the listing or remove you.</p>
-        <div class="shot"><!-- Replace with a real screenshot: the role dropdown with Manager selected --><em>Screenshot goes here</em></div>
+        <div class="shot"><b>Screenshot needed</b>The role list with Manager picked, so they can see it is not Owner.</div>
       </li>
     </ol>
 
@@ -139,22 +144,27 @@
       <li>
         <h3>Open Meta Business Suite</h3>
         <p>Go to <a href="https://business.facebook.com" target="_blank" rel="noopener">business.facebook.com</a> and pick your restaurant's Page. You can also get there from your Page's <b>Professional dashboard</b>.</p>
+        <div class="shot"><b>Screenshot needed</b>business.facebook.com with the Page selected.</div>
       </li>
       <li>
         <h3>Find "Page access"</h3>
         <p>It's under <b>Settings</b>. Meta moves this around fairly often, so if the wording is slightly different, look for anything about people, roles or access.</p>
+        <div class="shot"><b>Screenshot needed</b>The Settings area with Page access visible.</div>
       </li>
       <li>
         <h3>Add us under "task access"</h3>
         <p>There are usually two lists. Use the one for <b>task access</b>, not the one for full Facebook access. Task access is the smaller, safer kind.</p>
+        <div class="shot"><b>Screenshot needed</b>The task access list and its Add button.</div>
       </li>
       <li>
         <h3>Turn on Content only</h3>
         <p>Switch on <b>Content</b>, which is create and manage posts. Leave <b>Messages</b>, <b>Ads</b> and anything about money switched off. We don't need them and we don't want them.</p>
+        <div class="shot"><b>Screenshot needed</b>The permission toggles, Content on, Messages and Ads off.</div>
       </li>
       <li>
         <h3>Confirm with your own password</h3>
         <p>Facebook will ask <b>you</b> to type <b>your own</b> password to confirm the change. That's normal, and it stays with Facebook. We never see it.</p>
+        <div class="shot"><b>Screenshot needed</b>The confirm-your-password prompt, so it does not look like a scam.</div>
       </li>
     </ol>
 
@@ -165,14 +175,17 @@
       <li>
         <h3>Make sure it's a Professional account</h3>
         <p>In the Instagram app: <b>Settings</b>, then look for account type, then switch to <b>Professional</b> or <b>Business</b>. It's free, it takes a minute, and you keep everything you've posted. Personal accounts can't be connected to anything.</p>
+        <div class="shot"><b>Screenshot needed</b>Instagram settings showing the account type option.</div>
       </li>
       <li>
         <h3>Link it to your Facebook Page</h3>
         <p>Still in Instagram settings, find the option about linking or connecting a Facebook Page, and pick your restaurant's Page. This is the step people miss.</p>
+        <div class="shot"><b>Screenshot needed</b>The linking screen with the Page picked.</div>
       </li>
       <li>
         <h3>Check it shows up in Business Suite</h3>
         <p>Back on <a href="https://business.facebook.com" target="_blank" rel="noopener">business.facebook.com</a>, your Instagram should now appear next to your Page. If it does, the access you gave us in step 2 usually covers Instagram too.</p>
+        <div class="shot"><b>Screenshot needed</b>Business Suite showing the Instagram account beside the Page.</div>
       </li>
     </ol>
 
@@ -214,6 +227,7 @@
     };
     (function(){
       document.title = "Connect your accounts | " + CONFIG.brand;
+      if (location.search.indexOf("shots") !== -1) document.body.classList.add("shots");
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
       document.querySelectorAll("[data-email-text]").forEach(function(n){ n.textContent = CONFIG.managerEmail; });
       document.querySelectorAll("[data-fb-text]").forEach(function(n){ n.textContent = CONFIG.fbName; });

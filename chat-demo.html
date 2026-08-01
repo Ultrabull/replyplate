@@ -94,7 +94,7 @@
 <body>
 
   <div class="demobar">
-    A made-up restaurant, built to show the chat helper in place. Tap the button, bottom right.
+    A made-up restaurant, built to show the chat helper in place. Try <b>Order for collection</b>, or the chat button, bottom right.
     <a href="./index.html">Back to ReplyPlate</a>
   </div>
 
@@ -104,6 +104,7 @@
       <li><a href="#menu">Menu</a></li>
       <li><a href="#hours">Hours</a></li>
       <li><a href="#find">Find us</a></li>
+      <li><a href="#" data-rp-order style="color:var(--gold)">Order</a></li>
     </ul>
   </div></header>
 
@@ -113,8 +114,8 @@
       <h1>The Olive Table</h1>
       <p>Sourdough bases, a very hot oven, and whatever looked good at the market this morning.</p>
       <div class="cta">
-        <a class="btn solid" href="#menu">See the menu</a>
-        <a class="btn line" href="#hours">Opening hours</a>
+        <a class="btn solid" href="#" data-rp-order>Order for collection</a>
+        <a class="btn line" href="#menu">See the menu</a>
       </div>
     </div>
   </div>
@@ -164,6 +165,10 @@
           <div class="mrow"><span class="nm">Dogs<em>bar and terrace, welcome</em></span><span class="dots"></span><span class="pr">·</span></div>
           <div class="mrow"><span class="nm">Children<em>kids' menu, high chairs</em></span><span class="dots"></span><span class="pr">·</span></div>
         </div>
+      </div>
+      <div style="text-align:center;margin-top:36px">
+        <a class="btn solid" href="#" data-rp-order>Order for collection</a>
+        <p style="color:var(--muted);font-size:13.5px;margin-top:14px">You send it from your own phone. Pay when you collect.</p>
       </div>
     </div>
   </section>

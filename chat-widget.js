@@ -313,6 +313,19 @@
 
   btn.addEventListener("click", open);
   if (MOUNT) open();
+
+  // Public hooks, so a page can drive the widget from its own buttons.
+  window.RPChat = {
+    open: function () { open(); showChat(); },
+    openOrder: function () { if (!ORDER) return open(); open(); showOrder(); },
+    close: close
+  };
+  document.addEventListener("click", function (e) {
+    var o = e.target.closest("[data-rp-order]");
+    if (o) { e.preventDefault(); window.RPChat.openOrder(); return; }
+    var c = e.target.closest("[data-rp-chat]");
+    if (c) { e.preventDefault(); window.RPChat.open(); }
+  });
   panel.querySelector(".rpc-x").addEventListener("click", close);
   backBtn.addEventListener("click", showChat);
   panel.querySelector(".rpc-form").addEventListener("submit", function (e) { e.preventDefault(); ask(input.value); });
