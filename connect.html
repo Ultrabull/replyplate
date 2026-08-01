@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Connect your Google listing | ReplyPlate</title>
-<meta name="description" content="Add ReplyPlate as a manager on your Google Business Profile. Takes about 30 seconds. You never share a password." />
+<title>Connect your accounts | ReplyPlate</title>
+<meta name="description" content="Add ReplyPlate to your Google listing, Facebook Page and Instagram. You never share a password, and you can remove us any time." />
 <style>
   :root{
     --ink:#1a1410; --muted:#6b5d52; --bg:#fffaf3; --card:#fff; --line:#eaddcd;
@@ -22,6 +22,20 @@
   .lede{color:var(--muted);font-size:17px;margin-bottom:8px}
   .reassure{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 28px}
   .pill{font-size:13px;font-weight:600;background:#e4f3ea;color:var(--ok);padding:5px 12px;border-radius:999px}
+
+  .jump{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:38px}
+  .jump a{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-decoration:none;color:var(--ink)}
+  .jump a:hover{border-color:var(--accent)}
+  .jump b{display:block;font-size:15px}
+  .jump span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+  h2.sec{font-size:23px;margin:44px 0 6px;scroll-margin-top:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:999px}
+  .tag.req{background:var(--accent);color:#fff}
+  .tag.opt{background:var(--line);color:var(--muted)}
+  .secsub{color:var(--muted);font-size:15px;margin-bottom:22px}
+  .note{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:14.5px;color:var(--muted);margin-top:8px}
+  .note b{color:var(--ink)}
 
   .emailbox{background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:18px;margin-bottom:32px;text-align:center}
   .emailbox .lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
@@ -56,13 +70,22 @@
   <header><div class="wrap"><div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div></div></header>
 
   <main class="wrap">
-    <h1>Add us to your Google listing</h1>
-    <p class="lede">This is the only setup step. It takes about 30 seconds.</p>
+    <h1>Connect your accounts</h1>
+    <p class="lede">You never share a password. You add us the same way you'd add a member of staff, and you can remove us any time.</p>
     <div class="reassure">
       <span class="pill">✓ No password shared</span>
       <span class="pill">✓ Remove us in 2 clicks</span>
-      <span class="pill">✓ We can't change your owner</span>
+      <span class="pill">✓ We can't take over your accounts</span>
     </div>
+
+    <div class="jump">
+      <a href="#google"><b>1. Google</b><span>Required. 30 seconds.</span></a>
+      <a href="#facebook"><b>2. Facebook</b><span>Only if you want us posting.</span></a>
+      <a href="#instagram"><b>3. Instagram</b><span>Do Facebook first.</span></a>
+    </div>
+
+    <h2 class="sec" id="google">1. Google <span class="tag req">Required</span></h2>
+    <p class="secsub">This is the one that matters. It's how we see your reviews and reply to them.</p>
 
     <div class="emailbox">
       <div class="lbl">The email to add</div>
@@ -103,6 +126,60 @@
       </li>
     </ol>
 
+    <h2 class="sec" id="facebook">2. Facebook Page <span class="tag opt">Optional</span></h2>
+    <p class="secsub">Only needed if you want us putting your posts up for you. Skip it and we'll just send you the captions to post yourself.</p>
+
+    <div class="emailbox">
+      <div class="lbl">The account to look for</div>
+      <div class="addr" data-fb-text>ReplyPlate</div>
+      <p style="font-size:13px;color:var(--muted);margin-top:6px">Search this name, or use the same email as above.</p>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <h3>Open Meta Business Suite</h3>
+        <p>Go to <a href="https://business.facebook.com" target="_blank" rel="noopener">business.facebook.com</a> and pick your restaurant's Page. You can also get there from your Page's <b>Professional dashboard</b>.</p>
+      </li>
+      <li>
+        <h3>Find "Page access"</h3>
+        <p>It's under <b>Settings</b>. Meta moves this around fairly often, so if the wording is slightly different, look for anything about people, roles or access.</p>
+      </li>
+      <li>
+        <h3>Add us under "task access"</h3>
+        <p>There are usually two lists. Use the one for <b>task access</b>, not the one for full Facebook access. Task access is the smaller, safer kind.</p>
+      </li>
+      <li>
+        <h3>Turn on Content only</h3>
+        <p>Switch on <b>Content</b>, which is create and manage posts. Leave <b>Messages</b>, <b>Ads</b> and anything about money switched off. We don't need them and we don't want them.</p>
+      </li>
+      <li>
+        <h3>Confirm with your own password</h3>
+        <p>Facebook will ask <b>you</b> to type <b>your own</b> password to confirm the change. That's normal, and it stays with Facebook. We never see it.</p>
+      </li>
+    </ol>
+
+    <h2 class="sec" id="instagram">3. Instagram <span class="tag opt">Optional</span></h2>
+    <p class="secsub">Instagram is the fiddly one. It works, but Meta hides the settings in odd places and changes them often. If you get stuck, stop and email us rather than clicking around.</p>
+
+    <ol class="steps">
+      <li>
+        <h3>Make sure it's a Professional account</h3>
+        <p>In the Instagram app: <b>Settings</b>, then look for account type, then switch to <b>Professional</b> or <b>Business</b>. It's free, it takes a minute, and you keep everything you've posted. Personal accounts can't be connected to anything.</p>
+      </li>
+      <li>
+        <h3>Link it to your Facebook Page</h3>
+        <p>Still in Instagram settings, find the option about linking or connecting a Facebook Page, and pick your restaurant's Page. This is the step people miss.</p>
+      </li>
+      <li>
+        <h3>Check it shows up in Business Suite</h3>
+        <p>Back on <a href="https://business.facebook.com" target="_blank" rel="noopener">business.facebook.com</a>, your Instagram should now appear next to your Page. If it does, the access you gave us in step 2 usually covers Instagram too.</p>
+      </li>
+    </ol>
+
+    <div class="note">
+      <b>Honest note about posting.</b> Right now a person on our side puts your posts up using the access you've granted. Fully automatic posting needs Meta to approve our software, which takes months, and we'll tell you when that's done. Nothing about your side changes when it happens.
+    </div>
+
     <div class="done">
       <h2>Done it?</h2>
       <p>Tell us and we'll check the invite arrived. If something didn't work we'll come back to you the same day.</p>
@@ -116,6 +193,9 @@
       <details><summary>How do I remove you later?</summary><p>Same screen you just used. People and access, click our name, remove. Two clicks and it takes effect straight away. If you cancel, we take ourselves off the same day without you having to ask.</p></details>
       <details><summary>Manager or Owner, which one?</summary><p>Manager. Never make us an Owner. Manager is everything we need, and it keeps you in full control.</p></details>
       <details><summary>I can't find "People and access"</summary><p>Usually it means you're signed into a different Google account than the one that owns the listing. Try signing out and back in with the account you first set the restaurant up with. If you're not sure which that is, email us and we'll work it out with you.</p></details>
+      <details><summary>Do I have to connect Facebook and Instagram?</summary><p>No. Google is the only one that matters, and it's the one your reviews live on. If you skip the social ones we'll just send you the captions each month and you post them whenever suits you. Plenty of owners prefer that.</p></details>
+      <details><summary>Why is Facebook asking for a password?</summary><p>It's asking <b>you</b> for <b>your own</b> password, to check it's really you making the change. That's Facebook being careful, and it's a good sign. You never type it anywhere near us and we never see it.</p></details>
+      <details><summary>My Instagram isn't a Professional account</summary><p>Switching is free, takes about a minute, and you keep every photo and follower you have. It's in the Instagram app under Settings. Personal accounts can't be connected to anything by anyone, so this step isn't us being awkward.</p></details>
       <details><summary>Someone else set up my Google listing</summary><p>This happens a lot, often an old marketing company or the person who built your website. You'll need them to add us, or to make you an Owner first. Email us and we'll send you the exact wording to forward to them.</p></details>
     </div>
 
@@ -129,11 +209,13 @@
     const CONFIG = {
       brand: "ReplyPlate",
       email: "hello@example.com",
+      fbName: "ReplyPlate",   // the Facebook account name owners should search for
     };
     (function(){
-      document.title = "Connect your Google listing | " + CONFIG.brand;
+      document.title = "Connect your accounts | " + CONFIG.brand;
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
       document.querySelectorAll("[data-email-text]").forEach(function(n){ n.textContent = CONFIG.email; });
+      document.querySelectorAll("[data-fb-text]").forEach(function(n){ n.textContent = CONFIG.fbName; });
       document.querySelectorAll("[data-email]").forEach(function(a){ a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
 
       var btn = document.getElementById("copyBtn");
