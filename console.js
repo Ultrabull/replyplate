@@ -210,8 +210,8 @@
     const link = c.reviewLink || "[your Google review link]";
     setLoading(dom.grOut); dom.grGo.disabled = true;
     try {
-      const sys = `You write short, friendly messages a restaurant sends ALL its customers to request a Google review. Warm, no guilt-trips, easy. Always include the review link exactly as given. Match the brand voice. CRITICAL: never write anything that screens for satisfaction first, targets only happy customers, or offers an incentive — Google prohibits selectively soliciting positive reviews and penalises the restaurant for it.`;
-      const prompt = `For ${clientContext()}, write these, clearly labelled: 1) a text/SMS (under 320 chars), 2) an email (subject + body), 3) a short table-card / receipt line. Use this review link: ${link}`;
+      const sys = `You write the wording a restaurant puts in front of EVERY diner to ask for a Google review. Warm, no guilt-trips, easy, and short enough to read while paying. Always include the review link exactly as given. Match the brand voice. CRITICAL: never screen for satisfaction first, never target only happy customers, never offer an incentive — Google prohibits selectively soliciting positive reviews and penalises the restaurant for it. Never write an SMS to diners: the restaurant has no consent from walk-ins and US law charges per message.`;
+      const prompt = `For ${clientContext()}, write these, clearly labelled: 1) a receipt footer line (one sentence, fits on a printed receipt), 2) a table card / QR card (a heading of 4 to 6 words plus one line underneath), 3) a takeout bag sticker line (under 12 words), 4) an email for diners whose address the restaurant already holds from bookings or online orders (subject + body). Use this review link: ${link}`;
       renderResults(dom.grOut, splitBlocks(await generate(prompt, sys)));
     } catch (e) { setError(dom.grOut, e); } finally { dom.grGo.disabled = false; }
   }
@@ -285,7 +285,7 @@
     const review = dom.ocReview.value.trim();
     setLoading(dom.ocOut); dom.ocGo.disabled = true;
     try {
-      const sys = `You write cold outreach for a service that answers restaurants' Google reviews, invites every diner to leave a review, and writes their social posts, for $199/mo with no contract.
+      const sys = `You write cold outreach for a service that answers restaurants' Google reviews, supplies the card and QR code that asks every diner for a review, and writes their social posts, for $199/mo with no contract. Never claim we message diners directly: we do not have walk-ins' contact details.
 
 How to write it:
 - Lead with something SPECIFIC and TRUE from the research. Generic outreach gets deleted.
