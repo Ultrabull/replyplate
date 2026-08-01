@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Connect your Google listing | ReplyPlate</title>
+<meta name="description" content="Add ReplyPlate as a manager on your Google Business Profile. Takes about 30 seconds. You never share a password." />
+<style>
+  :root{
+    --ink:#1a1410; --muted:#6b5d52; --bg:#fffaf3; --card:#fff; --line:#eaddcd;
+    --accent:#d1452b; --accent2:#e8863b; --ok:#1a7f4b; --soft:#fbeee6;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px}
+  header{padding:16px 0;background:#fff;border-bottom:1px solid var(--line)}
+  .logo{font-weight:800;font-size:19px;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  h1{font-size:clamp(26px,5vw,34px);line-height:1.15;letter-spacing:-.3px;margin:36px 0 10px}
+  .lede{color:var(--muted);font-size:17px;margin-bottom:8px}
+  .reassure{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 28px}
+  .pill{font-size:13px;font-weight:600;background:#e4f3ea;color:var(--ok);padding:5px 12px;border-radius:999px}
+
+  .emailbox{background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:18px;margin-bottom:32px;text-align:center}
+  .emailbox .lbl{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+  .emailbox .addr{font-size:clamp(16px,4.2vw,22px);font-weight:800;word-break:break-all;margin-bottom:12px}
+  .copy{border:none;background:var(--accent);color:#fff;font-weight:700;font-size:15px;padding:11px 22px;border-radius:10px;cursor:pointer;font-family:inherit}
+  .copy:hover{background:#b83a22}
+
+  ol.steps{list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;position:relative;padding-left:52px;margin-bottom:26px}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:36px;height:36px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
+  ol.steps h3{font-size:17px;margin-bottom:4px;padding-top:5px}
+  ol.steps p{color:var(--muted);font-size:15px}
+  .shot{margin-top:12px;border:1px dashed var(--line);border-radius:12px;background:var(--card);color:var(--muted);font-size:12.5px;text-align:center;padding:26px 14px}
+  .shot img{max-width:100%;border-radius:8px;display:block}
+
+  .done{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center;margin:36px 0}
+  .done h2{font-size:20px;margin-bottom:6px}
+  .done p{color:var(--muted);font-size:15px;margin-bottom:16px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;padding:14px 28px;border-radius:999px;font-weight:700;text-decoration:none;font-size:16px}
+  .btn:hover{background:#b83a22}
+
+  .qa{margin-bottom:40px}
+  .qa h2{font-size:20px;margin-bottom:14px}
+  .qa details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 17px;margin-bottom:9px}
+  .qa summary{font-weight:700;cursor:pointer;font-size:15.5px}
+  .qa p{color:var(--muted);margin-top:9px;font-size:15px}
+  .stuck{text-align:center;color:var(--muted);font-size:15px;padding:0 0 50px}
+  footer{border-top:1px solid var(--line);padding:22px 0 44px;text-align:center;color:var(--muted);font-size:13.5px}
+</style>
+</head>
+<body>
+  <header><div class="wrap"><div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div></div></header>
+
+  <main class="wrap">
+    <h1>Add us to your Google listing</h1>
+    <p class="lede">This is the only setup step. It takes about 30 seconds.</p>
+    <div class="reassure">
+      <span class="pill">✓ No password shared</span>
+      <span class="pill">✓ Remove us in 2 clicks</span>
+      <span class="pill">✓ We can't change your owner</span>
+    </div>
+
+    <div class="emailbox">
+      <div class="lbl">The email to add</div>
+      <div class="addr" data-email-text>hello@example.com</div>
+      <button class="copy" id="copyBtn" type="button">Copy email</button>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <h3>Open your Google Business Profile</h3>
+        <p>Go to <a href="https://business.google.com" target="_blank" rel="noopener">business.google.com</a> and pick your restaurant. Sign in with the Google account that owns the listing.</p>
+        <div class="shot"><!-- Replace with a real screenshot: business.google.com after sign-in --><em>Screenshot goes here</em></div>
+      </li>
+      <li>
+        <h3>Open the menu</h3>
+        <p>Click the three lines (☰) or the three dots, then choose <b>Business Profile settings</b>.</p>
+        <div class="shot"><!-- Replace with a real screenshot: the menu open, Business Profile settings visible --><em>Screenshot goes here</em></div>
+      </li>
+      <li>
+        <h3>Click "People and access"</h3>
+        <p>This is where you add anyone who helps with your listing, like a staff member.</p>
+        <div class="shot"><!-- Replace with a real screenshot: the People and access panel --><em>Screenshot goes here</em></div>
+      </li>
+      <li>
+        <h3>Click "Add"</h3>
+        <p>Usually a button at the top of that panel.</p>
+        <div class="shot"><!-- Replace with a real screenshot: the Add button --><em>Screenshot goes here</em></div>
+      </li>
+      <li>
+        <h3>Paste our email</h3>
+        <p>Use the <b>Copy email</b> button above so it's exact. One wrong letter and the invite goes nowhere.</p>
+        <div class="shot"><!-- Replace with a real screenshot: the invite box with an email typed in --><em>Screenshot goes here</em></div>
+      </li>
+      <li>
+        <h3>Choose "Manager", then Invite</h3>
+        <p>Pick <b>Manager</b>, not Owner. Manager lets us reply to your reviews. It does not let us change who owns the listing or remove you.</p>
+        <div class="shot"><!-- Replace with a real screenshot: the role dropdown with Manager selected --><em>Screenshot goes here</em></div>
+      </li>
+    </ol>
+
+    <div class="done">
+      <h2>Done it?</h2>
+      <p>Tell us and we'll check the invite arrived. If something didn't work we'll come back to you the same day.</p>
+      <a class="btn" id="doneBtn" href="#">I've added you →</a>
+    </div>
+
+    <div class="qa">
+      <h2>Questions people ask</h2>
+      <details><summary>Do you get my password?</summary><p>No. You never type a password anywhere for this, and we never see one. Google just adds our email to the list of people allowed to help with your listing, the same way you'd add a member of staff.</p></details>
+      <details><summary>What can you actually see and do?</summary><p>As a Manager we can read your reviews and reply to them, and update things like your posts and hours. We cannot change who owns the listing, we cannot remove you, and we cannot delete the listing. Nothing about your bank, your bookings or your till is connected to this.</p></details>
+      <details><summary>How do I remove you later?</summary><p>Same screen you just used. People and access, click our name, remove. Two clicks and it takes effect straight away. If you cancel, we take ourselves off the same day without you having to ask.</p></details>
+      <details><summary>Manager or Owner, which one?</summary><p>Manager. Never make us an Owner. Manager is everything we need, and it keeps you in full control.</p></details>
+      <details><summary>I can't find "People and access"</summary><p>Usually it means you're signed into a different Google account than the one that owns the listing. Try signing out and back in with the account you first set the restaurant up with. If you're not sure which that is, email us and we'll work it out with you.</p></details>
+      <details><summary>Someone else set up my Google listing</summary><p>This happens a lot, often an old marketing company or the person who built your website. You'll need them to add us, or to make you an Owner first. Email us and we'll send you the exact wording to forward to them.</p></details>
+    </div>
+
+    <p class="stuck">Stuck at any step? Email <a data-email href="#">hello@example.com</a> and we'll sort it out. No call needed unless you want one.</p>
+  </main>
+
+  <footer><div class="wrap"><span data-brand>ReplyPlate</span>. Google reviews answered and social posts written, for independent restaurants.</div></footer>
+
+  <script>
+    /* Keep this block matching index.html's CONFIG. */
+    const CONFIG = {
+      brand: "ReplyPlate",
+      email: "hello@example.com",
+    };
+    (function(){
+      document.title = "Connect your Google listing | " + CONFIG.brand;
+      document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
+      document.querySelectorAll("[data-email-text]").forEach(function(n){ n.textContent = CONFIG.email; });
+      document.querySelectorAll("[data-email]").forEach(function(a){ a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
+
+      var btn = document.getElementById("copyBtn");
+      btn.addEventListener("click", function(){
+        var done = function(){ btn.textContent = "Copied ✓"; setTimeout(function(){ btn.textContent = "Copy email"; }, 1600); };
+        if (navigator.clipboard) { navigator.clipboard.writeText(CONFIG.email).then(done, fallback); } else { fallback(); }
+        function fallback(){
+          var t = document.createElement("textarea"); t.value = CONFIG.email;
+          document.body.appendChild(t); t.select();
+          try { document.execCommand("copy"); done(); } catch(e) { btn.textContent = "Copy failed"; }
+          t.remove();
+        }
+      });
+
+      /* No backend yet, so "Done it?" opens a pre-written email. When the Worker
+         is live this becomes a real check against the pending-invitations list. */
+      var done = document.getElementById("doneBtn");
+      done.href = "mailto:" + CONFIG.email
+        + "?subject=" + encodeURIComponent("I've added you as a manager")
+        + "&body=" + encodeURIComponent("Restaurant name:\n\nGoogle listing link (optional):\n\nI've added " + CONFIG.email + " as a Manager.");
+    })();
+  </script>
+</body>
+</html>
