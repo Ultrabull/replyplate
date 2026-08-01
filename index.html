@@ -62,6 +62,18 @@
   .getstrip li{position:relative;padding-left:26px;font-size:15.5px;line-height:1.45}
   .getstrip li::before{content:"✓";position:absolute;left:0;top:0;color:var(--ok);font-weight:800}
   .card.us{border-color:var(--accent);background:#251e14;box-shadow:0 20px 50px -16px rgba(0,0,0,.45)}
+  .addons{background:linear-gradient(180deg,rgba(208,163,78,.07),transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sums{max-width:560px;margin:22px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
+  .sums h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:14px;text-align:center}
+  .sumrow,.sumtot{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:9px 0;font-size:15px;border-bottom:1px solid var(--line)}
+  .sumrow span{color:var(--muted)}
+  .sumrow b,.sumtot b{white-space:nowrap;font-weight:800}
+  .sumrow .bad{color:#e0705a}
+  .sumrow .good{color:var(--ok)}
+  .sumtot{border-bottom:none;border-top:2px solid var(--accent);margin-top:4px;padding-top:13px;font-size:15.5px}
+  .sumtot b{color:var(--accent)}
+  .sumnote{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px}
+  @media (max-width:520px){.sumrow,.sumtot{flex-direction:column;gap:2px}.sumrow b,.sumtot b{align-self:flex-start}}
   .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
   table.cmp{width:100%;min-width:760px;border-collapse:collapse}
   .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -185,6 +197,34 @@
         <div class="card"><h3><span class="emoji">🙋</span> Every diner gets asked, not just the happy ones</h3><p>We invite everyone who dined with you to leave a review. Google prohibits cherry-picking your happy customers, so we don't do it. More reviews, honestly collected.</p></div>
         <div class="card"><h3><span class="emoji">📱</span> Eight posts a month, written and put up</h3><p>Your specials, your events, your room. Written for your restaurant and posted to your Facebook and Instagram, so the page doesn't go quiet for three weeks at a time.</p></div>
         <div class="card"><h3><span class="emoji">✋</span> Nothing rough goes out without you</h3><p>Low ratings, complaints, anything sensitive: it goes to your phone first and waits. One tap to approve, or edit it, or tell us to leave that one alone. There's no setting that turns this off.</p></div>
+      </div>
+    </section>
+
+    <section class="addons">
+      <h2 class="section-title">Two things worth adding</h2>
+      <p class="section-sub">Not part of the <span data-price>$199</span>. Both are one-off, and the second one can pay for the whole thing.</p>
+      <div class="grid two">
+        <div class="card">
+          <h3><span class="emoji">💬</span> Stop answering the same eight questions</h3>
+          <p><b>What it does.</b> A chat button on your website answers your hours, parking, vegan options, dogs, bookings. Only what you told it, and if it doesn't know it says so and hands out your number.</p>
+          <p style="margin-top:10px"><b>What it saves you.</b> The interruptions. Those questions arrive by phone, in the middle of service, and someone has to stop and take them. This one answers at 11pm on a Sunday with nobody in the building.</p>
+          <p style="margin-top:12px"><a href="./chat-demo.html">See it working, ask it anything →</a></p>
+        </div>
+        <div class="card">
+          <h3><span class="emoji">🍕</span> Let your regulars order direct</h3>
+          <p><b>What it does.</b> They tap what they want, the order arrives on your WhatsApp, they pay when they collect. No card machine to set up, no new system to learn, and no app in the middle.</p>
+          <p style="margin-top:10px"><b>What it saves you.</b> The cut. Every order that comes through a delivery app instead of straight to you costs you a slice of the ticket, on food you cooked either way.</p>
+          <p style="margin-top:12px"><a href="./chat-demo.html">Try the ordering →</a></p>
+        </div>
+      </div>
+
+      <div class="sums">
+        <h4>The sum, with your numbers</h4>
+        <div class="sumrow"><span>20 collection orders in a month, average <b>$40</b></span><b>$800</b></div>
+        <div class="sumrow"><span>Through an app taking <b>25%</b></span><b class="bad">you lose $200</b></div>
+        <div class="sumrow"><span>Taken direct instead</span><b class="good">you keep $800</b></div>
+        <div class="sumtot"><span>So moving those orders across covers your <span data-price>$199</span></span><b>with a dollar spare</b></div>
+        <p class="sumnote">Use your own figures, because you know them better than we do. Apps take somewhere between 15% and 30% depending on your deal, and every restaurant's order count is different. This only counts orders you move across, not new ones we are promising to bring you. And plenty of restaurants keep the apps for reach and use this for the regulars who would rather deal with you.</p>
       </div>
     </section>
 
@@ -324,23 +364,6 @@
         </div>
       </div>
       <p class="cmp-note mid">An example, written for a restaurant that doesn't exist. Note what it does: it names the wait, the fries and Marcus, and it doesn't thank anyone for their valued feedback. That's the tell people actually notice. A reply like this one would never post on its own. It would go to your phone and wait.</p>
-    </section>
-
-    <section>
-      <h2 class="section-title">Two things you can bolt on</h2>
-      <p class="section-sub">Not included in the <span data-price>$199</span>. Worth knowing about, because both save you money elsewhere.</p>
-      <div class="grid two">
-        <div class="card">
-          <h3><span class="emoji">💬</span> A chat helper for your website</h3>
-          <p>Answers the questions you get asked all day. Opening hours, parking, vegan options, dogs, bookings. It only ever says what you told it, and if it doesn't know it says so and gives out your number, so it can never guess at an allergy question.</p>
-          <p style="margin-top:10px"><a href="./chat-demo.html" style="color:var(--accent);font-weight:700">See it working →</a></p>
-        </div>
-        <div class="card">
-          <h3><span class="emoji">🍕</span> Take collection orders direct</h3>
-          <p>Regulars tap what they want and send the order to you on WhatsApp, then pay when they collect. No app taking a cut, no card fees, no new system to learn. If you have no website at all we can put it on a link and a QR code for your tables.</p>
-          <p style="margin-top:10px"><a href="./chat-demo.html" style="color:var(--accent);font-weight:700">Try the ordering →</a></p>
-        </div>
-      </div>
     </section>
 
     <section id="start">
