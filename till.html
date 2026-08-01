@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Put your review code on your receipts | ReplyPlate</title>
+<meta name="description" content="How to add your Google review code to your receipts, for Square, Toast, Clover, Lightspeed, SpotOn and TouchBistro. It cannot change your prices or your totals." />
+<style>
+  :root{
+    --ink:#1c1613; --muted:#6d6155; --bg:#faf7f1; --card:#fff; --line:#e6ddd1;
+    --accent:#b03d29; --accent2:#d4783a; --ok:#1a7346; --soft:#f7ece4; --warn:#8a5a00;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px}
+  header{padding:16px 0;background:#fff;border-bottom:1px solid var(--line)}
+  .logo{font-weight:800;font-size:19px;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  h1{font-size:clamp(26px,5vw,34px);line-height:1.15;letter-spacing:-.3px;margin:36px 0 10px}
+  .lede{color:var(--muted);font-size:17px;margin-bottom:8px}
+  .reassure{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 28px}
+  .pill{font-size:13px;font-weight:600;background:#e4f3ea;color:var(--ok);padding:5px 12px;border-radius:999px}
+
+  /* the receipt drawing, which answers the "will it break my billing" fear faster than words */
+  .receipt{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-family:var(--mono);
+    font-size:13px;line-height:1.75;color:#3a322c;max-width:330px;margin:0 auto 10px;
+    box-shadow:0 10px 28px -14px rgba(0,0,0,.25)}
+  .receipt .r{display:flex;justify-content:space-between;gap:12px}
+  .receipt hr{border:none;border-top:1px dashed #cbbfae;margin:9px 0}
+  .receipt .tot{font-weight:800;color:var(--ink)}
+  .receipt .new{background:#fff6d9;border:1px dashed var(--warn);border-radius:8px;padding:9px 10px;margin-top:10px;color:var(--warn);text-align:center}
+  .receipt .new .sq{width:52px;height:52px;margin:7px auto 0;border-radius:4px;
+    background:conic-gradient(from 0deg,#3a322c 0 25%,#fff 0 50%,#3a322c 0 75%,#fff 0);
+    background-size:13px 13px;border:3px solid #3a322c}
+  .cap{text-align:center;color:var(--muted);font-size:13px;margin-bottom:34px}
+
+  h2.sec{font-size:23px;margin:44px 0 6px;scroll-margin-top:16px}
+  .secsub{color:var(--muted);font-size:15px;margin-bottom:22px}
+  .note{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:14.5px;color:var(--muted);margin-top:14px}
+  .note b{color:var(--ink)}
+  .note.warn{background:#fff6d9;border-color:#e6d09a}
+  .note.warn b{color:var(--warn)}
+
+  /* till picker */
+  .picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:8px}
+  .pick{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;text-align:left;
+    cursor:pointer;font:inherit;color:var(--ink);min-height:48px}
+  .pick:hover{border-color:var(--accent)}
+  .pick[aria-selected="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+  .pick b{display:block;font-size:15.5px}
+  .pick span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+  .till{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:16px}
+  .till h3{font-size:19px;margin-bottom:4px}
+  .verdict{display:inline-block;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+    padding:4px 10px;border-radius:999px;margin-bottom:12px}
+  .verdict.yes{background:#e4f3ea;color:var(--ok)}
+  .verdict.no{background:#fff6d9;color:var(--warn)}
+  .path{font-family:var(--mono);font-size:13.5px;background:#f4efe7;border:1px solid var(--line);border-radius:9px;
+    padding:10px 12px;margin:12px 0;word-break:break-word;line-height:1.6}
+  ol.steps{list-style:none;counter-reset:s;margin-top:6px}
+  ol.steps li{counter-increment:s;position:relative;padding-left:38px;margin-bottom:14px;font-size:15px}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:26px;height:26px;background:var(--accent);
+    color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13.5px}
+
+  .lines{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 18px;margin:14px 0}
+  .lines .l{border-bottom:1px solid var(--line);padding:13px 0;font-size:15px}
+  .lines .l:last-child{border-bottom:none}
+  .lines .l em{display:block;font-style:normal;color:var(--muted);font-size:13px;margin-top:3px}
+
+  .qa{margin:38px 0 40px}
+  .qa h2{font-size:20px;margin-bottom:14px}
+  .qa details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 17px;margin-bottom:9px}
+  .qa summary{font-weight:700;cursor:pointer;font-size:15.5px}
+  .qa p{color:var(--muted);margin-top:9px;font-size:15px}
+  .done{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:24px;text-align:center;margin:36px 0}
+  .done h2{font-size:20px;margin-bottom:6px}
+  .done p{color:var(--muted);font-size:15px;margin-bottom:16px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;padding:14px 28px;border-radius:999px;font-weight:700;
+    text-decoration:none;font-size:16px;min-height:48px;line-height:20px}
+  .btn:hover{background:#94321f}
+  footer{border-top:1px solid var(--line);padding:22px 0 44px;text-align:center;color:var(--muted);font-size:13.5px}
+</style>
+</head>
+<body>
+  <header><div class="wrap"><div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div></div></header>
+
+  <main class="wrap">
+    <h1>Put your review code on your receipts</h1>
+    <p class="lede">This is the version that works, because it needs nobody to remember anything. Every customer who pays gets asked, forever, and you set it once.</p>
+    <div class="reassure">
+      <span class="pill">✓ Cannot change your prices</span>
+      <span class="pill">✓ You make the change, not us</span>
+      <span class="pill">✓ We never ask for your till login</span>
+    </div>
+
+    <div class="receipt" role="img" aria-label="A receipt showing the total unchanged, with a review line added underneath">
+      <div class="r"><span>2 x Margherita</span><span>$24.00</span></div>
+      <div class="r"><span>1 x Garlic Bread</span><span>$5.00</span></div>
+      <hr />
+      <div class="r"><span>Tax</span><span>$2.32</span></div>
+      <div class="r tot"><span>TOTAL</span><span>$31.32</span></div>
+      <div class="r"><span>Card ****4471</span><span>PAID</span></div>
+      <hr />
+      <div class="new">Enjoyed it? Tell us in 20 seconds.<div class="sq" aria-hidden="true"></div></div>
+    </div>
+    <p class="cap">Only the boxed part is new. It prints after the money.</p>
+
+    <div class="note"><b>Why it cannot touch your billing.</b> The footer is text your printer adds at the bottom, after the totals have already been worked out. It has no connection to prices, tax, tips or the card payment, in the same way the words <i>Thank you, please come again</i> at the bottom of a receipt do not change what you charged.</div>
+
+    <h2 class="sec" id="pick">Find your till</h2>
+    <p class="secsub">Pick the one you use. The first thing to know is whether yours can print the code as a picture or only as words, because that changes what you do.</p>
+
+    <div class="picker" role="tablist" id="picker"></div>
+    <div id="detail" aria-live="polite"></div>
+
+    <h2 class="sec">The words to print</h2>
+    <p class="secsub">Short is better. People read a receipt for about two seconds. Pick one and send it to us, or use ours.</p>
+    <div class="lines">
+      <div class="l">Enjoyed it? Tell us in 20 seconds.<em>Our default. Names the effort, which is the objection.</em></div>
+      <div class="l">Was it any good? We read every review.<em>For places whose voice is blunter.</em></div>
+      <div class="l">Your review helps a small family place a lot.<em>Only if it is true. Do not use this one if you are a group.</em></div>
+    </div>
+    <div class="note warn"><b>Never add a condition.</b> Not <i>if you enjoyed it</i>, not <i>if we earned 5 stars</i>, and never a discount for reviewing. Google prohibits asking only your happy customers and the penalty lands on your listing, not on us. The line has to read the same to somebody who had a bad night.</div>
+
+    <h2 class="sec">Before you change anything</h2>
+    <ol class="steps">
+      <li><b>Do it before you open.</b> Not because it is risky, but because if the printer needs restarting you do not want that at 7pm on a Friday.</li>
+      <li><b>Print one test receipt and look at it.</b> Check the total is right and, if you added a code, that your own phone can scan it. That is the whole safety check.</li>
+      <li><b>Check the paper.</b> A printed code adds roughly an inch to every receipt. On a busy week that is a bit more roll. Worth knowing, not worth worrying about.</li>
+    </ol>
+
+    <div class="qa">
+      <h2>Questions</h2>
+      <details><summary>Will this change my prices, tax or tips?</summary><p>No. Nothing in the footer can. It is printed after the totals are calculated, and the setting has no access to them. If you want to be certain, print one test receipt and compare the total to what you expected. It will match.</p></details>
+      <details><summary>Will you log into my till and do it?</summary><p>No, and we will not ask. Your till holds your sales and your card data, and we have no business in there. You make the change, or your till's own support does it with you on a two-minute chat. We write out what to click.</p></details>
+      <details><summary>My till is not on your list.</summary><p>Tell us which one and we will look up the steps. If you would rather not wait, message your till's support with this one sentence: <i>"How do I add a custom message to the bottom of my printed customer receipts, and can it include a QR code image?"</i> Send us their answer and we will do the rest.</p></details>
+      <details><summary>My till can only print words, not the code. Is it worth doing?</summary><p>Partly. A written-out link is much weaker than a code, because somebody has to type it. Do it anyway, since it costs nothing, but put the printed code where they are already looking: a small card by the register or a sticker on the card reader. That is the one that will actually get scanned.</p></details>
+      <details><summary>Does this replace the printed card?</summary><p>It replaces the need for one, if your till prints the code. If it does not, the card is doing the real work and the receipt line is just a reminder.</p></details>
+      <details><summary>Can I change the wording later?</summary><p>Any time, and it costs nothing. If the reviews are not coming, the wording is the cheapest thing to try first. We will tell you what the count is doing each month.</p></details>
+    </div>
+
+    <div class="done">
+      <h2>Stuck at any point?</h2>
+      <p>Send us a photo of the screen you are on. We will tell you exactly what to tap.</p>
+      <a class="btn" data-email href="#">hello@example.com</a>
+    </div>
+  </main>
+
+  <footer><div class="wrap">
+    <a href="./index.html">Back to ReplyPlate</a> · <a href="./connect.html">Connect your accounts</a>
+  </div></footer>
+
+<script>
+(function () {
+  "use strict";
+  var CONFIG = { brand: "ReplyPlate", email: "hello@reply-plate.com" };
+
+  /* Checked against each vendor's own documentation in August 2026. Till menus get
+     renamed, so every entry says where to look rather than promising a pixel-perfect
+     path, and the "not listed" answer in the Q&A covers the rest.
+
+     qr:true means the till can print the code as a picture on paper. That is the
+     difference between a customer scanning and a customer typing, so it is the first
+     thing each card says. */
+  var TILLS = [
+    {
+      id: "square", name: "Square", sub: "Text only",
+      qr: false,
+      path: "Square Dashboard → Settings → Account & Settings → Payments → Receipts → Additional text",
+      steps: [
+        "Sign in to your Square Dashboard on a computer, not the app.",
+        "Open Settings, then Account &amp; Settings, then Payments, then Receipts.",
+        "Find <b>Additional text</b> and type your review line there.",
+        "Save, then take one test payment and check the printed receipt."
+      ],
+      note: "Square's receipt footer takes words only. There is a workaround, which is to upload your review code in the logo slot, but that means giving up your logo on every receipt. We would not. Put the printed code by the register instead and keep your logo."
+    },
+    {
+      id: "toast", name: "Toast", sub: "Text footer",
+      qr: false,
+      path: "toasttab.com → Marketing → Receipt Setup → footer",
+      steps: [
+        "Sign in at toasttab.com.",
+        "Open <b>Marketing</b>, then <b>Receipt Setup</b>.",
+        "Put your review line in the footer, where your website or social links would go.",
+        "Click <b>Save</b>, then <b>Publish</b>. Toast does not apply it until you publish.",
+        "Print a test receipt and check it."
+      ],
+      note: "Toast lets you upload a logo image under the header, so some owners put the code there. It prints at the top rather than the bottom, which is worse, but it does print. Try the footer text first and ask Toast support whether your receipt template supports a footer image."
+    },
+    {
+      id: "clover", name: "Clover", sub: "Prints the code",
+      qr: true,
+      path: "Clover Dashboard → Setup → Receipts (Smart Receipts) → URL field",
+      steps: [
+        "Sign in to your Clover Dashboard.",
+        "Open <b>Setup</b>, then the receipt settings, and look for <b>Smart Receipts</b>.",
+        "Paste your review link into the URL field and add your message in the text field.",
+        "Save, then print a test receipt and scan the code with your own phone."
+      ],
+      note: "Clover is the good one here. Give it a link and it prints that link as a scannable code on the paper receipt, which is exactly what we want. If you cannot find Smart Receipts, your Clover plan or your reseller may have it switched off, so ask them for it by name."
+    },
+    {
+      id: "lightspeed", name: "Lightspeed", sub: "Footer lines",
+      qr: false,
+      path: "Back Office → Payment → Receipt settings → Add footer line",
+      steps: [
+        "Sign in to your Lightspeed Back Office.",
+        "Open <b>Payment</b>, then <b>Receipt settings</b>.",
+        "Edit the receipt layout and use <b>Add footer line</b> for your review line.",
+        "Save, then print a test receipt."
+      ],
+      note: "Lightspeed ships in several versions with different menu names, K-Series and O-Series among them. If yours does not match, look for anything called receipt template or receipt layout. The footer takes words."
+    },
+    {
+      id: "spoton", name: "SpotOn", sub: "Header and footer",
+      qr: false,
+      path: "SpotOn Back of House → receipt settings → Receipt Header &amp; Footer",
+      steps: [
+        "Sign in to SpotOn Back of House.",
+        "Find the receipt settings and open <b>Receipt Header &amp; Footer</b>.",
+        "Put your review line in the footer.",
+        "Save, then print a test receipt."
+      ],
+      note: "SpotOn keeps receipt settings in the back office rather than on the terminal, so do this on a computer. Ask their support whether your receipt type supports an image if you want the code printed."
+    },
+    {
+      id: "touchbistro", name: "TouchBistro", sub: "Bill message",
+      qr: false,
+      path: "Admin → Advanced Settings → Messages → receipt or bill footer",
+      steps: [
+        "On the iPad, open <b>Admin</b>, then <b>Advanced Settings</b>.",
+        "Open <b>Messages</b> and find the receipt or bill footer message.",
+        "Type your review line and save.",
+        "Print a test bill and check it."
+      ],
+      note: "TouchBistro runs on the iPad rather than a website, so you need the admin passcode. If somebody else set your system up, they may hold it."
+    },
+    {
+      id: "other", name: "Something else", sub: "Or not sure",
+      qr: null,
+      path: null,
+      steps: [
+        "Find the settings area of your till, on a computer if it has a website.",
+        "Look for anything called <b>Receipts</b>, <b>Receipt settings</b>, <b>Receipt footer</b> or <b>Custom message</b>.",
+        "If you find a free-text box that prints at the bottom, that is the one.",
+        "Print a test receipt and check the total is unchanged."
+      ],
+      note: "If you cannot find it, message your till's support with this exact sentence: “How do I add a custom message to the bottom of my printed customer receipts, and can it include a QR code image?” Send us what they say and we will write out the rest for you."
+    }
+  ];
+
+  var picker = document.getElementById("picker"), detail = document.getElementById("detail");
+
+  function render(t) {
+    var v = t.qr === true
+      ? '<span class="verdict yes">Can print the code</span>'
+      : (t.qr === false ? '<span class="verdict no">Words only</span>' : "");
+    var html = '<div class="till"><h3>' + t.name + '</h3>' + v;
+    if (t.path) html += '<div class="path">' + t.path + '</div>';
+    html += '<ol class="steps">';
+    t.steps.forEach(function (s) { html += "<li>" + s + "</li>"; });
+    html += "</ol>";
+    html += '<div class="note' + (t.qr === false ? " warn" : "") + '">' + t.note + "</div>";
+    if (t.qr === false) {
+      html += '<div class="note"><b>So what do I do?</b> Print the line anyway, it costs nothing. Then put your code on a small card by the register or a sticker on the card reader, which is where people are already looking while they pay.</div>';
+    }
+    html += "</div>";
+    detail.innerHTML = html;
+  }
+
+  TILLS.forEach(function (t, i) {
+    var b = document.createElement("button");
+    b.className = "pick"; b.type = "button"; b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    b.innerHTML = "<b>" + t.name + "</b><span>" + t.sub + "</span>";
+    b.addEventListener("click", function () {
+      picker.querySelectorAll(".pick").forEach(function (o) { o.setAttribute("aria-selected", "false"); });
+      b.setAttribute("aria-selected", "true");
+      render(t);
+    });
+    picker.appendChild(b);
+  });
+  render(TILLS[0]);
+
+  document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
+  document.querySelectorAll("[data-email]").forEach(function (a) {
+    a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email;
+  });
+})();
+</script>
+</body>
+</html>
