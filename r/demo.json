@@ -1,7 +1,7 @@
 {
   "name": "The Olive Table",
   "subtitle": "Answers, day or night",
-  "phone": "01234 567890",
+  "phone": "(555) 010-2288",
   "greeting": "Hello! Ask me anything about The Olive Table. I'll only tell you things the team has actually confirmed.",
   "buttonText": "Ask us a question",
   "answers": [
@@ -35,10 +35,10 @@
       "q": [
         "is there parking",
         "where can i park",
-        "do you have a car park",
+        "is there a parking lot",
         "parking nearby"
       ],
-      "a": "There's free street parking on Mill Lane after 6pm, and a pay and display car park about two minutes' walk away on Bridge Street."
+      "a": "There's free street parking on Mill Street after 6pm, and a paid lot about two minutes' walk away on Bridge Street."
     },
     {
       "chip": "Booking a table",
@@ -50,7 +50,7 @@
         "large group booking",
         "reservations"
       ],
-      "a": "Yes, we take bookings. For groups up to 8 you can book online or give us a ring.\n\nFor 9 or more, please call us so we can sort the seating properly."
+      "a": "Yes, we take bookings. For groups up to 8 you can book online or give us a call.\n\nFor 9 or more, please call us so we can sort the seating properly."
     },
     {
       "chip": "Dogs",
@@ -71,13 +71,14 @@
         "is it family friendly",
         "children's food"
       ],
-      "a": "Children are welcome. We have a kids' menu, high chairs, and a baby changing table in the accessible toilet."
+      "a": "Children are welcome. We have a kids' menu, high chairs, and a changing table in the accessible restroom."
     }
   ],
   "order": {
     "enabled": true,
     "method": "whatsapp",
-    "phone": "+441234567890",
+    "phone": "+1 (555) 010-2288",
+    "demo": true,
     "currency": "$",
     "chip": "Order for collection",
     "title": "Order for collection",

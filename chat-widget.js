@@ -117,6 +117,14 @@
     + '.rpc-go{width:100%;background:' + accent + ';color:#fff;border:none;border-radius:11px;padding:12px;font:700 15px inherit;cursor:pointer}'
     + '.rpc-go:disabled{opacity:.45;cursor:default}'
     + '.rpc-hint{font-size:11.5px;color:#8a7b6e;text-align:center;margin-top:7px;line-height:1.45}'
+    /* what the owner's phone shows, used by the demo and after a real send */
+    /* flex:0 0 auto, or the log's flex column squashes the message and clips it */
+    + '.rpc-wa{flex:0 0 auto;background:#fff;border:1px solid #e6ddd1;border-radius:14px;margin:2px 0 4px;overflow:hidden;max-width:100%}'
+    + '.rpc-wa .hd{background:#075e54;color:#fff;padding:9px 12px;font:700 12.5px inherit;display:flex;align-items:center;gap:7px}'
+    + '.rpc-wa .hd i{width:8px;height:8px;border-radius:50%;background:#25d366;font-style:normal;flex:0 0 auto}'
+    + '.rpc-wa .bd{padding:11px 12px;background:#ece5dd}'
+    + '.rpc-wa pre{background:#fff;border-radius:9px;padding:10px 11px;margin:0;font-family:inherit;font-size:13.5px;line-height:1.5;'
+    +   'white-space:pre-wrap;word-break:break-word;color:#22201d;box-shadow:0 1px 1px rgba(0,0,0,.08)}'
     + '.rpc-embed{position:static;right:auto;bottom:auto;width:100%;height:min(620px,calc(100vh - 150px));display:flex;box-shadow:0 6px 24px rgba(0,0,0,.10);border:1px solid #e6ddd1}'
     + '@media (max-width:420px){.rpc-panel{right:8px;left:8px;bottom:8px;width:auto;height:calc(100vh - 16px)}.rpc-btn{right:12px;bottom:12px}.rpc-embed{right:auto;left:auto;bottom:auto;height:min(620px,calc(100vh - 190px))}}';
 
@@ -273,17 +281,55 @@
     if (ORDER.mode) lines.push(ORDER.mode);
     return lines.join("\n");
   }
-  function sendOrder() {
-    var num = String(ORDER.phone || "").replace(/[^0-9]/g, "");
-    if (!num) return;
-    var text = encodeURIComponent(orderText());
-    var url = (ORDER.method === "sms") ? ("sms:" + ORDER.phone + "?&body=" + text) : ("https://wa.me/" + num + "?text=" + text);
-    window.open(url, "_blank");
-    showChat();
-    bubble("Your order is ready to send in " + (ORDER.method === "sms" ? "your messages" : "WhatsApp") +
-      ". Press send there and " + (C.name || "we") + " will confirm shortly.", "bot");
+  /* Shows what lands on the owner's phone. In demo mode this replaces opening
+     WhatsApp, because a demo restaurant has no real number to open. */
+  function phonePreview(text) {
+    var app = (ORDER.method === "sms") ? "Messages" : "WhatsApp";
+    var d = document.createElement("div");
+    d.className = "rpc-wa";
+    var hd = document.createElement("div"); hd.className = "hd";
+    var dot = document.createElement("i"); hd.appendChild(dot);
+    hd.appendChild(document.createTextNode(app + " · " + (ORDER.phone || "the restaurant")));
+    var bd = document.createElement("div"); bd.className = "bd";
+    var pre = document.createElement("pre"); pre.textContent = text;
+    bd.appendChild(pre);
+    d.appendChild(hd); d.appendChild(bd);
+    log.appendChild(d); log.scrollTop = log.scrollHeight;
+  }
+  function clearBasket() {
     basket = {}; refreshBasket();
     var m = panel.querySelector("#rpcMenu"); m.innerHTML = ""; buildMenu();
+  }
+  function sendOrder() {
+    var app = (ORDER.method === "sms") ? "your messages" : "WhatsApp";
+    var text = orderText();
+
+    if (ORDER.demo) {
+      showChat();
+      bubble("That is as far as the demo goes. On a real restaurant's site, this opens " + app +
+        " on your phone with the message below already typed, and you press send.", "bot");
+      phonePreview(text);
+      bubble("It arrives on the owner's phone. Nothing is paid here, and your number is what tells them the order is real.", "bot");
+      clearBasket();
+      return;
+    }
+
+    var num = String(ORDER.phone || "").replace(/[^0-9]/g, "");
+    if (!num) return;
+    var enc = encodeURIComponent(text);
+    var url = (ORDER.method === "sms") ? ("sms:" + ORDER.phone + "?&body=" + enc) : ("https://wa.me/" + num + "?text=" + enc);
+    var win = window.open(url, "_blank");
+    showChat();
+    if (win) {
+      bubble("Your order is ready to send in " + app + ". Press send there and " +
+        (C.name || "we") + " will confirm shortly.", "bot");
+    } else {
+      /* Popup blocked, or no app to hand it to. Never leave the order stranded. */
+      bubble("Your browser stopped that window from opening. Here is your order, ready to copy and send to " +
+        (ORDER.phone || "us") + ".", "bot");
+      phonePreview(text);
+    }
+    clearBasket();
   }
 
   function showOrder() {
