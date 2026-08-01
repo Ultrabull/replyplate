@@ -80,6 +80,30 @@
     .cmp-hint{display:block}
   }
 
+
+  /* motion: subtle reveal on scroll, off entirely if the visitor asked for that */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .55s cubic-bezier(.22,.8,.3,1),transform .55s cubic-bezier(.22,.8,.3,1)}
+  .rv.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+
+  /* tap ripple, the tasteful version */
+  .btn,.card,.step{position:relative;overflow:hidden}
+  .rip{position:absolute;border-radius:50%;transform:scale(0);opacity:.35;background:currentColor;pointer-events:none;animation:rip .55s ease-out forwards}
+  .btn .rip{background:#fff;opacity:.4}
+  @keyframes rip{to{transform:scale(2.4);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.rip{display:none}}
+
+  /* collapsible supporting detail */
+  .fold{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:0 22px;margin-bottom:12px}
+  .fold summary{cursor:pointer;list-style:none;padding:17px 34px 17px 0;font-weight:700;font-size:16.5px;position:relative;line-height:1.4}
+  .fold summary::-webkit-details-marker{display:none}
+  .fold summary::after{content:"+";position:absolute;right:0;top:16px;color:var(--accent);font-weight:800;font-size:22px;line-height:1}
+  .fold[open] summary::after{content:"–"}
+  .fold summary small{display:block;font-weight:400;color:var(--muted);font-size:13.5px;margin-top:2px}
+  .fold .body{padding-bottom:20px}
+  .fold .body p{color:var(--muted);font-size:15px;margin-bottom:14px}
+  .fold .body p:last-child{margin-bottom:0}
+  .fold .body b{color:var(--ink)}
   .pricing{max-width:460px;margin:0 auto;text-align:center;background:var(--card);border:2px solid var(--accent);border-radius:22px;padding:36px 28px;box-shadow:0 16px 40px rgba(209,69,43,.12)}
   .pricing .price{font-size:48px;font-weight:800}
   .pricing .price small{font-size:18px;color:var(--muted);font-weight:600}
@@ -156,12 +180,23 @@
 
     <section>
       <h2 class="section-title">Before you buy, the honest version</h2>
-      <div class="honest">
-        <p><b>AI writes the first draft. A person checks it.</b> That is the whole arrangement. Drafts come from your menu, your past replies and the words you give us at setup. Straightforward positive reviews can post on their own if you choose that. Anything negative, low-starred or awkward is held until you approve it, every time, and there is no setting that turns that off.</p>
-        <p><b>Nothing posts under an invented employee name.</b> There is no character called Ava or Max on our side. Replies go out as your restaurant, because that's whose name is on them.</p>
-        <p><b>And you should know our size.</b> ReplyPlate is run by one person, and today a good part of the work is delivered by hand rather than fully automated. Your reviews get worked every business day, not within a minute of landing. Those are different promises and we're only making one of them. As more of it automates we'll tell you which parts, before it changes, and the rule that negative reviews wait for your OK will not change. If we're at capacity we'll say so and put you on a list, rather than take <span data-price>$199</span> and get to you in a couple of weeks.</p>
-        <p><b>What we don't do.</b> We don't photograph tonight's special, answer your phone, or walk your dining room, and if that's what you need, you need a person and not us. We don't cover Yelp, TripAdvisor or OpenTable. Facebook retired star ratings, so reviews here means Google reviews. We don't touch anything outside the access you grant, we can't change who owns your profile, and you can pull it in two clicks.</p>
-        <p><b>And we won't promise your rating will go up.</b> Nobody honest will. Google will even draft you a reply free on some accounts, and the writing is fine. It also needs you to log in, read the review and press send, every time, forever. If logging in every day is realistic for you, use the free one. We're honestly not for you.</p>
+      <p class="section-sub">The things most services leave out. Tap any of them.</p>
+      <div class="honest-folds">
+        <details class="fold"><summary>AI writes the first draft. A person checks it.<small>What is actually automatic, and what is not</small></summary>
+          <div class="body"><p>That is the whole arrangement. Drafts come from your menu, your past replies and the words you give us at setup. Straightforward positive reviews can post on their own if you choose that. Anything negative, low-starred or awkward is held until you approve it, every time, and there is no setting that turns that off.</p></div></details>
+
+        <details class="fold"><summary>Nothing posts under an invented employee name.<small>No fake person on our side</small></summary>
+          <div class="body"><p>There is no character called Ava or Max here. Replies go out as your restaurant, because that is whose name is on them.</p></div></details>
+
+        <details class="fold"><summary>We are small, and new.<small>How the work actually gets done today</small></summary>
+          <div class="body"><p>ReplyPlate is run by one person, and today a good part of the work is delivered by hand rather than fully automated. Your reviews get worked every business day, not within a minute of landing. Those are different promises and we are only making one of them.</p>
+          <p>As more of it automates we will tell you which parts, before it changes, and the rule that negative reviews wait for your OK will not change. If we are at capacity we will say so and put you on a list, rather than take <span data-price>$199</span> and get to you in a couple of weeks.</p></div></details>
+
+        <details class="fold"><summary>What we don't do.<small>Where you need a person instead of us</small></summary>
+          <div class="body"><p>We don't photograph tonight's special, answer your phone, or walk your dining room, and if that is what you need, you need a person and not us. We don't cover Yelp, TripAdvisor or OpenTable. Facebook retired star ratings, so reviews here means Google reviews. We don't touch anything outside the access you grant, we can't change who owns your profile, and you can pull it in two clicks.</p></div></details>
+
+        <details class="fold"><summary>We won't promise your rating will go up.<small>And what we say about Google's free tool</small></summary>
+          <div class="body"><p>Nobody honest will. Google will even draft you a reply free on some accounts, and the writing is fine. It also needs you to log in, read the review and press send, every time, forever. If logging in every day is realistic for you, use the free one. We are honestly not for you.</p></div></details>
       </div>
     </section>
 
@@ -233,7 +268,7 @@
         </table>
       </div>
       <button class="cmp-hint" id="cmpHint" type="button">Tap to see all five options →</button>
-      <p class="cmp-note"><b>How we got these numbers, and where we rounded.</b> The $850 is deliberately the low end. Ten hours a week at around $18 to $20 an hour is roughly $780 to $865 a month in wages, and employer payroll taxes and workers comp add somewhere around 10% to 15% on top depending on your state, so call it about $850 at the bottom. Realistically most restaurants would pay more than that, and if you offered any health insurance or paid leave it would be far more. We used the cheapest honest version so the comparison isn't doing the arguing for us. The wage range is what part-time marketing assistant roles were advertising in the US in mid-2026, and it moves by market, so check your own. And ten hours a week is not how long this job takes: it is the smallest job a real person will accept, so you would be paying for someone to be available rather than for hours used. Freelance figures are typical entry packages for basic posting and scheduling, which do not usually include Google review replies or review requests, so ask before you sign. Diner figures are rounded from published consumer review surveys. One thing this table cannot show: a person you hire can shoot fresh photos of tonight's special, answer the phone and walk the dining room, and we cannot do any of that. We are comparing the typing, not the whole job. <span data-price>$199</span> is our real price, not an introductory rate. Treat every figure here as an estimate for comparison, not a quote.</p>
+      <details class="fold" style="margin-top:14px"><summary>How we got these numbers, and where we rounded<small>Every figure, and where we deliberately used the low end</small></summary><div class="body"><p style="font-size:13px;line-height:1.65">The $850 is deliberately the low end. Ten hours a week at around $18 to $20 an hour is roughly $780 to $865 a month in wages, and employer payroll taxes and workers comp add somewhere around 10% to 15% on top depending on your state, so call it about $850 at the bottom. Realistically most restaurants would pay more than that, and if you offered any health insurance or paid leave it would be far more. We used the cheapest honest version so the comparison isn't doing the arguing for us. The wage range is what part-time marketing assistant roles were advertising in the US in mid-2026, and it moves by market, so check your own. And ten hours a week is not how long this job takes: it is the smallest job a real person will accept, so you would be paying for someone to be available rather than for hours used. Freelance figures are typical entry packages for basic posting and scheduling, which do not usually include Google review replies or review requests, so ask before you sign. Diner figures are rounded from published consumer review surveys. One thing this table cannot show: a person you hire can shoot fresh photos of tonight's special, answer the phone and walk the dining room, and we cannot do any of that. We are comparing the typing, not the whole job. <span data-price>$199</span> is our real price, not an introductory rate. Treat every figure here as an estimate for comparison, not a quote.</p></div></details>
     </section>
 
     <section>
@@ -363,6 +398,45 @@
       var bookUrl = CONFIG.book || ("mailto:" + CONFIG.email + "?subject=Free%20setup%20call");
       document.querySelectorAll("[data-book]").forEach(function(a){ a.href = bookUrl; });
       document.querySelectorAll("[data-email]").forEach(function(a){ a.href = "mailto:"+CONFIG.email; a.textContent = CONFIG.email; });
+
+      /* Reveal sections as they come into view. Purely decorative, so it must
+         never be the reason content is invisible: if IntersectionObserver is
+         missing or the visitor asked for reduced motion, everything shows. */
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var targets = document.querySelectorAll("section > .grid, section > .steps, section > .honest-folds, .getstrip, .cmp-wrap, .pricing, .final, section > .fold");
+      if (!reduce && "IntersectionObserver" in window) {
+        targets.forEach(function (n) { n.classList.add("rv"); });
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            e.target.classList.add("in");
+            io.unobserve(e.target);
+          });
+        }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+        targets.forEach(function (n) { io.observe(n); });
+        // Anything still hidden after 2s gets shown regardless.
+        setTimeout(function () { targets.forEach(function (n) { n.classList.add("in"); }); }, 2000);
+      }
+
+      /* Tap ripple. A full-page water effect would read as a template from 2012,
+         and restaurants are wary of gimmicky sites right now. This is the version
+         premium apps actually use: feedback exactly where the finger landed. */
+      if (!reduce) {
+        document.addEventListener("pointerdown", function (e) {
+          var el = e.target.closest(".btn, .card, .step");
+          if (!el) return;
+          var r = el.getBoundingClientRect();
+          var d = Math.max(r.width, r.height);
+          var s = document.createElement("span");
+          s.className = "rip";
+          s.style.width = s.style.height = d + "px";
+          s.style.left = (e.clientX - r.left - d / 2) + "px";
+          s.style.top = (e.clientY - r.top - d / 2) + "px";
+          el.appendChild(s);
+          setTimeout(function () { s.remove(); }, 600);
+        }, { passive: true });
+      }
+
       var hint = document.getElementById("cmpHint"), tbl = document.getElementById("cmpTable");
       if (hint && tbl) hint.addEventListener("click", function(){
         tbl.classList.toggle("show-all");
@@ -370,5 +444,48 @@
       });
     })();
   </script>
+
+  <script>
+  /* We sell this widget. Running it on our own site is the demo: a restaurant
+     owner sees the exact thing they would be buying, working, answering their
+     questions at 11pm. Same rule as everywhere else, it only says what we wrote. */
+  window.RP_CHAT = {
+    name: "ReplyPlate",
+    subtitle: "Real answers, not a sales bot",
+    email: CONFIG.email,
+    buttonText: "Questions? Ask here",
+    greeting: "Ask me anything about ReplyPlate. This is the same chat helper we sell to restaurants, so you are looking at the product while you use it.",
+    answers: [
+      { chip: "What it costs",
+        q: ["how much does it cost","what is the price","pricing","how much","is there a setup fee","any hidden fees","per location"],
+        a: "$199 a month, flat. No setup fee, no contract, no charge per location, and the price does not change with how many reviews you get.\n\nCancel any month." },
+      { chip: "What's included",
+        q: ["what do i get","what is included","what services","what do you actually do","whats included"],
+        a: "A reply drafted to every Google review, a review request sent to every diner, 8 social posts a month written and put up, and one page each month on what your reviews are actually saying." },
+      { chip: "Bad reviews",
+        q: ["what about bad reviews","one star","negative reviews","do you post automatically","will you reply to a bad review without me","auto post"],
+        a: "Anything negative, low-starred or sensitive is held for you, every time. It goes to your phone, you read it, then you approve it, edit it, or tell us to leave that one alone.\n\nThat rule is not a setting and cannot be switched off." },
+      { chip: "My Google account",
+        q: ["do you need my password","how do you get access","is it safe","google account","can i remove you","security"],
+        a: "You add us as a manager on your Google Business Profile, the same way you would add a member of staff. It takes about 30 seconds, you never share a password, and you can remove us in two clicks.\n\nWe cannot change who owns your profile." },
+      { chip: "Will my rating go up?",
+        q: ["will my rating go up","will my rating improve","rating go up","do you improve my rating","better rating","do you guarantee results","more stars","guarantee","will it work","does it actually work"],
+        a: "We will not promise that, and be careful with anyone who does. Your rating comes from your food and your service.\n\nWhat we can say is that your reviews get answers instead of silence, and every diner gets asked rather than just the happy ones." },
+      { chip: "Cancelling",
+        q: ["can i cancel","how do i cancel","is there a contract","notice period","am i tied in"],
+        a: "Any month. No contract and no notice period. Email us and it stops at the end of the month, and we take ourselves off your Google profile the same day." },
+      { chip: "Facebook reviews",
+        q: ["do you do facebook reviews","what about facebook","instagram","yelp","tripadvisor","other review sites"],
+        a: "Facebook retired star ratings, so no tool can reply to those any more. Reviews here means Google reviews, which is where they actually matter.\n\nWe handle your Facebook and Instagram posts. We do not cover Yelp, TripAdvisor or OpenTable." },
+      { chip: "This chat thing",
+        q: ["what is this chat","can i get this on my website","how does this chat work","chat helper","ordering"],
+        a: "This is our chat helper, and yes, you can have it on your own site. It answers the questions you get asked all day, and it can take collection orders that customers send you on WhatsApp, so you keep the whole ticket.\n\nIt is a paid add-on, not part of the $199. There is a full demo on the site." },
+      { chip: "Getting started",
+        q: ["how do i start","how long does setup take","what happens next","how quickly","first steps"],
+        a: "A short call to learn how your place talks, then you add us to your Google profile. Usually live within two business days.\n\nIf you would rather see the writing first, send us your listing and we will answer your last five reviews free." }
+    ]
+  };
+  </script>
+  <script src="./chat-widget.js" defer></script>
 </body>
 </html>
