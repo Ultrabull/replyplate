@@ -47,7 +47,9 @@
   function money(n) { return CUR + n.toFixed(2); }
 
   function score(qTokens, qNorm, entry) {
+    /* The chip label counts as a phrasing: people type what they saw on the button. */
     var best = 0, phrasings = [].concat(entry.q || []);
+    if (entry.chip) phrasings.push(entry.chip);
     for (var i = 0; i < phrasings.length; i++) {
       var pNorm = norm(phrasings[i]);
       if (!pNorm) continue;
@@ -68,6 +70,12 @@
   var THRESHOLD = 0.45;
   function findAnswer(q) {
     var qTokens = tokens(q), qNorm = norm(q);
+    if (!qTokens.length) {
+      /* Every word was a common one, as in "what do i get". Keep them rather than
+         giving up: whole-phrase matching still works, and these are the questions
+         people ask most. */
+      qTokens = qNorm.split(" ").filter(function (w) { return w.length > 1; });
+    }
     if (!qTokens.length) return null;
     var top = null, topScore = 0;
     C.answers.forEach(function (e) { var s = score(qTokens, qNorm, e); if (s > topScore) { topScore = s; top = e; } });
@@ -214,7 +222,10 @@
       if (!label) return;
       var c = document.createElement("button");
       c.className = "rpc-chip"; c.type = "button"; c.textContent = label;
-      c.addEventListener("click", function () { ask(label); });
+      /* A chip already knows its answer, so hand it over. Never search for it:
+         the chip label is a heading, not one of the phrasings, so "What it costs"
+         could score below the threshold and fall back on its own answer. */
+      c.addEventListener("click", function () { ask(label, e); });
       wrap.appendChild(c);
     });
     log.appendChild(wrap); log.scrollTop = log.scrollHeight;
@@ -225,11 +236,15 @@
     else if (C.email) lines.push("Drop us a line at " + C.email + " and we'll come back to you.");
     return lines.join("\n\n");
   }
-  function ask(q) {
+  function ask(q, known) {
     q = String(q || "").trim(); if (!q) return;
     bubble(q, "you"); input.value = "";
-    var hit = findAnswer(q);
-    setTimeout(function () { bubble(hit ? hit.a : fallback(), "bot"); }, 220);
+    var hit = known || findAnswer(q);
+    setTimeout(function () {
+      bubble(hit ? hit.a : fallback(), "bot");
+      /* A miss should not be a dead end. Put the things it does know back on screen. */
+      if (!hit) chips();
+    }, 220);
   }
 
   /* ---- ordering ---- */
