@@ -38,6 +38,7 @@
     ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
     ocGo: $("ocGo"), ocOut: $("ocOut"),
+    rpPeriod: $("rpPeriod"), rpLoad: $("rpLoad"), rpText: $("rpText"), rpGo: $("rpGo"), rpOut: $("rpOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
     apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
     toast: $("toast"),
@@ -314,6 +315,136 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     } catch (e) { setError(dom.ocOut, e); } finally { dom.ocGo.disabled = false; }
   }
 
+  /* ---------- monthly report ---------- */
+  // Stats are computed in code, never asked of the model. The AI reads themes;
+  // arithmetic it might get wrong stays out of its hands.
+  function parseReviews(raw) {
+    const chunks = /\n\s*\n/.test(raw) ? raw.split(/\n\s*\n/) : raw.split(/\n/);
+    return chunks.map((s) => s.trim()).filter(Boolean).map((line) => {
+      const m = line.match(/^\s*([1-5])\s*(?:stars?|★+)?\s*[|:,\-–—]?\s*(.+)$/is);
+      return m ? { rating: +m[1], text: m[2].trim() } : { rating: null, text: line };
+    });
+  }
+
+  function reviewStats(list) {
+    const rated = list.filter((r) => r.rating);
+    const sum = rated.reduce((a, r) => a + r.rating, 0);
+    const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    rated.forEach((r) => dist[r.rating]++);
+    return {
+      total: list.length,
+      rated: rated.length,
+      avg: rated.length ? (sum / rated.length) : null,
+      dist,
+      negative: dist[1] + dist[2] + dist[3],
+    };
+  }
+
+  function loadFromAutopilot() {
+    const c = activeClient();
+    if (!c) { toast("Pick a client first"); return; }
+    const mine = state.queue.filter((q) => q.clientId === c.id);
+    if (!mine.length) { toast("No reviews in Autopilot for this client yet"); return; }
+    dom.rpText.value = mine.map((q) => `${q.rating} | ${q.text}`).join("\n");
+    toast(`Loaded ${mine.length}`);
+  }
+
+  function renderReport(container, o, stats, client, period) {
+    container.innerHTML = "";
+    const card = el("div", "report");
+    const bits = [];
+    bits.push(`<div class="rp-head"><h3>${escapeHtml(client)}</h3><div class="rp-period">${escapeHtml(period || "This month")}</div></div>`);
+
+    bits.push(`<div class="rp-stats">
+      <div class="rp-stat"><b>${stats.total}</b><span>reviews</span></div>
+      ${stats.avg ? `<div class="rp-stat"><b>${stats.avg.toFixed(1)}★</b><span>average</span></div>` : ""}
+      <div class="rp-stat"><b>${stats.dist[5] + stats.dist[4]}</b><span>4 and 5 star</span></div>
+      <div class="rp-stat"><b>${stats.negative}</b><span>3 star or below</span></div>
+    </div>`);
+
+    if (o.headline) bits.push(`<p class="rp-headline">${escapeHtml(o.headline)}</p>`);
+
+    const list = (title, items, fmt) => {
+      if (!items || !items.length) return "";
+      return `<div class="rp-sec"><h4>${title}</h4><ul>` +
+        items.map(fmt).join("") + `</ul></div>`;
+    };
+
+    bits.push(list("What people loved", o.loved, (t) =>
+      `<li><b>${escapeHtml(t.theme)}</b>${t.count ? ` <span class="rp-n">${t.count}×</span>` : ""}${t.quote ? `<em>“${escapeHtml(t.quote)}”</em>` : ""}</li>`));
+
+    bits.push(list("What came up as a problem", o.problems, (t) =>
+      `<li><b>${escapeHtml(t.theme)}</b>${t.count ? ` <span class="rp-n">${t.count}×</span>` : ""}${t.pattern ? ` <span class="rp-pat">${escapeHtml(t.pattern)}</span>` : ""}${t.quote ? `<em>“${escapeHtml(t.quote)}”</em>` : ""}</li>`));
+
+    bits.push(list("Your team, mentioned by name", o.people, (t) =>
+      `<li><b>${escapeHtml(t.name)}</b>${t.count ? ` <span class="rp-n">${t.count}×</span>` : ""}${t.note ? `<em>${escapeHtml(t.note)}</em>` : ""}</li>`));
+
+    bits.push(list("Dishes people talked about", o.dishes, (t) =>
+      `<li><b>${escapeHtml(t.name)}</b>${t.count ? ` <span class="rp-n">${t.count}×</span>` : ""}${t.sentiment ? ` <span class="rp-pat">${escapeHtml(t.sentiment)}</span>` : ""}</li>`));
+
+    if (o.actions && o.actions.length) {
+      bits.push(`<div class="rp-sec rp-actions"><h4>Worth a look this month</h4><ol>` +
+        o.actions.map((a) => `<li>${escapeHtml(a)}</li>`).join("") + `</ol></div>`);
+    }
+
+    bits.push(`<p class="rp-foot">Based on ${stats.total} review${stats.total === 1 ? "" : "s"} in this period. Counts are exact. The themes are read from what people wrote.</p>`);
+
+    card.innerHTML = bits.join("");
+    container.appendChild(card);
+
+    const bar = el("div", "row"); bar.style.marginTop = "14px";
+    const pr = el("button", "btn sm"); pr.type = "button"; pr.textContent = "Print / Save as PDF";
+    pr.addEventListener("click", () => window.print());
+    const cp = el("button", "btn sm ghost"); cp.type = "button"; cp.textContent = "Copy as text";
+    cp.addEventListener("click", () => copy(card.innerText, cp));
+    bar.appendChild(pr); bar.appendChild(cp);
+    container.appendChild(bar);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+
+  async function doReport() {
+    if (!requireClient(dom.rpOut)) return;
+    const raw = dom.rpText.value.trim();
+    if (!raw) { toast("Paste this month's reviews, or load them from Autopilot"); return; }
+    const list = parseReviews(raw);
+    const stats = reviewStats(list);
+    const period = dom.rpPeriod.value.trim();
+    setLoading(dom.rpOut); dom.rpGo.disabled = true;
+    try {
+      const sys = `You read a month of restaurant reviews and tell the owner what they actually say. You are writing for a busy restaurant owner, not an analyst.
+
+Rules:
+- Only report what is genuinely in the reviews. Never invent a theme, a name, a dish or a number.
+- Count honestly. If something came up twice, say twice. Do not inflate.
+- Look for PATTERNS, not just topics: which day, which time, front of house or kitchen, new or repeat customers. A pattern is the valuable part.
+- Name staff only if a reviewer named them.
+- Suggested actions must be specific and small enough to actually do. No strategy essays.
+- Never predict or promise a rating will improve. Never suggest asking only happy customers for reviews.
+- Plain words. No management jargon.
+- If there is too little to say, say less. Empty arrays are fine.
+
+Return ONLY minified JSON, no markdown, with exactly these keys:
+{"headline":"2-3 plain sentences the owner reads first","loved":[{"theme":"","count":0,"quote":""}],"problems":[{"theme":"","count":0,"pattern":"","quote":""}],"people":[{"name":"","count":0,"note":""}],"dishes":[{"name":"","count":0,"sentiment":"positive|mixed|negative"}],"actions":[""]}`;
+
+      const prompt = `Reviews for ${clientContext()}${period ? `, period: ${period}` : ""}.\n` +
+        `Computed already, do not recount: ${stats.total} reviews` +
+        (stats.avg ? `, average ${stats.avg.toFixed(1)} stars` : "") +
+        `, ${stats.dist[5] + stats.dist[4]} at 4-5 stars, ${stats.negative} at 3 or below.\n\n` +
+        list.map((r, i) => `${i + 1}. ${r.rating ? r.rating + "★ " : ""}${r.text}`).join("\n");
+
+      const rawOut = await generate(prompt, sys);
+      let t = String(rawOut).trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+      const a = t.indexOf("{"), z = t.lastIndexOf("}");
+      if (a !== -1 && z !== -1) t = t.slice(a, z + 1);
+      let o;
+      try { o = JSON.parse(t); } catch { o = { headline: String(rawOut).trim() }; }
+      renderReport(dom.rpOut, o, stats, activeClient().name, period);
+    } catch (e) { setError(dom.rpOut, e); } finally { dom.rpGo.disabled = false; }
+  }
+
   /* ---------- autopilot ---------- */
   /* Connectors: the swap-in point for the live product. In production,
      fetchNewReviews() polls the Google Business Profile / Meta Graph APIs and
@@ -505,6 +636,8 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.grGo.addEventListener("click", doGetReviews);
     dom.soGo.addEventListener("click", doSocial);
     dom.ocGo.addEventListener("click", doOutreach);
+    dom.rpGo.addEventListener("click", doReport);
+    dom.rpLoad.addEventListener("click", loadFromAutopilot);
     dom.leadAdd.addEventListener("click", addLead);
     dom.leadName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLead(); } });
     dom.apCheck.addEventListener("click", checkForReviews);

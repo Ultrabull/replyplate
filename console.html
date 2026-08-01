@@ -22,6 +22,7 @@
     <button class="tab" data-tab="replies">Reply to reviews</button>
     <button class="tab" data-tab="getreviews">Get reviews</button>
     <button class="tab" data-tab="social">Social posts</button>
+    <button class="tab" data-tab="report">Monthly report</button>
     <button class="tab" data-tab="outreach">Find clients</button>
   </nav>
 
@@ -101,6 +102,19 @@
       </label>
       <button class="btn" id="soGo" type="button">Generate posts</button>
       <div class="out" id="soOut"></div>
+    </section>
+
+    <!-- MONTHLY REPORT -->
+    <section class="panel" id="panel-report">
+      <h2>Monthly report</h2>
+      <p class="hint">One page telling the owner what their reviews are actually saying. This is the thing nobody else sends, and it's the reason people don't cancel.</p>
+      <div class="row">
+        <input id="rpPeriod" class="in" style="flex:1;min-width:150px;margin-bottom:0" placeholder="Period (e.g. July 2026)" />
+        <button class="btn ghost sm" id="rpLoad" type="button">Load from Autopilot</button>
+      </div>
+      <textarea id="rpText" class="ta" rows="8" placeholder="One review per line. Put the star rating first if you have it:&#10;&#10;5 | Best carbonara in town, staff were lovely&#10;2 | Waited 40 minutes on a quiet Tuesday&#10;4 | Great food, a bit loud when it filled up"></textarea>
+      <button class="btn" id="rpGo" type="button">Build the report</button>
+      <div class="out" id="rpOut"></div>
     </section>
 
     <!-- OUTREACH -->
