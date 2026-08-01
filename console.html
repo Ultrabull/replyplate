@@ -23,6 +23,7 @@
     <button class="tab" data-tab="getreviews">Get reviews</button>
     <button class="tab" data-tab="social">Social posts</button>
     <button class="tab" data-tab="report">Monthly report</button>
+    <button class="tab" data-tab="chat">Website chat</button>
     <button class="tab" data-tab="outreach">Find clients</button>
   </nav>
 
@@ -115,6 +116,22 @@
       <textarea id="rpText" class="ta" rows="8" placeholder="One review per line. Put the star rating first if you have it:&#10;&#10;5 | Best carbonara in town, staff were lovely&#10;2 | Waited 40 minutes on a quiet Tuesday&#10;4 | Great food, a bit loud when it filled up"></textarea>
       <button class="btn" id="rpGo" type="button">Build the report</button>
       <div class="out" id="rpOut"></div>
+    </section>
+
+    <!-- WEBSITE CHAT -->
+    <section class="panel" id="panel-chat">
+      <h2>Website chat helper</h2>
+      <p class="hint">Answers the questions a restaurant gets asked all day. <b>There is no AI in the widget itself</b> — it can only repeat answers the owner confirmed, so it can never guess at an allergy question. Sell it as a website add-on. <a href="./chat-demo.html" target="_blank" rel="noopener">See the demo</a>.</p>
+      <div class="card form">
+        <h3>1. Everything the owner told you</h3>
+        <p class="hint" style="margin-bottom:10px">Opening hours, parking, dietary options, bookings, kids, dogs, wifi, payment, delivery. Rough notes are fine.</p>
+        <textarea id="chNotes" class="ta" rows="7" placeholder="Open Tue-Thu 5-10pm, Fri-Sat 12-11pm, Sun 12-8pm, closed Mondays&#10;Free street parking on Mill Lane after 6pm&#10;Vegan menu, 5 mains&#10;Bookings up to 8 online, 9+ call us&#10;Dogs in the bar and terrace, not the dining room&#10;Kids menu and high chairs"></textarea>
+        <div class="row">
+          <input id="chPhone" class="in" style="flex:1;min-width:150px;margin-bottom:0" placeholder="Their phone number (for the fallback)" />
+          <button class="btn" id="chGo" type="button">Write the answers</button>
+        </div>
+      </div>
+      <div class="out" id="chOut"></div>
     </section>
 
     <!-- OUTREACH -->

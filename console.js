@@ -38,6 +38,7 @@
     ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
     ocGo: $("ocGo"), ocOut: $("ocOut"),
+    chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
     rpPeriod: $("rpPeriod"), rpLoad: $("rpLoad"), rpText: $("rpText"), rpGo: $("rpGo"), rpOut: $("rpOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
     apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
@@ -313,6 +314,92 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       catch { o = { angle: "Could not parse the model's JSON, so here is the raw output.", message: String(raw).trim() }; }
       renderOutreach(dom.ocOut, o);
     } catch (e) { setError(dom.ocOut, e); } finally { dom.ocGo.disabled = false; }
+  }
+
+  /* ---------- website chat helper ---------- */
+  // AI writes the answers here, at build time, from what the owner actually said.
+  // The widget that ships to the restaurant contains no AI at all, so it cannot
+  // invent an answer to an allergy question on their site.
+  let chatKB = null;
+
+  function chatSnippet(kb, client, phone) {
+    const cfg = {
+      name: client.name,
+      subtitle: "Answers, day or night",
+      phone: phone || "",
+      greeting: `Hello! Ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`,
+      buttonText: "Ask us a question",
+      answers: kb,
+    };
+    return `<!-- ${client.name} chat helper. Paste both lines just before </body> -->\n` +
+      `<script>window.RP_CHAT = ${JSON.stringify(cfg, null, 2)};<\/script>\n` +
+      `<script src="https://reply-plate.com/chat-widget.js" defer><\/script>`;
+  }
+
+  function renderChat(container, kb) {
+    container.innerHTML = "";
+    const c = activeClient();
+    const intro = el("div", "hint");
+    intro.innerHTML = `<b>${kb.length} answers.</b> Read every one before it goes live. If the owner didn't confirm it, delete it. A wrong answer here lands on them, not you.`;
+    container.appendChild(intro);
+
+    kb.forEach((entry, i) => {
+      const card = el("div", "result");
+      const lb = el("div", "reslabel"); lb.textContent = entry.chip || `Answer ${i + 1}`;
+      const qs = el("div", "chat-qs"); qs.textContent = "Matches: " + (entry.q || []).join(" · ");
+      const ta = el("textarea", "ta"); ta.rows = 3; ta.value = entry.a || "";
+      ta.addEventListener("input", () => { entry.a = ta.value; });
+      const bar = el("div", "bar");
+      const del = el("button", "copy"); del.type = "button"; del.textContent = "Delete";
+      del.addEventListener("click", () => {
+        const idx = chatKB.indexOf(entry);
+        if (idx > -1) { chatKB.splice(idx, 1); renderChat(container, chatKB); }
+      });
+      bar.appendChild(del);
+      card.appendChild(lb); card.appendChild(qs); card.appendChild(ta); card.appendChild(bar);
+      container.appendChild(card);
+    });
+
+    const out = el("div", "card form");
+    out.innerHTML = "<h3>2. The code they paste in</h3><p class='hint'>Two lines, just before &lt;/body&gt; on their website.</p>";
+    const code = el("textarea", "ta mono"); code.rows = 7; code.readOnly = true;
+    code.value = chatSnippet(chatKB, c, dom.chPhone.value.trim());
+    const row = el("div", "row");
+    const cp = el("button", "btn sm"); cp.type = "button"; cp.textContent = "Copy the code";
+    cp.addEventListener("click", () => { code.value = chatSnippet(chatKB, c, dom.chPhone.value.trim()); copy(code.value, cp); });
+    row.appendChild(cp);
+    out.appendChild(code); out.appendChild(row);
+    container.appendChild(out);
+  }
+
+  async function doChat() {
+    if (!requireClient(dom.chOut)) return;
+    const notes = dom.chNotes.value.trim();
+    if (!notes) { toast("Paste what the owner told you first"); return; }
+    setLoading(dom.chOut); dom.chGo.disabled = true;
+    try {
+      const sys = `You turn a restaurant owner's rough notes into answers for a chat helper on their website.
+
+Rules:
+- ONLY use facts in the notes. Never add an opening time, a price, a policy or a dietary claim that is not there. If the notes don't cover something, leave it out entirely.
+- Write each answer as the restaurant speaking to a customer. Warm, short, plain. Two or three sentences.
+- For anything about allergies or intolerances, the answer must tell the customer to confirm with staff on the day. Never state a dish is free of an allergen.
+- Give each entry several ways a real person might ask it, including short, sloppy and misspelled phrasings. Lowercase, no punctuation needed.
+- "chip" is a two or three word label for a button, like "Opening hours".
+- Order them with the most commonly asked first.
+- Aim for 5 to 9 entries. Fewer good ones beats padding.
+
+Return ONLY minified JSON, no markdown: {"answers":[{"chip":"","q":["",""],"a":""}]}`;
+      const prompt = `Restaurant: ${clientContext()}\n\nThe owner's notes:\n"""${notes}"""`;
+      const raw = await generate(prompt, sys);
+      let t = String(raw).trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+      const a = t.indexOf("{"), z = t.lastIndexOf("}");
+      if (a !== -1 && z !== -1) t = t.slice(a, z + 1);
+      const o = JSON.parse(t);
+      chatKB = (o.answers || []).filter((e) => e && e.a && e.q && e.q.length);
+      if (!chatKB.length) throw new Error("No usable answers came back. Try adding more detail to the notes.");
+      renderChat(dom.chOut, chatKB);
+    } catch (e) { setError(dom.chOut, e); } finally { dom.chGo.disabled = false; }
   }
 
   /* ---------- monthly report ---------- */
@@ -637,6 +724,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.soGo.addEventListener("click", doSocial);
     dom.ocGo.addEventListener("click", doOutreach);
     dom.rpGo.addEventListener("click", doReport);
+    dom.chGo.addEventListener("click", doChat);
     dom.rpLoad.addEventListener("click", loadFromAutopilot);
     dom.leadAdd.addEventListener("click", addLead);
     dom.leadName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLead(); } });
