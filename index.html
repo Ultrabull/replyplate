@@ -84,6 +84,28 @@
   .sumtot b{color:var(--accent)}
   .sumnote{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px}
   @media (max-width:520px){.sumrow,.sumtot{flex-direction:column;gap:2px}.sumrow b,.sumtot b{align-self:flex-start}}
+  .ctl{margin-bottom:18px}
+  .ctl label{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--muted);margin-bottom:9px}
+  .ctl label b{color:var(--accent);font-weight:800;font-size:16px;white-space:nowrap}
+  .ctl input[type=range]{width:100%;height:34px;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer;display:block}
+  .ctl input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:var(--line)}
+  .ctl input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line)}
+  .ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--bg);margin-top:-11px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .ctl input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .ctl input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:999px}
+  .segs{display:grid;grid-template-columns:1fr;gap:8px}
+  @media (min-width:560px){.segs{grid-template-columns:repeat(3,1fr)}}
+  .seg{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;
+    font:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:48px}
+  .seg:hover{border-color:var(--accent2)}
+  .seg[aria-checked="true"]{border-color:var(--accent);background:rgba(208,163,78,.16);box-shadow:inset 0 0 0 1px var(--accent)}
+  .seg[aria-checked="true"] b::before{content:"\2713 ";color:var(--accent);font-weight:800}
+  .seg b{display:block;font-size:14.5px}
+  .seg span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .seghint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
+  .sumtot b.short{color:#e0705a}
   .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
   table.cmp{width:100%;min-width:760px;border-collapse:collapse}
   .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -225,7 +247,7 @@
 
     <section class="addons">
       <h2 class="section-title">Two things worth adding</h2>
-      <p class="section-sub">Not part of the <span data-price>$199</span>. Both are one-off, and the second one can pay for the whole thing.</p>
+      <p class="section-sub">Not part of the <span data-price>$199</span>. Both are one-off. Whether the second one pays for itself depends on where your orders come from now, so there is a calculator below rather than a promise.</p>
       <div class="grid two">
         <div class="card">
           <h3><span class="emoji">💬</span> Stop answering the same eight questions</h3>
@@ -242,13 +264,30 @@
       </div>
       <p class="cmp-note mid">Both live in one button on your site, reading <b>Order food or ask us</b>. A diner taps it and can do either, so the ones who came to ask a question end up seeing the menu.</p>
 
-      <div class="sums">
-        <h4>The sum, with your numbers</h4>
-        <div class="sumrow"><span>20 collection orders in a month, average <b>$40</b></span><b>$800</b></div>
-        <div class="sumrow"><span>Through an app taking <b>25%</b></span><b class="bad">you lose $200</b></div>
-        <div class="sumrow"><span>Taken direct instead</span><b class="good">you keep $800</b></div>
-        <div class="sumtot"><span>So moving those orders across covers your <span data-price>$199</span></span><b>with a dollar spare</b></div>
-        <p class="sumnote">Use your own figures, because you know them better than we do. Apps take somewhere between 15% and 30% depending on your deal, and every restaurant's order count is different. This only counts orders you move across, not new ones we are promising to bring you. And plenty of restaurants keep the apps for reach and use this for the regulars who would rather deal with you.</p>
+      <div class="sums" id="calc">
+        <h4>Work it out with your numbers</h4>
+
+        <div class="ctl">
+          <label for="cOrders">Orders a month you could move across <b id="vOrders">20</b></label>
+          <input type="range" id="cOrders" min="0" max="200" step="5" value="20" />
+        </div>
+        <div class="ctl">
+          <label for="cAvg">Average order <b id="vAvg">$40</b></label>
+          <input type="range" id="cAvg" min="10" max="120" step="5" value="40" />
+        </div>
+
+        <div class="ctl">
+          <label id="howLbl">Where those orders go today</label>
+          <div class="segs" role="radiogroup" aria-labelledby="howLbl" id="cHow"></div>
+          <p class="seghint" id="rateNote"></p>
+        </div>
+
+        <div class="sumrow"><span id="rowTotal">Those orders are worth</span><b id="outTotal">$800</b></div>
+        <div class="sumrow"><span id="rowCut">The app takes</span><b class="bad" id="outCut">$56</b></div>
+        <div class="sumrow"><span>Taken direct instead, you keep</span><b class="good" id="outKeep">$800</b></div>
+        <div class="sumtot"><span id="outVerdictLbl">Against your <span data-price>$199</span> a month</span><b id="outVerdict">covers it</b></div>
+
+        <p class="sumnote">Every figure here is an estimate for comparison, not a quote. It only counts orders you move across, not new ones we are promising to bring you, because we are not promising that. Plenty of restaurants keep the apps for the reach and use this for the regulars who would rather deal with you directly. Commission rates are the published US merchant rates as of August 2026, and yours depend on the deal you signed.</p>
       </div>
     </section>
 
@@ -542,6 +581,89 @@
         hint.textContent = tbl.classList.contains("show-all") ? "Show fewer options" : "Tap to see all five options →";
       });
     })();
+
+  /* Savings calculator.
+
+     The rates below are the published US merchant rates, checked August 2026.
+     They matter because the obvious mistake here is to apply a DELIVERY rate to
+     a COLLECTION order. DoorDash delivery is 15 to 30 percent by plan, but its
+     pickup rate is 6 percent flat. Uber Eats delivery reaches 30 percent, and
+     pickup is 7 percent with validated in-store pricing, otherwise 10. Charging
+     a collection order at 25 percent overstates the saving by roughly four
+     times, which is exactly the sort of number a restaurant owner checks.
+
+     So the owner picks what the order actually replaces and the sums follow.
+     When the answer is that it does not cover the bill, it says so. */
+  (function () {
+    var HOWS = [
+      { id: "delivery", label: "A delivery app", sub: "Ordered for delivery", rate: 0.25,
+        note: "Delivery is where the apps take the most. Published US rates run from about 15% up to 30% depending on the plan you are on, so we have used 25% in the middle. Check your own statement." },
+      { id: "pickup", label: "App collection", sub: "Ordered on an app, collected", rate: 0.07,
+        note: "Collection through an app costs far less than delivery. DoorDash charges 6% on pickup and Uber Eats 7%, or 10% if your app prices do not match your in-store prices. We have used 7%. It is a much smaller saving, and we would rather show you that than a flattering number." },
+      { id: "direct", label: "Phone or walk-in", sub: "No app involved", rate: 0,
+        note: "No commission to save here, so the sum says so. What this changes is different: the phone stops ringing during service, the order arrives written down instead of shouted across a kitchen, and people tend to add a side when they can see the menu." }
+    ];
+    var state = { orders: 20, avg: 40, how: "delivery" };
+    var PRICE = 199;
+    var $c = function (id) { return document.getElementById(id); };
+    if (!$c("calc")) return;
+    function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+
+    function draw() {
+      var how = HOWS.filter(function (h) { return h.id === state.how; })[0];
+      var total = state.orders * state.avg, cut = total * how.rate;
+
+      $c("vOrders").textContent = state.orders;
+      $c("vAvg").textContent = "$" + state.avg;
+      $c("rateNote").textContent = how.note;
+      $c("rowTotal").textContent = state.orders + (state.orders === 1 ? " order" : " orders") +
+        " at " + money(state.avg) + " is worth";
+      $c("outTotal").textContent = money(total);
+
+      if (how.rate === 0) {
+        $c("rowCut").textContent = "No app is taking a cut of these";
+        $c("outCut").textContent = money(0);
+      } else {
+        $c("rowCut").textContent = "The app takes " + Math.round(how.rate * 100) + "% of that";
+        $c("outCut").textContent = "you lose " + money(cut);
+      }
+      $c("outKeep").textContent = "you keep " + money(total);
+
+      var v = $c("outVerdict"), lbl = $c("outVerdictLbl");
+      if (how.rate === 0) {
+        lbl.textContent = "Money saved on commission";
+        v.className = "short";
+        v.textContent = "none, and we will not pretend otherwise";
+      } else if (cut >= PRICE) {
+        lbl.textContent = "Against your $" + PRICE + " a month";
+        v.className = "";
+        v.textContent = "covers it, with " + money(cut - PRICE) + " spare";
+      } else {
+        lbl.textContent = "Against your $" + PRICE + " a month";
+        v.className = "short";
+        v.textContent = money(PRICE - cut) + " short";
+      }
+    }
+
+    $c("cOrders").addEventListener("input", function (e) { state.orders = +e.target.value; draw(); });
+    $c("cAvg").addEventListener("input", function (e) { state.avg = +e.target.value; draw(); });
+
+    var wrap = $c("cHow");
+    HOWS.forEach(function (h, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "seg"; b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", i === 0 ? "true" : "false");
+      b.innerHTML = "<b>" + h.label + "</b><span>" + h.sub + "</span>";
+      b.addEventListener("click", function () {
+        state.how = h.id;
+        Array.prototype.forEach.call(wrap.children, function (o) { o.setAttribute("aria-checked", "false"); });
+        b.setAttribute("aria-checked", "true");
+        draw();
+      });
+      wrap.appendChild(b);
+    });
+    draw();
+  })();
   </script>
 
   <script>
@@ -598,8 +720,9 @@
         q: ["do you do facebook reviews","facebook reviews","what about facebook reviews","yelp","tripadvisor","opentable","other review sites","which review sites"],
         a: "Facebook retired star ratings, so no tool can reply to those any more. Reviews here means Google reviews, which is where they actually matter.\n\nWe do not cover Yelp, TripAdvisor or OpenTable. We do handle your Facebook and Instagram posts." },
       { chip: "This chat thing",
-        q: ["what is this chat","can i get this on my website","how does this chat work","chat helper","ordering","take orders","order food on my site"],
-        a: "This is our chat helper, and yes, you can have it on your own site. It answers the questions you get asked all day, and it can take collection orders that customers send you on WhatsApp, so you keep the whole ticket.\n\nIt is a paid add-on, not part of the $199. There is a full demo on the site." },
+        q: ["what is this chat","can i get this on my website","how does this chat work","chat helper","ordering","take orders","order food on my site",
+            "how much do delivery apps take","what do the apps charge","commission","doordash","uber eats","do the apps take a cut","how much will i save"],
+        a: "This is our chat helper, and yes, you can have it on your own site. It answers the questions you get asked all day, and it can take collection orders that customers send you on WhatsApp, so you keep the whole ticket.\n\nHow much that saves you depends on where the order would have gone instead. A delivery app takes roughly 15% to 30%. The same app taking a collection order takes far less, around 6% to 10%, so moving collection orders across saves less than people expect. There is a calculator on this page that does the sum with your own numbers, and it will tell you when the answer is no.\n\nIt is a paid add-on, not part of the $199. There is a full demo on the site." },
       { chip: "See it first",
         q: ["can i see it first","is there a demo","can i see a demo","show me an example","do you have examples",
             "can i see it working","proof","sample","what does a reply look like"],
