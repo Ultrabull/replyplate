@@ -39,6 +39,7 @@
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
     ocGo: $("ocGo"), ocOut: $("ocOut"),
     chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
+    chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chMethod: $("chMethod"), chCurrency: $("chCurrency"),
     rpPeriod: $("rpPeriod"), rpLoad: $("rpLoad"), rpText: $("rpText"), rpGo: $("rpGo"), rpOut: $("rpOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
     apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
@@ -322,7 +323,30 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
   // invent an answer to an allergy question on their site.
   let chatKB = null;
 
-  function chatSnippet(kb, client, phone) {
+  // Menu is parsed in code, never by the model. A hallucinated price is a
+  // customer arriving expecting to pay less than the till says.
+  function parseMenu(raw) {
+    const out = [];
+    let sec = null;
+    String(raw || "").split(/\n/).forEach((line) => {
+      const t = line.trim();
+      if (!t) return;
+      if (t.indexOf("|") === -1) { sec = { section: t, items: [] }; out.push(sec); return; }
+      const bits = t.split("|").map((s) => s.trim());
+      const price = parseFloat(String(bits[1] || "").replace(/[^0-9.]/g, ""));
+      if (!bits[0] || isNaN(price)) return;
+      if (!sec) { sec = { section: "", items: [] }; out.push(sec); }
+      const item = { name: bits[0], price: price };
+      if (bits[2]) item.note = bits[2];
+      sec.items.push(item);
+    });
+    return out.filter((s) => s.items.length);
+  }
+
+  function chatSnippet(kb, client) {
+    const phone = dom.chPhone.value.trim();
+    const menu = parseMenu(dom.chMenu.value);
+    const orderPhone = dom.chOrderPhone.value.trim();
     const cfg = {
       name: client.name,
       subtitle: "Answers, day or night",
@@ -331,6 +355,20 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       buttonText: "Ask us a question",
       answers: kb,
     };
+    if (menu.length && orderPhone) {
+      cfg.menu = menu;
+      cfg.order = {
+        enabled: true,
+        method: dom.chMethod.value,
+        phone: orderPhone,
+        currency: dom.chCurrency.value.trim() || "$",
+        chip: "Order for collection",
+        title: "Order for collection",
+        subtitle: "Tap what you'd like",
+        mode: "For collection",
+        note: `You'll send this from your own phone. Nothing is paid here, and ${client.name} will confirm before you come.`,
+      };
+    }
     return `<!-- ${client.name} chat helper. Paste both lines just before </body> -->\n` +
       `<script>window.RP_CHAT = ${JSON.stringify(cfg, null, 2)};<\/script>\n` +
       `<script src="https://reply-plate.com/chat-widget.js" defer><\/script>`;
@@ -361,12 +399,15 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     });
 
     const out = el("div", "card form");
-    out.innerHTML = "<h3>2. The code they paste in</h3><p class='hint'>Two lines, just before &lt;/body&gt; on their website.</p>";
+    const menuN = parseMenu(dom.chMenu.value).reduce((a, sct) => a + sct.items.length, 0);
+    const ordOn = menuN && dom.chOrderPhone.value.trim();
+    out.innerHTML = "<h3>3. The code they paste in</h3><p class='hint'>Two lines, just before &lt;/body&gt; on their website.<br>" +
+      (ordOn ? "<b>Ordering is on</b> with " + menuN + " items." : menuN ? "<b>Ordering is off</b> \u2014 add the order phone number to switch it on." : "Ordering is off. Add a menu to switch it on.") + "</p>";
     const code = el("textarea", "ta mono"); code.rows = 7; code.readOnly = true;
-    code.value = chatSnippet(chatKB, c, dom.chPhone.value.trim());
+    code.value = chatSnippet(chatKB, c);
     const row = el("div", "row");
     const cp = el("button", "btn sm"); cp.type = "button"; cp.textContent = "Copy the code";
-    cp.addEventListener("click", () => { code.value = chatSnippet(chatKB, c, dom.chPhone.value.trim()); copy(code.value, cp); });
+    cp.addEventListener("click", () => { code.value = chatSnippet(chatKB, c); copy(code.value, cp); });
     row.appendChild(cp);
     out.appendChild(code); out.appendChild(row);
     container.appendChild(out);

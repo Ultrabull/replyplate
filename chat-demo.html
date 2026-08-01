@@ -46,6 +46,7 @@
         <li>Can I bring my dog?</li>
         <li>Do you take bookings for 10 people?</li>
         <li>Then try something odd, like "do you sell bicycles"</li>
+        <li><b>Then tap "Order for collection"</b> and add a few things</li>
       </ul>
     </div>
 
@@ -95,6 +96,31 @@ window.RP_CHAT = {
     { chip: "Children",
       q: ["do you have a kids menu","are children welcome","high chairs","is it family friendly","children's food"],
       a: "Children are welcome. We have a kids' menu, high chairs, and a baby changing table in the accessible toilet." }
+  ],
+  order: {
+    enabled: true,
+    method: "whatsapp",          // or "sms"
+    phone: "+441234567890",
+    currency: "$",
+    chip: "Order for collection",
+    title: "Order for collection",
+    subtitle: "Tap what you'd like",
+    mode: "For collection",
+    note: "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
+  },
+  menu: [
+    { section: "Pizzas", items: [
+      { name: "Margherita", price: 12.00 },
+      { name: "Pepperoni", price: 13.50 },
+      { name: "Vegan Special", price: 14.00, note: "cashew base, no dairy" }
+    ]},
+    { section: "Sides", items: [
+      { name: "Garlic Bread", price: 5.00 },
+      { name: "Olives", price: 4.00 }
+    ]},
+    { section: "Drinks", items: [
+      { name: "San Pellegrino", price: 3.00 }
+    ]}
   ]
 };
 </script>
