@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Make your review code | ReplyPlate</title>
+<meta name="description" content="Turn your Google review link into a QR code, then print it as table cards, stickers or a counter sign. Nothing is uploaded anywhere." />
+<meta name="robots" content="noindex" />
+<style>
+  :root{
+    --ink:#1c1613; --muted:#6d6155; --bg:#faf7f1; --card:#fff; --line:#e6ddd1;
+    --accent:#b03d29; --accent2:#d4783a; --ok:#1a7346; --soft:#f7ece4; --warn:#8a5a00;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  header{padding:16px 0;background:#fff;border-bottom:1px solid var(--line)}
+  .logo{font-weight:800;font-size:19px;display:flex;align-items:center;gap:8px}
+  .logo .dot{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+  h1{font-size:clamp(26px,5vw,34px);line-height:1.15;letter-spacing:-.3px;margin:34px 0 10px}
+  .lede{color:var(--muted);font-size:17px;margin-bottom:8px}
+  .reassure{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 30px}
+  .pill{font-size:13px;font-weight:600;background:#e4f3ea;color:var(--ok);padding:5px 12px;border-radius:999px}
+
+  h2.sec{font-size:21px;margin:34px 0 6px}
+  .secsub{color:var(--muted);font-size:15px;margin-bottom:16px}
+  label.fld{display:block;font-weight:700;font-size:14.5px;margin-bottom:6px}
+  .in{width:100%;border:1px solid var(--line);border-radius:11px;padding:13px 14px;font:15.5px var(--font);
+    background:#fff;color:var(--ink);outline:none;min-height:48px}
+  .in:focus{border-color:var(--accent)}
+  .in.bad{border-color:var(--accent);background:#fff6f4}
+  .hint{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.55}
+  .msg{font-size:13.5px;margin-top:8px;padding:10px 12px;border-radius:10px;line-height:1.55;display:none}
+  .msg.show{display:block}
+  .msg.warn{background:#fff6d9;border:1px solid #e6d09a;color:var(--warn)}
+  .msg.err{background:#fff0ec;border:1px solid #e8c3b8;color:var(--accent)}
+  .msg.good{background:#e4f3ea;border:1px solid #b9ddc7;color:var(--ok)}
+
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;border:none;padding:13px 22px;border-radius:999px;
+    font:700 15.5px var(--font);text-decoration:none;cursor:pointer;min-height:48px}
+  .btn:hover{background:#94321f}
+  .btn.ghost{background:#fff;color:var(--accent);border:2px solid var(--accent)}
+  .btn.ghost:hover{background:var(--soft)}
+  .btn:disabled{opacity:.45;cursor:default}
+
+  .preview{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:18px;
+    display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+  .preview .qrbox{width:180px;flex:0 0 auto}
+  .preview .qrbox svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px}
+  .preview .meta{flex:1;min-width:200px;font-size:14.5px;color:var(--muted)}
+  .preview .meta b{color:var(--ink)}
+  .preview .meta code{font-family:var(--mono);font-size:12.5px;word-break:break-all;color:var(--ink)}
+
+  .picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+  .pick{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;text-align:left;
+    cursor:pointer;font:inherit;color:var(--ink);min-height:48px}
+  .pick:hover{border-color:var(--accent)}
+  .pick[aria-selected="true"]{border-color:var(--accent);background:var(--soft);box-shadow:inset 0 0 0 1px var(--accent)}
+  .pick b{display:block;font-size:15px}
+  .pick span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+  .lines .l{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;min-height:48px}
+  .lines .l[aria-selected="true"]{border-color:var(--accent);background:var(--soft)}
+  .lines .l input{margin-top:5px;flex:0 0 auto;accent-color:var(--accent)}
+  .lines .l div{flex:1}
+  .lines .l b{font-weight:600;font-size:15px}
+  .lines .l em{display:block;font-style:normal;color:var(--muted);font-size:12.5px;margin-top:2px}
+
+  .note{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:14.5px;
+    color:var(--muted);margin-top:20px}
+  .note b{color:var(--ink)}
+  .note.warn{background:#fff6d9;border-color:#e6d09a}
+  .note.warn b{color:var(--warn)}
+
+  .sheetwrap{background:#e9e3d8;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:18px;overflow-x:auto}
+  .sheet{background:#fff;width:8.5in;min-height:11in;margin:0 auto;padding:0.5in;display:flex;flex-wrap:wrap;
+    align-content:flex-start;gap:0;transform-origin:top left}
+  .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    border:1px dashed #cfc6b8;padding:10px}
+  .cell .hd{font-weight:800;line-height:1.2;color:#14100d}
+  .cell .sub{color:#5b5348;line-height:1.35}
+  .cell .nm{color:#8a7f70;line-height:1.3}
+  .cell svg{display:block}
+  /* six table cards */
+  .sheet.cards .cell{width:50%;height:3.33in}
+  .sheet.cards .cell .hd{font-size:15pt;margin-bottom:5px}
+  .sheet.cards .cell .sub{font-size:9.5pt;margin-top:7px}
+  .sheet.cards .cell .nm{font-size:8pt;margin-top:3px}
+  .sheet.cards .cell svg{width:1.5in;height:1.5in}
+  /* twelve small stickers */
+  .sheet.stickers .cell{width:25%;height:2.5in}
+  .sheet.stickers .cell .hd{font-size:9pt;margin-bottom:4px}
+  .sheet.stickers .cell .sub{display:none}
+  .sheet.stickers .cell .nm{font-size:6.5pt;margin-top:3px}
+  .sheet.stickers .cell svg{width:1.05in;height:1.05in}
+  /* one counter sign */
+  .sheet.sign .cell{width:100%;height:10in;border:none}
+  .sheet.sign .cell .hd{font-size:34pt;margin-bottom:16px;max-width:6.5in}
+  .sheet.sign .cell .sub{font-size:15pt;margin-top:18px}
+  .sheet.sign .cell .nm{font-size:12pt;margin-top:8px}
+  .sheet.sign .cell svg{width:4.2in;height:4.2in}
+  /* bare code, for handing to a print shop or uploading to a till */
+  .sheet.bare .cell{width:100%;height:10in;border:none}
+  .sheet.bare .cell .hd,.sheet.bare .cell .sub,.sheet.bare .cell .nm{display:none}
+  .sheet.bare .cell svg{width:5in;height:5in}
+
+  footer{border-top:1px solid var(--line);padding:22px 0 44px;text-align:center;color:var(--muted);font-size:13.5px;margin-top:40px}
+  .empty{color:var(--muted);font-size:15px;padding:26px;text-align:center;background:var(--card);
+    border:1px dashed var(--line);border-radius:16px;margin-top:18px}
+
+  @media print{
+    @page{size:letter;margin:0}
+    body{background:#fff}
+    header,footer,.noprint{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sheetwrap{background:none;border:none;border-radius:0;padding:0;margin:0;overflow:visible}
+    .sheet{width:8.5in;min-height:11in;box-shadow:none;transform:none !important}
+    .cell{border-color:#ddd}
+    .sheet.sign .cell,.sheet.bare .cell{border:none}
+  }
+</style>
+</head>
+<body>
+  <header class="noprint"><div class="wrap"><div class="logo"><span class="dot"></span><span>ReplyPlate</span></div></div></header>
+
+  <main class="wrap">
+    <div class="noprint">
+      <h1>Make your review code</h1>
+      <p class="lede">Paste your Google review link, pick what you want to print, and print it. The code takes people straight to your review box, so nobody has to search for you.</p>
+      <div class="reassure">
+        <span class="pill">✓ Made on this page, not sent anywhere</span>
+        <span class="pill">✓ Works offline</span>
+        <span class="pill">✓ Yours to keep and reprint</span>
+      </div>
+
+      <h2 class="sec">1. Your review link</h2>
+      <p class="secsub">In your Google Business Profile, look for <b>Ask for reviews</b> or <b>Get more reviews</b>. It gives you a short link. Paste it here.</p>
+      <label class="fld" for="link">Google review link</label>
+      <input class="in" id="link" type="url" inputmode="url" autocomplete="off" spellcheck="false"
+             placeholder="https://g.page/r/…/review" />
+      <p class="hint">Only have your Place ID? Paste that instead and we will build the link for you.</p>
+      <div class="msg" id="linkMsg"></div>
+
+      <label class="fld" for="name" style="margin-top:18px">Restaurant name <span style="font-weight:400;color:var(--muted)">(printed under the code)</span></label>
+      <input class="in" id="name" autocomplete="off" placeholder="The Olive Table" />
+
+      <div id="preview"></div>
+
+      <h2 class="sec">2. The words on it</h2>
+      <p class="secsub">Short wins. People read a card for about two seconds.</p>
+      <div class="lines" id="lines"></div>
+      <div class="note warn"><b>None of these can be conditional.</b> Not <i>if you enjoyed it</i>, not <i>if we earned 5 stars</i>, and never a discount for reviewing. Google prohibits asking only your happy customers, and the penalty lands on your listing. Whatever you write has to read the same to somebody who had a bad night.</div>
+
+      <h2 class="sec">3. What to print</h2>
+      <p class="secsub">All of these fit a normal US Letter sheet on an ordinary printer.</p>
+      <div class="picker" role="tablist" id="layouts"></div>
+
+      <div class="row">
+        <button class="btn" id="printBtn" type="button" disabled>Print this sheet</button>
+        <button class="btn ghost" id="svgBtn" type="button" disabled>Download the code (SVG)</button>
+        <button class="btn ghost" id="pngBtn" type="button" disabled>Download the code (PNG)</button>
+      </div>
+      <p class="hint">SVG stays sharp at any size, so that is the one to send a print shop. PNG is the one to upload if your till accepts an image.</p>
+
+      <div class="note"><b>How big should it be?</b> Print the code at least an inch across, and bigger wherever people stand further away. Leave the white border alone: scanners need that space to find the code. Never stretch it out of square.</div>
+    </div>
+
+    <div class="sheetwrap" id="sheetwrap" hidden><div class="sheet cards" id="sheet"></div></div>
+    <div class="empty noprint" id="empty">Paste your review link above and your printable sheet appears here.</div>
+  </main>
+
+  <footer class="noprint"><div class="wrap">
+    <a href="./index.html">Back to ReplyPlate</a> · <a href="./till.html">Putting it on your receipts</a> · <a href="./connect.html">Connect your accounts</a>
+  </div></footer>
+
+<script src="./qr.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* Q rather than M: a receipt lives in a pocket and a table card gets wiped
+     down. Q recovers from more damage and, for a link this short, costs one
+     version of extra size. */
+  var LEVEL = "Q";
+
+  var LINES = [
+    { hd: "Enjoyed it? Tell us in 20 seconds.", sub: "Scan with your phone camera",
+      why: "Our default. Names the effort, which is the real objection." },
+    { hd: "Was it any good? We read every review.", sub: "Scan with your phone camera",
+      why: "For places whose voice is blunter." },
+    { hd: "Your review helps a small family place a lot.", sub: "Scan with your phone camera",
+      why: "Only if it is true. Not for a group." },
+    { hd: "Tell us how we did.", sub: "Scan with your phone camera",
+      why: "The plainest one. Hard to get wrong." }
+  ];
+
+  var LAYOUTS = [
+    { id: "cards",    name: "Table cards",   sub: "6 per sheet, for tables and the counter", n: 6 },
+    { id: "stickers", name: "Small stickers", sub: "12 per sheet, for takeout bags",         n: 12 },
+    { id: "sign",     name: "Counter sign",   sub: "One big one, for the window or register", n: 1 },
+    { id: "bare",     name: "Just the code",  sub: "Nothing else, to send a printer",         n: 1 }
+  ];
+
+  var state = { url: "", name: "", line: 0, layout: "cards" };
+
+  /* ---- link handling ---- */
+  var PLACE_ID = /^[A-Za-z0-9_-]{20,}$/;
+  function normalise(raw) {
+    var v = String(raw || "").trim();
+    if (!v) return { url: "", level: "" };
+    if (PLACE_ID.test(v) && v.indexOf(".") === -1) {
+      return { url: "https://search.google.com/local/writereview?placeid=" + v,
+               level: "good", note: "Built the review link from your Place ID." };
+    }
+    if (!/^https?:\/\//i.test(v)) v = "https://" + v;
+    var host;
+    try { host = new URL(v).hostname.toLowerCase(); } catch (e) { return { url: "", level: "err", note: "That does not look like a link. Paste the whole thing, starting with https." }; }
+    var known = /(^|\.)(g\.page|google\.com|goo\.gl|maps\.app\.goo\.gl)$/.test(host) || host === "g.page";
+    if (!known) {
+      return { url: v, level: "warn",
+        note: "That is not a Google address, so check it is really your review link. The code will still be made from exactly what you pasted." };
+    }
+    return { url: v, level: "good", note: "Looks like a Google review link." };
+  }
+
+  function render() {
+    var msg = $("linkMsg"), input = $("link");
+    var r = normalise(input.value);
+    state.url = r.url;
+    msg.className = "msg" + (r.note ? " show " + (r.level === "good" ? "good" : r.level === "warn" ? "warn" : "err") : "");
+    msg.textContent = r.note || "";
+    input.className = "in" + (r.level === "err" ? " bad" : "");
+
+    var ready = !!state.url;
+    ["printBtn", "svgBtn", "pngBtn"].forEach(function (b) { $(b).disabled = !ready; });
+    $("empty").hidden = ready;
+    $("sheetwrap").hidden = !ready;
+    $("preview").innerHTML = "";
+    if (!ready) return;
+
+    var svg, info;
+    try {
+      info = QR.encode(state.url, LEVEL);
+      svg = QR.svg(state.url, { level: LEVEL });
+    } catch (e) {
+      msg.className = "msg show err";
+      msg.textContent = e.message;
+      $("sheetwrap").hidden = true; $("empty").hidden = false;
+      ["printBtn", "svgBtn", "pngBtn"].forEach(function (b) { $(b).disabled = true; });
+      return;
+    }
+
+    var p = document.createElement("div");
+    p.className = "preview";
+    var box = document.createElement("div"); box.className = "qrbox"; box.innerHTML = svg;
+    var meta = document.createElement("div"); meta.className = "meta";
+    meta.innerHTML = "<b>Scan this with your own phone before you print anything.</b><br>" +
+      "It should open your review box. If it opens something else, the link is wrong, not the code." +
+      "<br><br>Goes to:<br><code>" + escapeHtml(state.url) + "</code>";
+    p.appendChild(box); p.appendChild(meta);
+    $("preview").appendChild(p);
+
+    buildSheet(svg);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function buildSheet(svg) {
+    var lay = LAYOUTS.filter(function (l) { return l.id === state.layout; })[0];
+    var line = LINES[state.line];
+    var sheet = $("sheet");
+    sheet.className = "sheet " + lay.id;
+    sheet.innerHTML = "";
+    for (var i = 0; i < lay.n; i++) {
+      var cell = document.createElement("div"); cell.className = "cell";
+      var hd = document.createElement("div"); hd.className = "hd"; hd.textContent = line.hd;
+      var code = document.createElement("div"); code.innerHTML = svg;
+      var sub = document.createElement("div"); sub.className = "sub"; sub.textContent = line.sub;
+      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = state.name || "";
+      cell.appendChild(hd); cell.appendChild(code); cell.appendChild(sub);
+      if (state.name) cell.appendChild(nm);
+      sheet.appendChild(cell);
+    }
+    fitSheet();
+  }
+
+  /* The sheet is drawn at real inches so printing is exact. On screen it has to
+     be scaled down to fit, which is presentation only and is undone for print. */
+  function fitSheet() {
+    var wrap = $("sheetwrap"), sheet = $("sheet");
+    if (wrap.hidden) return;
+    sheet.style.transform = "none";
+    wrap.style.height = "";
+    var avail = wrap.clientWidth - 36;
+    var real = sheet.offsetWidth;
+    if (!real) return;
+    var k = Math.min(1, avail / real);
+    sheet.style.transform = "scale(" + k + ")";
+    wrap.style.height = (sheet.offsetHeight * k + 36) + "px";
+  }
+
+  /* ---- downloads. Blobs, so nothing leaves the browser. ---- */
+  function download(blob, filename) {
+    var a = document.createElement("a"), u = URL.createObjectURL(blob);
+    a.href = u; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(u); }, 1000);
+  }
+  function slug() {
+    var s = (state.name || "review-code").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return (s || "review-code") + "-qr";
+  }
+
+  $("svgBtn").addEventListener("click", function () {
+    download(new Blob([QR.svg(state.url, { level: LEVEL })], { type: "image/svg+xml" }), slug() + ".svg");
+  });
+
+  $("pngBtn").addEventListener("click", function () {
+    var q = QR.encode(state.url, LEVEL), quiet = 4, total = q.size + quiet * 2;
+    /* Whole pixels per module, or the code blurs and stops scanning. */
+    var scale = Math.max(1, Math.floor(1600 / total));
+    var c = document.createElement("canvas");
+    c.width = c.height = total * scale;
+    var g = c.getContext("2d");
+    g.fillStyle = "#ffffff"; g.fillRect(0, 0, c.width, c.height);
+    g.fillStyle = "#000000";
+    for (var r = 0; r < q.size; r++) {
+      for (var col = 0; col < q.size; col++) {
+        if (q.modules[r][col]) g.fillRect((col + quiet) * scale, (r + quiet) * scale, scale, scale);
+      }
+    }
+    c.toBlob(function (b) { download(b, slug() + ".png"); }, "image/png");
+  });
+
+  $("printBtn").addEventListener("click", function () {
+    var sheet = $("sheet"), prev = sheet.style.transform, h = $("sheetwrap").style.height;
+    sheet.style.transform = "none"; $("sheetwrap").style.height = "";
+    window.print();
+    sheet.style.transform = prev; $("sheetwrap").style.height = h;
+  });
+
+  /* ---- controls ---- */
+  LINES.forEach(function (l, i) {
+    var el = document.createElement("label");
+    el.className = "l"; el.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    el.innerHTML = '<input type="radio" name="line" ' + (i === 0 ? "checked" : "") + ' />' +
+      "<div><b>" + escapeHtml(l.hd) + "</b><em>" + escapeHtml(l.why) + "</em></div>";
+    el.querySelector("input").addEventListener("change", function () {
+      state.line = i;
+      Array.prototype.forEach.call($("lines").children, function (o, j) {
+        o.setAttribute("aria-selected", j === i ? "true" : "false");
+      });
+      if (state.url) buildSheet(QR.svg(state.url, { level: LEVEL }));
+    });
+    $("lines").appendChild(el);
+  });
+
+  LAYOUTS.forEach(function (l, i) {
+    var b = document.createElement("button");
+    b.className = "pick"; b.type = "button"; b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    b.innerHTML = "<b>" + l.name + "</b><span>" + l.sub + "</span>";
+    b.addEventListener("click", function () {
+      state.layout = l.id;
+      Array.prototype.forEach.call($("layouts").children, function (o) { o.setAttribute("aria-selected", "false"); });
+      b.setAttribute("aria-selected", "true");
+      if (state.url) buildSheet(QR.svg(state.url, { level: LEVEL }));
+    });
+    $("layouts").appendChild(b);
+  });
+
+  $("link").addEventListener("input", render);
+  $("name").addEventListener("input", function () {
+    state.name = $("name").value.trim();
+    if (state.url) buildSheet(QR.svg(state.url, { level: LEVEL }));
+  });
+  window.addEventListener("resize", fitSheet);
+  render();
+})();
+</script>
+</body>
+</html>
