@@ -347,15 +347,19 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     const phone = dom.chPhone.value.trim();
     const menu = parseMenu(dom.chMenu.value);
     const orderPhone = dom.chOrderPhone.value.trim();
+    const ordering = menu.length && orderPhone;
     const cfg = {
       name: client.name,
-      subtitle: "Answers, day or night",
+      // Say ordering out loud on the button, or diners never find it.
+      subtitle: ordering ? "Order collection, or ask us anything" : "Answers, day or night",
       phone: phone || "",
-      greeting: `Hello! Ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`,
-      buttonText: "Ask us a question",
+      greeting: ordering
+        ? `Hello! Tap "${"Order for collection"}" above to order, or ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`
+        : `Hello! Ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`,
+      buttonText: ordering ? "Order food or ask us" : "Ask us a question",
       answers: kb,
     };
-    if (menu.length && orderPhone) {
+    if (ordering) {
       cfg.menu = menu;
       cfg.order = {
         enabled: true,
@@ -365,6 +369,7 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
         chip: "Order for collection",
         title: "Order for collection",
         subtitle: "Tap what you'd like",
+        barNote: "Tap the menu, pay when you collect",
         mode: "For collection",
         note: `You'll send this from your own phone. Nothing is paid here, and ${client.name} will confirm before you come.`,
       };

@@ -1,9 +1,9 @@
 {
   "name": "The Olive Table",
-  "subtitle": "Answers, day or night",
+  "subtitle": "Order collection, or ask us anything",
   "phone": "(555) 010-2288",
-  "greeting": "Hello! Ask me anything about The Olive Table. I'll only tell you things the team has actually confirmed.",
-  "buttonText": "Ask us a question",
+  "greeting": "Hello! Tap Order for collection above to order, or ask me anything about The Olive Table. I'll only tell you things the team has actually confirmed.",
+  "buttonText": "Order food or ask us",
   "answers": [
     {
       "chip": "Opening hours",
@@ -83,6 +83,7 @@
     "chip": "Order for collection",
     "title": "Order for collection",
     "subtitle": "Tap what you'd like",
+    "barNote": "Tap the menu, pay when you collect",
     "mode": "For collection",
     "note": "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
   },

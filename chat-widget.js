@@ -78,7 +78,7 @@
   var css = ''
     + '.rpc-btn{position:fixed;right:18px;bottom:18px;z-index:2147483000;background:' + accent + ';color:#fff;border:none;border-radius:999px;padding:13px 20px;font:600 15px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;box-shadow:0 6px 22px rgba(0,0,0,.22);cursor:pointer;display:flex;align-items:center;gap:8px}'
     + '.rpc-btn:hover{filter:brightness(.93)}'
-    + '.rpc-panel{position:fixed;right:18px;bottom:18px;z-index:2147483001;width:min(370px,calc(100vw - 24px));height:min(580px,calc(100vh - 36px));background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1c1613}'
+    + '.rpc-panel{position:fixed;right:18px;bottom:18px;z-index:2147483001;width:min(370px,calc(100vw - 24px));height:min(580px,calc(100vh - 36px));height:min(580px,calc(100dvh - 36px));background:#fff;border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:none;flex-direction:column;overflow:hidden;overscroll-behavior:contain;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#1c1613}'
     + '.rpc-panel.open{display:flex}'
     + '.rpc-head{background:' + accent + ';color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex:0 0 auto}'
     + '.rpc-head b{font-size:15.5px}.rpc-head small{display:block;opacity:.9;font-size:12.5px;font-weight:400}'
@@ -86,7 +86,7 @@
     + '.rpc-back{background:none;border:none;color:#fff;font:600 14px inherit;cursor:pointer;padding:0}'
     + '.rpc-view{flex:1;display:none;flex-direction:column;min-height:0}'
     + '.rpc-view.on{display:flex}'
-    + '.rpc-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f8f5ef}'
+    + '.rpc-log{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f8f5ef}'
     + '.rpc-msg{max-width:88%;padding:10px 13px;border-radius:14px;font-size:14.5px;white-space:pre-wrap}'
     + '.rpc-bot{background:#fff;border:1px solid #e6ddd1;align-self:flex-start;border-bottom-left-radius:5px}'
     + '.rpc-you{background:' + accent + ';color:#fff;align-self:flex-end;border-bottom-right-radius:5px}'
@@ -99,8 +99,18 @@
     + '.rpc-in:focus{border-color:' + accent + '}'
     + '.rpc-send{background:' + accent + ';color:#fff;border:none;border-radius:10px;padding:0 16px;font:700 15px inherit;cursor:pointer}'
     + '.rpc-foot{font-size:11px;color:#8a7b6e;text-align:center;padding:0 0 9px;background:#fff;flex:0 0 auto}'
+    /* Ordering has to be visible the whole time, not a chip that scrolls away. */
+    + '.rpc-orderbar{flex:0 0 auto;display:flex;align-items:center;gap:10px;width:100%;text-align:left;'
+    +   'background:#fff;border:none;border-bottom:1px solid #e6ddd1;padding:12px 14px;min-height:52px;cursor:pointer;font:inherit;color:#1c1613}'
+    + '.rpc-orderbar:hover{background:#faf5ee}'
+    + '.rpc-orderbar .ic{width:30px;height:30px;border-radius:9px;background:' + accent + ';color:#fff;flex:0 0 auto;'
+    +   'display:flex;align-items:center;justify-content:center;font-size:16px}'
+    + '.rpc-orderbar .tx{flex:1;min-width:0}'
+    + '.rpc-orderbar .tx b{display:block;font-size:14.5px;font-weight:700}'
+    + '.rpc-orderbar .tx span{display:block;font-size:12.5px;color:#8a7b6e}'
+    + '.rpc-orderbar .ar{color:' + accent + ';font-weight:700;flex:0 0 auto}'
     /* order view */
-    + '.rpc-menu{flex:1;overflow-y:auto;padding:12px 14px;background:#f8f5ef}'
+    + '.rpc-menu{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 14px;background:#f8f5ef}'
     + '.rpc-sec{font:800 11px inherit;text-transform:uppercase;letter-spacing:.5px;color:#8a7b6e;margin:14px 0 7px}'
     + '.rpc-sec:first-child{margin-top:2px}'
     + '.rpc-item{background:#fff;border:1px solid #e6ddd1;border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px}'
@@ -126,25 +136,43 @@
     + '.rpc-wa pre{background:#fff;border-radius:9px;padding:10px 11px;margin:0;font-family:inherit;font-size:13.5px;line-height:1.5;'
     +   'white-space:pre-wrap;word-break:break-word;color:#22201d;box-shadow:0 1px 1px rgba(0,0,0,.08)}'
     + '.rpc-embed{position:static;right:auto;bottom:auto;width:100%;height:min(620px,calc(100vh - 150px));display:flex;box-shadow:0 6px 24px rgba(0,0,0,.10);border:1px solid #e6ddd1}'
-    + '@media (max-width:420px){.rpc-panel{right:8px;left:8px;bottom:8px;width:auto;height:calc(100vh - 16px)}.rpc-btn{right:12px;bottom:12px}.rpc-embed{right:auto;left:auto;bottom:auto;height:min(620px,calc(100vh - 190px))}}';
+    /* On a phone, pin the panel by its edges. Never size it with 100vh: iOS reports
+       the URL-bar-hidden height, so a vh panel is taller than the screen and its
+       header hides underneath Safari's bar. Insets resolve against what you can see. */
+    + '@media (max-width:420px){'
+    +   '.rpc-panel{left:8px;right:8px;width:auto;height:auto;'
+    +     'top:8px;top:max(8px,env(safe-area-inset-top));'
+    +     'bottom:8px;bottom:max(8px,env(safe-area-inset-bottom))}'
+    +   '.rpc-btn{right:12px;bottom:12px;bottom:max(12px,env(safe-area-inset-bottom))}'
+    +   '.rpc-embed{position:static;top:auto;right:auto;left:auto;bottom:auto;height:min(620px,calc(100dvh - 190px))}'
+    + '}';
 
   var style = document.createElement("style"); style.textContent = css;
   document.head.appendChild(style);
 
+  /* The launcher has to say ordering is here, or nobody finds it. */
+  var launchText = C.buttonText || (ORDER ? "Order food or ask us" : "Ask us a question");
   var btn = document.createElement("button");
   btn.className = "rpc-btn"; btn.type = "button";
-  btn.setAttribute("aria-label", "Ask a question");
-  btn.innerHTML = '<span aria-hidden="true">💬</span><span>' + esc(C.buttonText || "Ask us a question") + '</span>';
+  btn.setAttribute("aria-label", launchText);
+  btn.innerHTML = '<span aria-hidden="true">' + (ORDER ? "🍽" : "💬") + '</span><span>' + esc(launchText) + '</span>';
 
   var panel = document.createElement("div");
   panel.className = "rpc-panel";
   panel.setAttribute("role", "dialog");
   panel.setAttribute("aria-label", "Ask " + (C.name || "us") + " a question");
   panel.innerHTML = ''
-    + '<div class="rpc-head"><div><b id="rpcTitle">' + esc(C.name || "Ask us") + '</b><small id="rpcSub">' + esc(C.subtitle || "Quick answers, any time") + '</small></div>'
+    + '<div class="rpc-head"><div><b id="rpcTitle">' + esc(C.name || "Ask us") + '</b><small id="rpcSub">' + esc(C.subtitle || (ORDER ? "Order collection, or ask us anything" : "Quick answers, any time")) + '</small></div>'
     + '<div style="display:flex;align-items:center;gap:12px"><button class="rpc-back" id="rpcBack" type="button" style="display:none">‹ Back</button>'
     + '<button class="rpc-x" type="button" aria-label="Close">&times;</button></div></div>'
     + '<div class="rpc-view on" id="rpcChatView">'
+    + (ORDER
+        ? '  <button class="rpc-orderbar" id="rpcOrderBar" type="button">'
+        +   '<span class="ic" aria-hidden="true">🍽</span>'
+        +   '<span class="tx"><b>' + esc(ORDER.chip || "Order for collection") + '</b>'
+        +   '<span>' + esc(ORDER.barNote || "Tap the menu, pay when you collect") + '</span></span>'
+        +   '<span class="ar" aria-hidden="true">›</span></button>'
+        : '')
     + '  <div class="rpc-log" id="rpcLog"></div>'
     + '  <form class="rpc-form"><input class="rpc-in" id="rpcIn" placeholder="Type your question" autocomplete="off" /><button class="rpc-send" type="submit">Ask</button></form>'
     + '  <div class="rpc-foot">Answers written by ' + esc(C.name || "the restaurant") + '</div>'
@@ -180,13 +208,7 @@
   }
   function chips() {
     var wrap = document.createElement("div"); wrap.className = "rpc-chips";
-    if (ORDER) {
-      var o = document.createElement("button");
-      o.className = "rpc-chip go"; o.type = "button";
-      o.textContent = ORDER.chip || "Order for collection";
-      o.addEventListener("click", showOrder);
-      wrap.appendChild(o);
-    }
+    /* No order chip when the sticky bar is showing it: one ask, not two. */
     C.answers.slice(0, 4).forEach(function (e) {
       var label = (e.chip || (e.q && e.q[0]) || "").trim();
       if (!label) return;
@@ -342,20 +364,45 @@
   function showChat() {
     orderView.classList.remove("on"); chatView.classList.add("on");
     backBtn.style.display = "none"; title.textContent = C.name || "Ask us";
-    sub.textContent = C.subtitle || "Quick answers, any time";
+    sub.textContent = C.subtitle || (ORDER ? "Order collection, or ask us anything" : "Quick answers, any time");
+  }
+
+  /* Hold the page still behind the panel. iOS ignores overflow:hidden on body, so
+     the page has to be pinned with position:fixed and put back on close. */
+  var lockedAt = 0, locked = false;
+  function lockPage() {
+    if (locked || MOUNT) return;
+    locked = true;
+    lockedAt = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var s = document.body.style;
+    s.position = "fixed"; s.top = -lockedAt + "px"; s.left = "0"; s.right = "0"; s.width = "100%";
+    s.overflow = "hidden";
+  }
+  function unlockPage() {
+    if (!locked) return;
+    locked = false;
+    var s = document.body.style;
+    s.position = ""; s.top = ""; s.left = ""; s.right = ""; s.width = ""; s.overflow = "";
+    window.scrollTo(0, lockedAt);
   }
 
   var opened = false;
   function open() {
     panel.classList.add("open"); if (!MOUNT) btn.style.display = "none";
+    lockPage();
     if (!opened) {
       opened = true;
       bubble(C.greeting || ("Hi! Ask me anything about " + (C.name || "us") + "."), "bot");
       chips();
     }
-    if (chatView.classList.contains("on")) input.focus();
+    /* Never autofocus on a phone: the keyboard springs up over the panel. */
+    if (chatView.classList.contains("on") && window.innerWidth > 640) input.focus();
   }
-  function close() { if (MOUNT) return; panel.classList.remove("open"); btn.style.display = "flex"; }
+  function close() {
+    if (MOUNT) return;
+    panel.classList.remove("open"); btn.style.display = "flex";
+    unlockPage();
+  }
 
   btn.addEventListener("click", open);
   if (MOUNT) open();
@@ -374,6 +421,8 @@
   });
   panel.querySelector(".rpc-x").addEventListener("click", close);
   backBtn.addEventListener("click", showChat);
+  var orderBar = panel.querySelector("#rpcOrderBar");
+  if (orderBar) orderBar.addEventListener("click", showOrder);
   panel.querySelector(".rpc-form").addEventListener("submit", function (e) { e.preventDefault(); ask(input.value); });
   panel.querySelector("#rpcGo").addEventListener("click", sendOrder);
   document.addEventListener("keydown", function (e) {
