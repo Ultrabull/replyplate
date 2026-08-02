@@ -106,6 +106,16 @@
   .seg span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
   .seghint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
   .sumtot b.short{color:#e0705a}
+  .slip{max-width:640px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+  .slip h4{font-size:17px;margin-bottom:8px}
+  .slip-intro{color:var(--muted);font-size:14.5px;margin-bottom:16px}
+  .slip ul{list-style:none;display:grid;gap:14px}
+  .slip li{position:relative;padding-left:26px;font-size:14.5px;color:var(--muted);line-height:1.6}
+  .slip li::before{content:"→";position:absolute;left:0;top:0;color:var(--accent);font-weight:800}
+  .slip li b{color:var(--ink);display:block;margin-bottom:2px}
+  .slip-limit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.6}
+  .slip-limit b{color:var(--ink)}
+  .estimate{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.55}
   .cmp-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
   table.cmp{width:100%;min-width:760px;border-collapse:collapse}
   .cmp th,.cmp td{padding:13px 15px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -246,26 +256,38 @@
     </section>
 
     <section class="addons">
-      <h2 class="section-title">Two things worth adding</h2>
-      <p class="section-sub">Not part of the <span data-price>$199</span>. Both are one-off. Whether the second one pays for itself depends on where your orders come from now, so there is a calculator below rather than a promise.</p>
+      <h2 class="section-title">Two optional extras: be easy to reach, and easy to order from</h2>
+      <p class="section-sub">Your <span data-price>$199</span> a month is the review service. That is the core of what you buy, and nothing here changes it. These two are optional, priced separately, and you can skip either one. Both do the same job: cut the wait between a hungry person and your kitchen.</p>
       <div class="grid two">
         <div class="card">
-          <h3><span class="emoji">💬</span> Stop answering the same eight questions</h3>
-          <p><b>What it does.</b> A chat button on your website answers your hours, parking, vegan options, dogs, bookings. Only what you told it, and if it doesn't know it says so and hands out your number.</p>
-          <p style="margin-top:10px"><b>What it saves you.</b> The interruptions. Those questions arrive by phone, in the middle of service, and someone has to stop and take them. This one answers at 11pm on a Sunday with nobody in the building.</p>
+          <h3><span class="emoji">💬</span> Answers when nobody can get to the phone</h3>
+          <p><b>What it does.</b> A chat button sits on your website. It answers the questions you get over and over: your serving times, parking, vegan options, dogs, how to book. It only repeats the answers you wrote, and when it does not know something it says so and gives out your number.</p>
+          <p style="margin-top:10px"><b>Why it is worth having.</b> Someone picking a restaurant at 9pm is standing on their phone, not making a call. Your page answers their question in your words, right then, while your staff stay on the floor. A page that answers nothing gives them nothing to act on.</p>
           <p style="margin-top:12px"><a href="./chat-demo.html">See it working, ask it anything →</a></p>
         </div>
         <div class="card">
-          <h3><span class="emoji">🍕</span> Let your regulars order direct</h3>
-          <p><b>What it does.</b> They tap what they want, the order arrives on your WhatsApp, they pay when they collect. No card machine to set up, no new system to learn, and no app in the middle.</p>
-          <p style="margin-top:10px"><b>What it saves you.</b> The cut. Every order that comes through a delivery app instead of straight to you costs you a slice of the ticket, on food you cooked either way.</p>
+          <h3><span class="emoji">🍕</span> Takes the order without the phone call</h3>
+          <p><b>What it does.</b> The same button opens your menu. The diner taps what they want and sends the finished order to your WhatsApp from their own phone, so their real number comes with it, and they pay when they collect. No card machine to set up and nothing new for you to log into. Worth knowing: your diner needs WhatsApp to send it.</p>
+          <p style="margin-top:10px"><b>Why it is worth having.</b> It gets to 7:40 on a Friday, the phone rings, and every pair of hands is carrying plates. Nobody gets to it, and a caller who got no answer is usually not sitting there waiting for one. This gives that person a way in that does not need anybody free to pick up.</p>
           <p style="margin-top:12px"><a href="./chat-demo.html">Try the ordering →</a></p>
         </div>
       </div>
       <p class="cmp-note mid">Both live in one button on your site, reading <b>Order food or ask us</b>. A diner taps it and can do either, so the ones who came to ask a question end up seeing the menu.</p>
 
+      <div class="slip">
+        <h4>Where business quietly slips away right now</h4>
+        <p class="slip-intro">We are not going to put a number on this, because nobody honestly can. What we can do is name the moments where an order slips away, so you can hold them up against your own Friday night.</p>
+        <ul>
+          <li><b>A menu sells the garlic bread. A phone call does not.</b> On the phone, someone reads you an order in a hurry and you write it down. On a menu they can see, the sides and the drinks are sitting right there on the way to sending the order.</li>
+          <li><b>The order arrives written down.</b> No name half heard over a busy pass, no order shouted across a kitchen. You get the same words the diner tapped, so there is less to remake and less to throw away.</li>
+          <li><b>Your regulars get a direct line.</b> Some of them use a delivery app because it is the easy way in, not because they prefer it. Give them an easier one and that choice is finally there.</li>
+        </ul>
+        <p class="slip-limit"><b>The honest ceiling.</b> None of this gets a chance if nobody sees the button. It only gets one when the link is on your Google listing, your Instagram bio and your website. If about ten people a week look you up, that is about ten chances a week. This helps the people already looking for you. It does not go out and find new ones.</p>
+      </div>
+
       <div class="sums" id="calc">
-        <h4>Work it out with your numbers</h4>
+        <h4>Work out the ordering extra with your numbers</h4>
+        <p class="slip-intro" style="margin-bottom:20px">This sum is only about the ordering extra. Your <span data-price>$199</span> review service is separate and is not part of it.</p>
 
         <div class="ctl">
           <label for="cOrders">Orders a month you could move across <b id="vOrders">20</b></label>
@@ -285,7 +307,8 @@
         <div class="sumrow"><span id="rowTotal">Those orders are worth</span><b id="outTotal">$800</b></div>
         <div class="sumrow"><span id="rowCut">The app takes</span><b class="bad" id="outCut">$56</b></div>
         <div class="sumrow"><span>Taken direct instead, you keep</span><b class="good" id="outKeep">$800</b></div>
-        <div class="sumtot"><span id="outVerdictLbl">Against your <span data-price>$199</span> a month</span><b id="outVerdict">covers it</b></div>
+        <div class="sumtot"><span id="outVerdictLbl">Commission you would keep</span><b id="outVerdict">$56 a month</b></div>
+        <p class="estimate">That is an estimate built from the numbers you just set. It is not a forecast and it is not a quote.</p>
 
         <p class="sumnote">Every figure here is an estimate for comparison, not a quote. It only counts orders you move across, not new ones we are promising to bring you, because we are not promising that. Plenty of restaurants keep the apps for the reach and use this for the regulars who would rather deal with you directly. Commission rates are the published US merchant rates as of August 2026, and yours depend on the deal you signed.</p>
       </div>
@@ -463,8 +486,8 @@
     </section>
 
     <section id="start">
-      <h2 class="section-title">One price. <span data-price>$199</span> a month.</h2>
-      <p class="section-sub">No setup fee. No contract. No per-location upcharge. Cancel any month.</p>
+      <h2 class="section-title">One price for the review work. <span data-price>$199</span> a month.</h2>
+      <p class="section-sub">No setup fee. No contract. No per-location upcharge. Cancel any month. The website chat and the collection ordering are optional extras, priced separately, and nothing below depends on them.</p>
       <div class="pricing">
         <div class="price"><span data-price>$199</span><small>/month</small></div>
         <ul>
@@ -474,6 +497,7 @@
           <li>One page each month on your rating and what your reviews are saying</li>
           <li>Your rules: approve everything, or let the positive replies post on their own</li>
           <li>Anything negative always waits for your OK, on every setting</li>
+          <li style="opacity:.72">Optional, priced separately: the website chat and the collection ordering</li>
         </ul>
         <a class="btn" data-cta href="#" style="width:100%">Start for <span data-price>$199</span>/mo →</a>
         <p style="margin-top:14px;font-size:13px;color:var(--muted)">Want the five sample replies first? Send us your Google listing and we'll write replies to your last five reviews so you can judge the writing yourself. No card, no call, and no follow-up if you say nothing. I do a handful of these a week, because I write them myself. <a data-book href="#" style="color:var(--accent);font-weight:700">Ask for yours</a></p>
@@ -596,15 +620,17 @@
      When the answer is that it does not cover the bill, it says so. */
   (function () {
     var HOWS = [
-      { id: "delivery", label: "A delivery app", sub: "Ordered for delivery", rate: 0.25,
-        note: "Delivery is where the apps take the most. Published US rates run from about 15% up to 30% depending on the plan you are on, so we have used 25% in the middle. Check your own statement." },
+      /* Collection first, deliberately. Loading on the 25% delivery rate shows an
+         owner a flattering number before they have touched a control, and this
+         extra takes collection orders, not delivery ones. */
       { id: "pickup", label: "App collection", sub: "Ordered on an app, collected", rate: 0.07,
         note: "Collection through an app costs far less than delivery. DoorDash charges 6% on pickup and Uber Eats 7%, or 10% if your app prices do not match your in-store prices. We have used 7%. It is a much smaller saving, and we would rather show you that than a flattering number." },
+      { id: "delivery", label: "A delivery app", sub: "Ordered for delivery", rate: 0.25,
+        note: "Delivery is where the apps take the most. Published US rates run from about 15% up to 30% depending on the plan you are on, so we have used 25% in the middle. Count an order here only if that diner would be happy to come and collect it, because this does not deliver, so most delivery orders stay on the app." },
       { id: "direct", label: "Phone or walk-in", sub: "No app involved", rate: 0,
         note: "No commission to save here, so the sum says so. What this changes is different: the phone stops ringing during service, the order arrives written down instead of shouted across a kitchen, and people tend to add a side when they can see the menu." }
     ];
-    var state = { orders: 20, avg: 40, how: "delivery" };
-    var PRICE = 199;
+    var state = { orders: 20, avg: 40, how: "pickup" };
     var $c = function (id) { return document.getElementById(id); };
     if (!$c("calc")) return;
     function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
@@ -629,19 +655,18 @@
       }
       $c("outKeep").textContent = "you keep " + money(total);
 
+      /* No pass or fail against a price. The review subscription is bought either
+         way, so comparing this extra's saving to it was the wrong sum, and the
+         extra is priced separately. Show the money and let the owner judge. */
       var v = $c("outVerdict"), lbl = $c("outVerdictLbl");
-      if (how.rate === 0) {
-        lbl.textContent = "Money saved on commission";
-        v.className = "short";
-        v.textContent = "none, and we will not pretend otherwise";
-      } else if (cut >= PRICE) {
-        lbl.textContent = "Against your $" + PRICE + " a month";
+      if (cut <= 0) {
+        lbl.textContent = "Commission saved";
         v.className = "";
-        v.textContent = "covers it, with " + money(cut - PRICE) + " spare";
+        v.textContent = "none, this one is about the calls you cannot get to";
       } else {
-        lbl.textContent = "Against your $" + PRICE + " a month";
-        v.className = "short";
-        v.textContent = money(PRICE - cut) + " short";
+        lbl.textContent = "Commission you would keep";
+        v.className = "";
+        v.textContent = money(cut) + " a month";
       }
     }
 
@@ -722,7 +747,7 @@
       { chip: "This chat thing",
         q: ["what is this chat","can i get this on my website","how does this chat work","chat helper","ordering","take orders","order food on my site",
             "how much do delivery apps take","what do the apps charge","commission","doordash","uber eats","do the apps take a cut","how much will i save"],
-        a: "This is our chat helper, and yes, you can have it on your own site. It answers the questions you get asked all day, and it can take collection orders that customers send you on WhatsApp, so you keep the whole ticket.\n\nHow much that saves you depends on where the order would have gone instead. A delivery app takes roughly 15% to 30%. The same app taking a collection order takes far less, around 6% to 10%, so moving collection orders across saves less than people expect. There is a calculator on this page that does the sum with your own numbers, and it will tell you when the answer is no.\n\nIt is a paid add-on, not part of the $199. There is a full demo on the site." },
+        a: "This is our chat helper, and yes, you can have it on your own site. It answers the questions you get asked all day, and it can take collection orders that diners send you on WhatsApp. They pay when they collect, so there is no card machine to set up and no app taking a slice.\n\nIt is optional and priced separately. The $199 review service is the core and works the same without it.\n\nHow much it saves depends on where the order would have gone instead. A delivery app takes roughly 15% to 30%. The same app taking a collection order takes far less, around 6% to 10%. There is a calculator on this page that does the sum with your own numbers.\n\nThe part a sum cannot show: the phone that rings at 7:40 on a Friday when every pair of hands is carrying plates. A caller who gets no answer usually does not sit there waiting for one. There is a full demo on the site." },
       { chip: "See it first",
         q: ["can i see it first","is there a demo","can i see a demo","show me an example","do you have examples",
             "can i see it working","proof","sample","what does a reply look like"],
