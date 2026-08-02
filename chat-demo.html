@@ -89,6 +89,97 @@
   .about{max-width:640px;margin:26px auto 0;font-size:12.5px;line-height:1.65;opacity:.72}
   .about summary{cursor:pointer;font-weight:700;color:var(--gold)}
   .about p{margin-top:10px}
+
+  /* Moved here from the landing page: the extras belong beside the demo that
+     shows them working, not in front of somebody deciding on the review service. */
+  .addons{--ink:#f4eee2;--muted:#a99a80;--card:#1c1712;--line:#332920;--accent:#c9a24d;--ok:#5cb383;--bg:#14100d;
+    --font:var(--sans);padding:64px 0;border-top:1px solid var(--line)}
+  .addons .wrap{max-width:960px}
+  .addons .section-title{font-family:var(--serif);font-size:clamp(24px,4.4vw,34px);text-align:center;font-weight:400;margin-bottom:10px;letter-spacing:0}
+  .addons .section-sub{text-align:center;color:var(--muted);max-width:600px;margin:0 auto 30px;font-size:15px}
+  .addons .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .addons .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .addons .card h3{font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:700}
+  .addons .card p{color:var(--muted);font-size:15px}
+  .addons .card a{color:var(--accent)}
+  .addons .emoji{font-size:22px}
+  .addons .cmp-note{font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.6}
+  .addons .cmp-note.mid{text-align:center;max-width:640px;margin-left:auto;margin-right:auto}
+  .sums{max-width:560px;margin:22px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
+  .addons .sums h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:14px;text-align:center}
+  .addons .sumrow,.sumtot{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:9px 0;font-size:15px;border-bottom:1px solid var(--line)}
+  .addons .sumrow span{color:var(--muted)}
+  .addons .sumrow b,.sumtot b{white-space:nowrap;font-weight:800}
+  .addons .sumrow .bad{color:#e0705a}
+  .addons .sumrow .good{color:var(--ok)}
+  .addons .sumtot{border-bottom:none;border-top:2px solid var(--accent);margin-top:4px;padding-top:13px;font-size:15.5px}
+  .addons .sumtot b{color:var(--accent)}
+  .addons .sumnote{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:14px}
+  @media (max-width:520px){.sumrow,.sumtot{flex-direction:column;gap:2px}.sumrow b,.sumtot b{align-self:flex-start}}
+  .addons .ctl{margin-bottom:18px}
+  .addons .ctl label{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--muted);margin-bottom:9px}
+  .addons .ctl label b{color:var(--accent);font-weight:800;font-size:16px;white-space:nowrap}
+  .addons .ctl input[type=range]{width:100%;height:34px;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer;display:block}
+  .addons .ctl input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:var(--line)}
+  .addons .ctl input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line)}
+  .addons .ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--bg);margin-top:-11px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .addons .ctl input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .addons .ctl input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:999px}
+  .addons .segs{display:grid;grid-template-columns:1fr;gap:8px}
+  @media (min-width:560px){.segs{grid-template-columns:repeat(3,1fr)}}
+  .addons .seg{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;
+    font:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:48px}
+  .addons .seg:hover{border-color:var(--accent2)}
+  .addons .seg[aria-checked="true"]{border-color:var(--accent);background:rgba(208,163,78,.16);box-shadow:inset 0 0 0 1px var(--accent)}
+  .addons .seg[aria-checked="true"] b::before{content:"\2713 ";color:var(--accent);font-weight:800}
+  .addons .seg b{display:block;font-size:14.5px}
+  .addons .seg span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .addons .seghint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
+  .addons .sumtot b.short{color:#e0705a}
+  .addons .slip{max-width:640px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+  .addons .slip h4{font-size:17px;margin-bottom:8px}
+  .addons .slip-intro{color:var(--muted);font-size:14.5px;margin-bottom:16px}
+  .addons .slip ul{list-style:none;display:grid;gap:14px}
+  .addons .slip li{position:relative;padding-left:26px;font-size:14.5px;color:var(--muted);line-height:1.6}
+  .addons .slip li::before{content:"→";position:absolute;left:0;top:0;color:var(--accent);font-weight:800}
+  .addons .slip li b{color:var(--ink);display:block;margin-bottom:2px}
+  .addons .slip-limit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.6}
+  .addons .slip-limit b{color:var(--ink)}
+  .addons .estimate{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.55}
+  .addons .ctl{margin-bottom:18px}
+  .addons .ctl label{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--muted);margin-bottom:9px}
+  .addons .ctl label b{color:var(--accent);font-weight:800;font-size:16px;white-space:nowrap}
+  .addons .ctl input[type=range]{width:100%;height:34px;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer;display:block}
+  .addons .ctl input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:var(--line)}
+  .addons .ctl input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line)}
+  .addons .ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--bg);margin-top:-11px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .addons .ctl input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .addons .ctl input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:999px}
+  .addons .segs{display:grid;grid-template-columns:1fr;gap:8px}
+  @media (min-width:560px){.segs{grid-template-columns:repeat(3,1fr)}}
+  .addons .seg{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;
+    font:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:48px}
+  .addons .seg:hover{border-color:var(--accent2)}
+  .addons .seg[aria-checked="true"]{border-color:var(--accent);background:rgba(208,163,78,.16);box-shadow:inset 0 0 0 1px var(--accent)}
+  .addons .seg[aria-checked="true"] b::before{content:"\2713 ";color:var(--accent);font-weight:800}
+  .addons .seg b{display:block;font-size:14.5px}
+  .addons .seg span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .addons .seghint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
+  .addons .sumtot b.short{color:#e0705a}
+  .addons .slip{max-width:640px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
+  .addons .slip h4{font-size:17px;margin-bottom:8px}
+  .addons .slip-intro{color:var(--muted);font-size:14.5px;margin-bottom:16px}
+  .addons .slip ul{list-style:none;display:grid;gap:14px}
+  .addons .slip li{position:relative;padding-left:26px;font-size:14.5px;color:var(--muted);line-height:1.6}
+  .addons .slip li::before{content:"→";position:absolute;left:0;top:0;color:var(--accent);font-weight:800}
+  .addons .slip li b{color:var(--ink);display:block;margin-bottom:2px}
+  .addons .slip-limit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.6}
+  .addons .slip-limit b{color:var(--ink)}
+  .addons .estimate{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.55}
 </style>
 </head>
 <body>
@@ -194,6 +285,65 @@
     </div>
   </section>
 
+  <section class="addons">
+      <h2 class="section-title">Two optional extras: be easy to reach, and easy to order from</h2>
+      <p class="section-sub">Your <span data-price>$199</span> a month is the review service. That is the core of what you buy, and nothing here changes it. These two are optional, priced separately, and you can skip either one. Both do the same job: cut the wait between a hungry person and your kitchen.</p>
+      <div class="grid two">
+        <div class="card">
+          <h3><span class="emoji">💬</span> Answers when nobody can get to the phone</h3>
+          <p><b>What it does.</b> A chat button sits on your website. It answers the questions you get over and over: your serving times, parking, vegan options, dogs, how to book. It only repeats the answers you wrote, and when it does not know something it says so and gives out your number.</p>
+          <p style="margin-top:10px"><b>Why it is worth having.</b> Someone picking a restaurant at 9pm is standing on their phone, not making a call. Your page answers their question in your words, right then, while your staff stay on the floor. A page that answers nothing gives them nothing to act on.</p>
+          <p style="margin-top:12px"><a href="./chat-demo.html">See it working, ask it anything →</a></p>
+        </div>
+        <div class="card">
+          <h3><span class="emoji">🍕</span> Takes the order without the phone call</h3>
+          <p><b>What it does.</b> The same button opens your menu. The diner taps what they want and sends the finished order to your WhatsApp from their own phone, so their real number comes with it, and they pay when they collect. No card machine to set up and nothing new for you to log into. Worth knowing: your diner needs WhatsApp to send it.</p>
+          <p style="margin-top:10px"><b>Why it is worth having.</b> It gets to 7:40 on a Friday, the phone rings, and every pair of hands is carrying plates. Nobody gets to it, and a caller who got no answer is usually not sitting there waiting for one. This gives that person a way in that does not need anybody free to pick up.</p>
+          <p style="margin-top:12px"><a href="./chat-demo.html">Try the ordering →</a></p>
+        </div>
+      </div>
+      <p class="cmp-note mid">Both live in one button on your site, reading <b>Order food or ask us</b>. A diner taps it and can do either, so the ones who came to ask a question end up seeing the menu.</p>
+
+      <div class="slip">
+        <h4>Where business quietly slips away right now</h4>
+        <p class="slip-intro">We are not going to put a number on this, because nobody honestly can. What we can do is name the moments where an order slips away, so you can hold them up against your own Friday night.</p>
+        <ul>
+          <li><b>A menu sells the garlic bread. A phone call does not.</b> On the phone, someone reads you an order in a hurry and you write it down. On a menu they can see, the sides and the drinks are sitting right there on the way to sending the order.</li>
+          <li><b>The order arrives written down.</b> No name half heard over a busy pass, no order shouted across a kitchen. You get the same words the diner tapped, so there is less to remake and less to throw away.</li>
+          <li><b>Your regulars get a direct line.</b> Some of them use a delivery app because it is the easy way in, not because they prefer it. Give them an easier one and that choice is finally there.</li>
+        </ul>
+        <p class="slip-limit"><b>The honest ceiling.</b> None of this gets a chance if nobody sees the button. It only gets one when the link is on your Google listing, your Instagram bio and your website. If about ten people a week look you up, that is about ten chances a week. This helps the people already looking for you. It does not go out and find new ones.</p>
+      </div>
+
+      <div class="sums" id="calc">
+        <h4>Work out the ordering extra with your numbers</h4>
+        <p class="slip-intro" style="margin-bottom:20px">This sum is only about the ordering extra. Your <span data-price>$199</span> review service is separate and is not part of it.</p>
+
+        <div class="ctl">
+          <label for="cOrders">Orders a month you could move across <b id="vOrders">20</b></label>
+          <input type="range" id="cOrders" min="0" max="200" step="5" value="20" />
+        </div>
+        <div class="ctl">
+          <label for="cAvg">Average order <b id="vAvg">$40</b></label>
+          <input type="range" id="cAvg" min="10" max="120" step="5" value="40" />
+        </div>
+
+        <div class="ctl">
+          <label id="howLbl">Where those orders go today</label>
+          <div class="segs" role="radiogroup" aria-labelledby="howLbl" id="cHow"></div>
+          <p class="seghint" id="rateNote"></p>
+        </div>
+
+        <div class="sumrow"><span id="rowTotal">Those orders are worth</span><b id="outTotal">$800</b></div>
+        <div class="sumrow"><span id="rowCut">The app takes</span><b class="bad" id="outCut">$56</b></div>
+        <div class="sumrow"><span>Taken direct instead, you keep</span><b class="good" id="outKeep">$800</b></div>
+        <div class="sumtot"><span id="outVerdictLbl">Commission you would keep</span><b id="outVerdict">$56 a month</b></div>
+        <p class="estimate">That is an estimate built from the numbers you just set. It is not a forecast and it is not a quote.</p>
+
+        <p class="sumnote">Every figure here is an estimate for comparison, not a quote. It only counts orders you move across, not new ones we are promising to bring you, because we are not promising that. Plenty of restaurants keep the apps for the reach and use this for the regulars who would rather deal with you directly. Commission rates are the published US merchant rates as of August 2026, and yours depend on the deal you signed.</p>
+      </div>
+  </section>
+
   <footer>
     <div class="wrap">
       <span class="brand">The Olive Table</span>
@@ -205,6 +355,92 @@
       </details>
     </div>
   </footer>
+
+<script>
+  /* Savings calculator.
+
+     The rates below are the published US merchant rates, checked August 2026.
+     They matter because the obvious mistake here is to apply a DELIVERY rate to
+     a COLLECTION order. DoorDash delivery is 15 to 30 percent by plan, but its
+     pickup rate is 6 percent flat. Uber Eats delivery reaches 30 percent, and
+     pickup is 7 percent with validated in-store pricing, otherwise 10. Charging
+     a collection order at 25 percent overstates the saving by roughly four
+     times, which is exactly the sort of number a restaurant owner checks.
+
+     So the owner picks what the order actually replaces and the sums follow.
+     When the answer is that it does not cover the bill, it says so. */
+  (function () {
+    var HOWS = [
+      /* Collection first, deliberately. Loading on the 25% delivery rate shows an
+         owner a flattering number before they have touched a control, and this
+         extra takes collection orders, not delivery ones. */
+      { id: "pickup", label: "App collection", sub: "Ordered on an app, collected", rate: 0.07,
+        note: "Collection through an app costs far less than delivery. DoorDash charges 6% on pickup and Uber Eats 7%, or 10% if your app prices do not match your in-store prices. We have used 7%. It is a much smaller saving, and we would rather show you that than a flattering number." },
+      { id: "delivery", label: "A delivery app", sub: "Ordered for delivery", rate: 0.25,
+        note: "Delivery is where the apps take the most. Published US rates run from about 15% up to 30% depending on the plan you are on, so we have used 25% in the middle. Count an order here only if that diner would be happy to come and collect it, because this does not deliver, so most delivery orders stay on the app." },
+      { id: "direct", label: "Phone or walk-in", sub: "No app involved", rate: 0,
+        note: "No commission to save here, so the sum says so. What this changes is different: the phone stops ringing during service, the order arrives written down instead of shouted across a kitchen, and people tend to add a side when they can see the menu." }
+    ];
+    var state = { orders: 20, avg: 40, how: "pickup" };
+    var $c = function (id) { return document.getElementById(id); };
+    if (!$c("calc")) return;
+    function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+
+    function draw() {
+      var how = HOWS.filter(function (h) { return h.id === state.how; })[0];
+      var total = state.orders * state.avg, cut = total * how.rate;
+
+      $c("vOrders").textContent = state.orders;
+      $c("vAvg").textContent = "$" + state.avg;
+      $c("rateNote").textContent = how.note;
+      $c("rowTotal").textContent = state.orders + (state.orders === 1 ? " order" : " orders") +
+        " at " + money(state.avg) + " is worth";
+      $c("outTotal").textContent = money(total);
+
+      if (how.rate === 0) {
+        $c("rowCut").textContent = "No app is taking a cut of these";
+        $c("outCut").textContent = money(0);
+      } else {
+        $c("rowCut").textContent = "The app takes " + Math.round(how.rate * 100) + "% of that";
+        $c("outCut").textContent = "you lose " + money(cut);
+      }
+      $c("outKeep").textContent = "you keep " + money(total);
+
+      /* No pass or fail against a price. The review subscription is bought either
+         way, so comparing this extra's saving to it was the wrong sum, and the
+         extra is priced separately. Show the money and let the owner judge. */
+      var v = $c("outVerdict"), lbl = $c("outVerdictLbl");
+      if (cut <= 0) {
+        lbl.textContent = "Commission saved";
+        v.className = "";
+        v.textContent = "none, this one is about the calls you cannot get to";
+      } else {
+        lbl.textContent = "Commission you would keep";
+        v.className = "";
+        v.textContent = money(cut) + " a month";
+      }
+    }
+
+    $c("cOrders").addEventListener("input", function (e) { state.orders = +e.target.value; draw(); });
+    $c("cAvg").addEventListener("input", function (e) { state.avg = +e.target.value; draw(); });
+
+    var wrap = $c("cHow");
+    HOWS.forEach(function (h, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "seg"; b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", i === 0 ? "true" : "false");
+      b.innerHTML = "<b>" + h.label + "</b><span>" + h.sub + "</span>";
+      b.addEventListener("click", function () {
+        state.how = h.id;
+        Array.prototype.forEach.call(wrap.children, function (o) { o.setAttribute("aria-checked", "false"); });
+        b.setAttribute("aria-checked", "true");
+        draw();
+      });
+      wrap.appendChild(b);
+    });
+    draw();
+  })();
+</script>
 
 <script>
 window.RP_CHAT = {
