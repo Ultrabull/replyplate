@@ -145,7 +145,7 @@
     where.appendChild(d);
     return d;
   }
-  // Typing the draft is the moment people lean in, so it is worth the few lines.
+  // Watching the reply get written is the moment people lean in, so it is worth the few lines.
   var typeToken = 0;
   function type(el, text) {
     if (reduce) { el.textContent = text; return; }
@@ -172,10 +172,10 @@
         run: function () { bubble(right, "", '<div class="who">ReplyPlate</div><p>New 5 star review spotted for your restaurant.</p>'); } },
       { cap: "A reply gets written in your words.", sub: "From your menu, your voice, and the reviews you have already answered.",
         run: function () {
-          var b = bubble(left, "reply", '<div class="who">Your reply, drafted</div><p></p>');
+          var b = bubble(left, "reply", '<div class="who">Your reply, written</div><p></p>');
           type(b.querySelector("p"), "Priya, thank you. Carbonara is the one we are judged on, so that means a lot. And we will tell the team you noticed, they will be chuffed.");
         } },
-      { cap: "5 stars, nothing sensitive, so it posts.", sub: "You chose to let the good ones go out on their own. You can also ask to see every one.",
+      { cap: "5 stars, nothing sensitive, so we put it up.", sub: "The good ones go up for you. You can also ask to see every one first.",
         run: function () {
           var b = bubble(right, "", '<div class="who"><span class="tag auto">Auto posted</span></div><p>Nothing needed from you.</p>');
         } },
@@ -186,9 +186,9 @@
     { leftTitle: "On Google", rightTitle: "Your phone", steps: [
       { cap: "A 2 star lands on a Saturday night.", sub: "The one that makes your stomach drop.",
         run: function () { bubble(left, "", reviewCard(REVIEW_BAD)); } },
-      { cap: "A careful reply gets drafted.", sub: "It names the wait, the fries and Marcus. No excuses, no arguing.",
+      { cap: "This one gets extra care.", sub: "It names the wait, the fries and Marcus. No excuses, no arguing.",
         run: function () {
-          var b = bubble(left, "reply", '<div class="who">Draft, not posted</div><p></p>');
+          var b = bubble(left, "reply", '<div class="who">Written, not posted</div><p></p>');
           type(b.querySelector("p"), "Thirty-five minutes on a quiet Tuesday isn't right, and cold fries after that wait is worse. That's on the kitchen, not on Marcus, and I'm glad he looked after you. Ask for me at the door next time and I'll make sure it lands better.");
         } },
       { cap: "It stops. It does not post.", sub: "3 stars or under always waits for you. There is no setting that turns this off.",
