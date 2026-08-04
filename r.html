@@ -21,6 +21,8 @@
   .foot{text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
   .foot a{color:var(--muted)}
   .err{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted)}
+  .rbtn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
+    padding:13px 24px;border-radius:999px;min-height:48px;line-height:22px}
 </style>
 </head>
 <body>
@@ -54,6 +56,24 @@
   fetch("r/" + slug + ".json", { cache: "no-cache" })
     .then(function (r) { if (!r.ok) throw new Error("missing"); return r.json(); })
     .then(function (cfg) {
+      /* A retired page. When a restaurant leaves, the printed codes on their bags
+         and tables do not disappear, so this link has to keep sending people
+         somewhere useful rather than dying. Flip "retired" in their JSON and it
+         becomes a signpost instead of an error. */
+      if (cfg.retired) {
+        document.title = cfg.name || "Ask us";
+        document.getElementById("rName").textContent = cfg.name || "";
+        document.getElementById("rSub").textContent = "";
+        var to = cfg.retiredUrl || cfg.mapsUrl || cfg.website || "";
+        chat.innerHTML = '<div class="err"><p style="margin-bottom:14px">' +
+          "This page isn't taking questions or orders any more." +
+          (cfg.phone ? " Give them a ring on " + cfg.phone + " and they'll sort you out." : "") +
+          "</p>" +
+          (to ? '<a class="rbtn" href="' + to + '" rel="noopener">Find ' + (cfg.name || "them") + ' on Google</a>' : "") +
+          "</div>";
+        var f = document.getElementById("rFoot"); if (f) f.textContent = "";
+        return;
+      }
       document.title = "Ask " + (cfg.name || "us");
       document.getElementById("rName").textContent = cfg.name || "Ask us";
       document.getElementById("rSub").textContent = cfg.pageSub || "Questions answered, and order for collection.";
