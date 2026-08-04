@@ -36,6 +36,7 @@
     dataExport: $("dataExport"), dataImport: $("dataImport"), dataFile: $("dataFile"), dataMsg: $("dataMsg"),
     clientsList: $("clientsList"),
     cName: $("cName"), cCuisine: $("cCuisine"), cTone: $("cTone"), cReview: $("cReview"), cCity: $("cCity"),
+    cPhone: $("cPhone"), cEmail: $("cEmail"),
     cSave: $("cSave"), cClear: $("cClear"),
     rvStars: $("rvStars"), rvText: $("rvText"), rvGo: $("rvGo"), rvOut: $("rvOut"),
     grGo: $("grGo"), grOut: $("grOut"),
@@ -98,7 +99,7 @@
       .filter((s) => s.length > 2);
     return parts.length ? parts : [text.trim()];
   }
-  function renderResults(container, blocks, onUse) {
+  function renderResults(container, blocks, onUse, forOwner) {
     container.innerHTML = "";
     blocks.forEach((b) => {
       const card = el("div", "result");
@@ -107,10 +108,63 @@
       const cp = el("button", "copy"); cp.type = "button"; cp.textContent = "Copy";
       cp.addEventListener("click", () => { copy(b, cp); if (onUse) onUse(); });
       bar.appendChild(cp);
+      /* Only review replies get these. A social post has no owner to approve it. */
+      if (forOwner) {
+        const tx = el("button", "copy"); tx.type = "button"; tx.textContent = "Text the owner";
+        tx.addEventListener("click", () => { if (sendToOwner("sms", forOwner.review, forOwner.stars, b) && onUse) onUse(); });
+        const em = el("button", "copy"); em.type = "button"; em.textContent = "Email instead";
+        em.addEventListener("click", () => { if (sendToOwner("email", forOwner.review, forOwner.stars, b) && onUse) onUse(); });
+        bar.appendChild(tx); bar.appendChild(em);
+      }
       card.appendChild(t); card.appendChild(bar);
       container.appendChild(card);
     });
   }
+
+  /* ---------- sending a draft to the owner ------------------------------
+     You press send on your own phone. That matters: a person texting their own
+     paying customer is person-to-person, so none of the carrier registration
+     that applies to software sending texts applies here. The console never
+     sends anything itself. It only opens your messaging app with the message
+     already typed, exactly the way the ordering chat hands a diner's order to
+     their own phone.
+
+     Keep the text short. An owner reads this standing on the floor during
+     service, and a 600 character wall of text gets left for later, which is
+     the one thing a bad review cannot afford. */
+  function ownerNote(client, review, stars, reply) {
+    var star = "★".repeat(Math.max(0, Math.min(5, +stars || 0)));
+    var short = review.length > 240 ? review.slice(0, 237).trim() + "…" : review;
+    return "Hi, one to OK for " + (client.name || "you") + ".\n\n"
+      + star + " review:\n\"" + short + "\"\n\n"
+      + "My reply:\n\"" + reply + "\"\n\n"
+      + "Reply YES and I'll post it, or send me changes.";
+  }
+
+  function sendToOwner(how, review, stars, reply) {
+    const c = activeClient();
+    if (!c) { toast("Pick a client first"); return false; }
+    const body = ownerNote(c, review, stars, reply);
+    if (how === "sms") {
+      const digits = String(c.ownerPhone || "").replace(/[^0-9]/g, "");
+      if (digits.length < 10) {
+        toast("Add the owner's mobile on the Clients tab first");
+        return false;
+      }
+      /* Digits only. A raw "+1 (415) 555 0199" leaves spaces and brackets in
+         the URI and some phones drop the message body without saying so. */
+      window.open("sms:+" + digits + "?&body=" + encodeURIComponent(body), "_blank");
+      toast("Opening your messages. Press send there.");
+      return true;
+    }
+    if (!c.ownerEmail) { toast("Add the owner's email on the Clients tab first"); return false; }
+    window.open("mailto:" + encodeURIComponent(c.ownerEmail)
+      + "?subject=" + encodeURIComponent("One to OK: " + (stars || "") + "-star review")
+      + "&body=" + encodeURIComponent(body), "_blank");
+    toast("Opening your email. Press send there.");
+    return true;
+  }
+
   function setLoading(container) { container.innerHTML = '<div class="loading">Working…</div>'; }
   function setError(container, e) { container.innerHTML = `<div class="loading" style="color:var(--accent)">⚠️ ${e.message || e}</div>`; }
 
@@ -172,16 +226,19 @@
     editingClientId = c.id;
     dom.cName.value = c.name || ""; dom.cCuisine.value = c.cuisine || ""; dom.cTone.value = c.tone || "";
     dom.cReview.value = c.reviewLink || ""; dom.cCity.value = c.city || ""; dom.cRev90.value = c.rev90 || "";
+    dom.cPhone.value = c.ownerPhone || ""; dom.cEmail.value = c.ownerEmail || "";
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function clearClientForm() {
     editingClientId = null;
-    [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90].forEach((i) => i.value = "");
+    [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90,
+     dom.cPhone, dom.cEmail].forEach((i) => i.value = "");
   }
   function saveClient() {
     const name = dom.cName.value.trim();
     if (!name) { toast("Give the restaurant a name"); return; }
-    const data = { name, cuisine: dom.cCuisine.value.trim(), tone: dom.cTone.value.trim(), reviewLink: dom.cReview.value.trim(), city: dom.cCity.value.trim(), rev90: dom.cRev90.value.trim() };
+    const data = { name, cuisine: dom.cCuisine.value.trim(), tone: dom.cTone.value.trim(), reviewLink: dom.cReview.value.trim(), city: dom.cCity.value.trim(), rev90: dom.cRev90.value.trim(),
+      ownerPhone: dom.cPhone.value.trim(), ownerEmail: dom.cEmail.value.trim() };
     if (editingClientId) {
       const c = state.clients.find((x) => x.id === editingClientId);
       if (c) Object.assign(c, data);
@@ -226,7 +283,7 @@
         logged = true;
         logReply(forClient, Math.round((Date.now() - startedAt) / 1000));
         toast("Logged. " + repliesThisMonth(forClient) + " this month");
-      });
+      }, { review, stars });
     } catch (e) { setError(dom.rvOut, e); } finally { dom.rvGo.disabled = false; }
   }
 
