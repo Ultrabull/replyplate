@@ -54,6 +54,7 @@
     ocGo: $("ocGo"), ocOut: $("ocOut"),
     chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
     chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chMethod: $("chMethod"), chCurrency: $("chCurrency"),
+    chLoyEvery: $("chLoyEvery"), chLoyReward: $("chLoyReward"),
     rpPeriod: $("rpPeriod"), rpLoad: $("rpLoad"), rpText: $("rpText"), rpGo: $("rpGo"), rpOut: $("rpOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
     apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
@@ -310,6 +311,7 @@
       /* What they will give for a direct order. This is the line that goes on
          the Google Maps ordering link, so it must not get lost in an inbox. */
       d["For ordering direct"] ? "For ordering direct: " + d["For ordering direct"] : "",
+      d["Loyalty card"] ? "Loyalty card: " + d["Loyalty card"] : "",
     ].filter(Boolean).join("\n\n");
     if (notes && dom.chNotes && !dom.chNotes.value.trim()) dom.chNotes.value = notes;
     if (d["Orders go to"] && dom.chOrderPhone && !dom.chOrderPhone.value.trim()) dom.chOrderPhone.value = d["Orders go to"];
@@ -713,6 +715,14 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
         mode: "For pickup",
         note: `You'll send this as a text from your own phone, to ${client.name}'s number. Nothing is paid here, and they'll confirm before you come.`,
       };
+      /* The card only exists when the owner has set both halves of it. A
+         threshold with no reward, or a reward with no threshold, is a promise
+         nobody can keep. */
+      const every = parseInt(dom.chLoyEvery.value, 10) || 0;
+      const reward = dom.chLoyReward.value.trim();
+      if (every > 1 && reward) {
+        cfg.loyalty = { enabled: true, every, reward };
+      }
     }
     return `<!-- ${client.name} chat helper. Paste both lines just before </body> -->\n` +
       `<script>window.RP_CHAT = ${JSON.stringify(cfg, null, 2)};<\/script>\n` +

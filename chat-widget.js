@@ -124,6 +124,8 @@
     + '.rpc-menu{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 14px;background:#f8f5ef}'
     + '.rpc-sec{font:800 11px inherit;text-transform:uppercase;letter-spacing:.5px;color:#8a7b6e;margin:14px 0 7px}'
     + '.rpc-sec:first-child{margin-top:2px}'
+    + '.rpc-loy{background:#f3ece1;border:1px dashed #cbb79b;border-radius:9px;padding:8px 11px;margin-bottom:8px;font-size:12.5px;color:#6b5c48;line-height:1.4}'
+    + '.rpc-loy.due{background:#eaf6ef;border-color:#7fbf9b;color:#1f6a45;font-weight:700;border-style:solid}'
     + '.rpc-item{background:#fff;border:1px solid #e6ddd1;border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px}'
     + '.rpc-item .nm{flex:1;min-width:0;font-size:14.5px}'
     + '.rpc-item .nm em{display:block;color:#8a7b6e;font-size:12.5px;font-style:normal}'
@@ -191,6 +193,7 @@
     + '<div class="rpc-view" id="rpcOrderView">'
     + '  <div class="rpc-menu" id="rpcMenu"></div>'
     + '  <div class="rpc-basket">'
+    + '    <div class="rpc-loy" id="rpcLoy" hidden></div>'
     + '    <div class="rpc-tot"><span id="rpcCount">Nothing yet</span><span id="rpcTotal"></span></div>'
     + '    <input class="rpc-name" id="rpcWho" placeholder="Your name" autocomplete="name" />'
     + '    <button class="rpc-go" id="rpcGo" type="button" disabled>Send this order</button>'
@@ -286,6 +289,13 @@
     panel.querySelector("#rpcCount").textContent = n ? (n + (n === 1 ? " item" : " items")) : "Nothing yet";
     panel.querySelector("#rpcTotal").textContent = n ? money(total()) : "";
     panel.querySelector("#rpcGo").disabled = !n;
+    var card = panel.querySelector("#rpcLoy");
+    if (card) {
+      var line = loyLine();
+      card.textContent = line;
+      card.hidden = !line;
+      card.className = "rpc-loy" + (loyDue() ? " due" : "");
+    }
   }
   function itemRow(it) {
     var key = it.name;
@@ -333,6 +343,52 @@
     panel.querySelector("#rpcHint").textContent = ORDER.note ||
       "You'll send this from your own phone. Nothing is paid here, and " + (C.name || "the restaurant") + " will confirm before you come.";
   }
+
+  /* ── The loyalty card ──────────────────────────────────────────────────
+     Order five times, the sixth garlic bread is free. The oldest trick in
+     hospitality, and the only one on this page aimed at getting somebody back
+     rather than getting them in.
+
+     It is kept on the diner's own phone, because this widget has no server and
+     never will. So yes, somebody could clear their browser and start again, or
+     count up on a second phone.
+
+     That is fine, and it is worth saying why. A paper stamp card is forgeable
+     with a rubber stamp off the internet, and restaurants have used them for a
+     hundred years anyway, because the habit it builds is worth more than the
+     occasional free coffee it loses. The ceiling on this fraud is one free side.
+
+     The owner is still the last check: the claim is written into the order text
+     they receive, so they see it before they give anything away.
+
+     Nothing here identifies anybody. No name, no number, no tracking, just a
+     count against this restaurant on this device. */
+  var LOY = C.loyalty && C.loyalty.enabled && +C.loyalty.every > 1 ? C.loyalty : null;
+  var LOY_KEY = "rpc.loy." + norm(C.name || "x").replace(/\s+/g, "-");
+
+  function loyGet() {
+    if (!LOY) return 0;
+    try { return Math.max(0, parseInt(localStorage.getItem(LOY_KEY), 10) || 0); }
+    catch (e) { return 0; }   /* private mode, or storage refused. Silent. */
+  }
+  function loySet(n) {
+    if (!LOY) return;
+    try { localStorage.setItem(LOY_KEY, String(n)); } catch (e) {}
+  }
+  function loyDue() { return LOY ? loyGet() + 1 >= +LOY.every : false; }
+
+  /* The line a diner reads. It has to be honest about where the count lives,
+     without turning a free side into a paragraph about browser storage. */
+  function loyLine() {
+    if (!LOY) return "";
+    var have = loyGet(), need = +LOY.every, left = need - have;
+    var reward = LOY.reward || "something on the house";
+    if (left <= 1) return "This one earns you " + reward + ". Mention it when you collect.";
+    return have === 0
+      ? "Order " + need + " times and get " + reward + "."
+      : have + " of " + need + ". " + (left - 1 === 0 ? "Next one" : left - 1 + " more") + " and you get " + reward + ".";
+  }
+
   function orderText() {
     var lines = ["Order from your website:", ""];
     basketList().forEach(function (b) { lines.push(b.qty + " x " + b.name); });
@@ -340,6 +396,11 @@
     var who = panel.querySelector("#rpcWho").value.trim();
     if (who) lines.push("Name: " + who);
     if (ORDER.mode) lines.push(ORDER.mode);
+    /* The owner is the last check on the card, so the claim has to be in the
+       message they read, not only on the diner's screen. */
+    if (LOY && loyDue()) {
+      lines.push("", "*** " + (LOY.reward || "A free item") + " earned, order " + LOY.every + " of " + LOY.every + " ***");
+    }
     return lines.join("\n");
   }
   /* Orders go by text. Every US restaurant already has a number that receives
@@ -394,7 +455,7 @@
       phonePreview(text);
       bubble("It arrives on the restaurant's own phone number, like a text from any other customer. Nothing is paid here, and your number is what tells them the order is real.", "bot");
       clearBasket();
-      return;
+      return;   /* demo: deliberately does not count towards the card */
     }
 
     var full = e164(ORDER.phone);
@@ -414,6 +475,16 @@
       (C.name || "we") + " will confirm shortly.\n\nIf nothing opened, here it is to copy and send to " +
       (ORDER.phone || "us") + " yourself.", "bot");
     phonePreview(text);
+    /* Count it only once the order has really been handed to the phone. A demo
+       order, or one that never left the panel, must never earn a stamp. */
+    if (LOY) {
+      var was = loyGet();
+      loySet(was + 1 >= +LOY.every ? 0 : was + 1);
+      if (was + 1 >= +LOY.every) {
+        bubble("That is your card filled. " + (LOY.reward || "Your free item") +
+          " is on this order, and it starts again from your next one.", "bot");
+      }
+    }
     clearBasket();
   }
 
