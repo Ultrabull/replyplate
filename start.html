@@ -63,6 +63,19 @@
   .opt:has(input:checked){border-color:var(--accent);background:rgba(208,163,78,.12)}
   .opt b{display:block;font-size:15px;font-weight:700}
   .opt span{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+  /* Tap-to-answer. Every chip writes its line into the box underneath, and
+     tapping it again takes the line back out. So an owner can answer entirely
+     with their thumb, entirely by typing, or any mix of the two. */
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
+  .chip{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:999px;
+    padding:10px 15px;font:inherit;font-size:13.5px;cursor:pointer;min-height:44px;
+    transition:border-color .15s,background .15s,color .15s}
+  .chip:hover{border-color:var(--accent2)}
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .chip[aria-pressed="true"]{border-color:var(--accent);background:rgba(208,163,78,.16);color:var(--accent);font-weight:700}
+  .chip[aria-pressed="true"]::before{content:"✓ ";font-weight:800}
+  .chiphint{font-size:12px;color:var(--muted);margin:-4px 0 9px}
+
   .send{background:var(--card);border:2px solid var(--accent);border-radius:18px;padding:24px;margin:22px 0 10px;text-align:center}
   .send h2{font-size:21px;margin-bottom:8px}
   .send p{color:var(--muted);font-size:14.5px;margin-bottom:18px}
@@ -255,10 +268,70 @@
       a.href = CONFIG.book || ("mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("Can we have a quick call"));
     });
 
+    /* Tap-to-answer sets. Each one writes into the field named after it.
+       These are the answers a restaurant gives most often, so the common case
+       is a few taps and the unusual case is still a free text box. */
+    var CHIPS = {
+      q3: { sep: ", ", items: ["Pizza", "Italian", "Mexican", "Thai", "Indian", "Chinese", "Burgers",
+              "Sushi", "BBQ", "Seafood", "Breakfast and brunch", "Coffee shop", "Bakery", "Pub food",
+              "Family run", "Casual", "Fine dining", "Plenty for vegans"] },
+      q4b: { items: ["Sign off with my first name", "Keep replies short",
+              "Never use the word guys", "A bit of humour is fine", "No exclamation marks",
+              "Always invite them back"] },
+      q5: { items: ["Never offer free food to fix a complaint", "Never blame a supplier",
+              "Never blame a member of staff", "Never argue with the reviewer",
+              "Never name anyone who works here", "Never discuss prices",
+              "Never mention we were closed for a while"] },
+      q7: { items: ["Opening hours", "Parking", "Vegan options", "Gluten free", "Nut allergies",
+              "Dogs allowed", "Kids menu and high chairs", "Booking a table", "Big groups",
+              "Wheelchair access", "Outdoor seating", "Do you deliver", "Card or cash",
+              "Wifi", "Corkage and BYO", "Set menus"] },
+      q9: { items: ["Closed Mondays", "Open seven days", "Lunch and dinner", "Dinner only",
+              "Closed Sunday evening", "Later on Friday and Saturday", "Kitchen shuts an hour before we do"] },
+      q10: { items: ["We run a weekly offer", "We are closing for a break soon",
+              "A recent bad review still bothers me", "We have just refurbished",
+              "A new menu is coming", "We are hiring", "Nothing right now"] }
+    };
+
     var form = document.getElementById("f");
     var bar = document.getElementById("bar");
     var lbl = document.getElementById("progLbl");
     var boxes = [].slice.call(form.querySelectorAll(".q"));
+
+    /* Build the chips and wire them to their field. A chip adds its own line and
+       removes exactly that line again, so typing around it is never disturbed. */
+    Object.keys(CHIPS).forEach(function (id) {
+      var field = document.getElementById(id);
+      if (!field) return;
+      var set = CHIPS[id], sep = set.sep || "\n";
+      var wrap = document.createElement("div");
+      wrap.className = "chips";
+      var hint = document.createElement("p");
+      hint.className = "chiphint";
+      hint.textContent = "Tap the ones that fit, then add anything else underneath.";
+      set.items.forEach(function (text) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip";
+        b.textContent = text;
+        b.setAttribute("aria-pressed", "false");
+        b.addEventListener("click", function () {
+          var on = b.getAttribute("aria-pressed") === "true";
+          var parts = field.value.split(sep).map(function (x) { return x.trim(); }).filter(Boolean);
+          if (on) {
+            parts = parts.filter(function (x) { return x !== text; });
+          } else if (parts.indexOf(text) === -1) {
+            parts.push(text);
+          }
+          field.value = parts.join(sep);
+          b.setAttribute("aria-pressed", on ? "false" : "true");
+          refresh();
+        });
+        wrap.appendChild(b);
+      });
+      field.parentNode.insertBefore(wrap, field);
+      field.parentNode.insertBefore(hint, field);
+    });
 
     /* A question counts as answered when anything inside it has been filled in.
        No question is required. An owner who skips two is still worth starting
@@ -269,6 +342,7 @@
       });
     }
     function refresh() {
+      if (!bar) return 0;
       var n = 0;
       boxes.forEach(function (q) {
         var ok = answered(q);
@@ -302,7 +376,24 @@
         lines.push("");
       });
       var who = (form.querySelector("#q1") || {}).value || "";
-      return { who: who.trim(), body: lines.join("\n").trim() };
+
+      /* A machine-readable copy, at the bottom, under a line that tells the
+         owner to leave it alone. The operator pastes this one block into the
+         console and the whole client record fills itself in. Without it the
+         answers get retyped by hand, which is where details get lost. */
+      var data = {};
+      [].slice.call(form.querySelectorAll("input, textarea")).forEach(function (el) {
+        var name = el.getAttribute("name");
+        if (!name) return;
+        if (el.type === "radio") { if (el.checked) data[name] = el.value; return; }
+        var v = el.value.trim();
+        if (v) data[name] = v;
+      });
+      var block = "\n\n----- for ReplyPlate, please leave this bit alone -----\n"
+        + "RP1:" + JSON.stringify(data)
+        + "\n----- end -----";
+
+      return { who: who.trim(), body: lines.join("\n").trim() + block };
     }
 
     function unanswered() {

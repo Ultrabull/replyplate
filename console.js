@@ -37,6 +37,7 @@
     clientsList: $("clientsList"),
     cName: $("cName"), cCuisine: $("cCuisine"), cTone: $("cTone"), cReview: $("cReview"), cCity: $("cCity"),
     cPhone: $("cPhone"), cEmail: $("cEmail"),
+    qzPaste: $("qzPaste"), qzGo: $("qzGo"), qzMsg: $("qzMsg"),
     cSave: $("cSave"), cClear: $("cClear"),
     rvStars: $("rvStars"), rvText: $("rvText"), rvGo: $("rvGo"), rvOut: $("rvOut"),
     grGo: $("grGo"), grOut: $("grOut"),
@@ -258,6 +259,65 @@
     clearClientForm(); renderClients(); renderClientSelect(); renderPhotos(); renderWorkload();
     toast("Saved");
   }
+
+  /* ---------- reading a filled-in questionnaire -------------------------
+     start.html puts a one-line JSON block at the bottom of the email it writes.
+     Paste the email in here and the client form fills itself, including the
+     things that would otherwise be retyped: the voice, the red lines, the
+     questions diners ask, and the hours.
+
+     It reads the block if it is there and falls back to reading the numbered
+     answers if the owner deleted it, because owners delete things. */
+  function parseQuestionnaire(raw) {
+    const text = String(raw || "");
+    const m = text.match(/RP1:(\{[\s\S]*?\})\s*(?:\n-|$)/);
+    if (m) { try { return JSON.parse(m[1]); } catch (e) { /* fall through */ } }
+    /* No block, so read the labelled lines the owner can see. */
+    const out = {};
+    text.split("\n").forEach((line) => {
+      const p = line.indexOf(":");
+      if (p < 1) return;
+      const k = line.slice(0, p).trim(), v = line.slice(p + 1).trim();
+      if (k && v && k.length < 40) out[k] = out[k] ? out[k] + "\n" + v : v;
+    });
+    return Object.keys(out).length ? out : null;
+  }
+
+  function applyQuestionnaire(raw) {
+    const d = parseQuestionnaire(raw);
+    if (!d) { dom.qzMsg.textContent = "Could not find any answers in that. Paste the whole email."; return; }
+    const put = (el, val) => { if (val && !el.value.trim()) el.value = val; };
+    put(dom.cName, d["Restaurant"]);
+    put(dom.cCity, d["Where"]);
+    put(dom.cCuisine, d["What you sell"]);
+    put(dom.cReview, d["Google listing"]);
+    put(dom.cPhone, d["Mobile"]);
+    put(dom.cEmail, d["Email"]);
+    /* Voice and the never-say list belong together: both are instructions about
+       how to write, and both go into every prompt through clientContext(). */
+    const voice = [d["Voice"], d["More on the voice"], d["Never say"] ? "Never: " + d["Never say"] : ""]
+      .filter(Boolean).join(". ");
+    put(dom.cTone, voice);
+    /* The chat answers and the hours are the raw material for the Website chat
+       tab, so drop them there rather than losing them. */
+    const notes = [
+      d["Hours"] ? "Hours:\n" + d["Hours"] : "",
+      d["Questions you get asked"] ? "They get asked about:\n" + d["Questions you get asked"] : "",
+      d["Anything else"] ? "Also:\n" + d["Anything else"] : "",
+      d["Pickup ordering"] ? "Pickup ordering: " + d["Pickup ordering"] : "",
+      d["Orders go to"] ? "Orders go to: " + d["Orders go to"] : "",
+    ].filter(Boolean).join("\n\n");
+    if (notes && dom.chNotes && !dom.chNotes.value.trim()) dom.chNotes.value = notes;
+    if (d["Orders go to"] && dom.chOrderPhone && !dom.chOrderPhone.value.trim()) dom.chOrderPhone.value = d["Orders go to"];
+    if (d["Mobile"] && dom.chPhone && !dom.chPhone.value.trim()) dom.chPhone.value = d["Mobile"];
+
+    const n = Object.keys(d).length;
+    dom.qzMsg.textContent = "Read " + n + " answer" + (n === 1 ? "" : "s") +
+      ". Check the form below, then press Save client. The hours and the questions they get asked "
+      + "have gone to the Website chat tab.";
+    dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   function deleteClient(id) {
     delete state.photos[id]; save(S.photos, state.photos);
     delete state.work[id]; save(S.work, state.work);
@@ -1314,6 +1374,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.dataFile.addEventListener("change", (e) => { if (e.target.files[0]) importData(e.target.files[0]); e.target.value = ""; });
     dom.settingsModal.addEventListener("click", (e) => { if (e.target === dom.settingsModal) closeSettings(); });
     dom.cSave.addEventListener("click", saveClient);
+    dom.qzGo.addEventListener("click", () => applyQuestionnaire(dom.qzPaste.value));
     dom.cClear.addEventListener("click", clearClientForm);
     dom.rvGo.addEventListener("click", doReplies);
     dom.grGo.addEventListener("click", doGetReviews);

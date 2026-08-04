@@ -36,6 +36,18 @@
       <p class="hint">Add each restaurant you work with. The active client (top-right) is used across all tools.</p>
       <div class="clients-list" id="clientsList"></div>
       <div class="card form">
+        <h3>Start from a questionnaire</h3>
+        <p class="hint">The owner filled in reply-plate.com/start.html and emailed you the answers.
+          Paste the whole email in here, or just the block at the bottom of it, and the form below
+          fills itself in. Nothing is saved until you press Save client.</p>
+        <textarea id="qzPaste" class="in" rows="4" placeholder="Paste the email here"></textarea>
+        <div class="row">
+          <button class="btn ghost" id="qzGo" type="button">Fill the form from this</button>
+        </div>
+        <p class="hint" id="qzMsg" style="margin-top:8px"></p>
+      </div>
+
+      <div class="card form">
         <h3>Add / edit a client</h3>
         <input id="cName" class="in" placeholder="Restaurant name *" />
         <input id="cCuisine" class="in" placeholder="Cuisine / style (e.g. cozy Italian trattoria)" />
