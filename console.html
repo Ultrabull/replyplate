@@ -300,13 +300,27 @@
         <input id="apiKey" class="in" type="password" placeholder="sk-or-v1-…" />
         <p class="hint">Stored only on this device. Get one at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.</p>
         <label class="lbl" for="modelSel" style="margin-top:14px">Model</label>
-        <select id="modelSel" class="in">
-          <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (recommended)</option>
-          <option value="openai/gpt-4o-mini">GPT-4o mini (cheap)</option>
-          <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek V3 (free)</option>
-          <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (free)</option>
-        </select>
-        <p class="hint">Claude writes the best replies. Free models work for testing.</p>
+        <select id="modelSel" class="in"></select>
+        <p class="hint">Claude writes the best replies. Free models work for testing.
+          Models get retired, so this list is loaded live from OpenRouter rather than
+          typed in here. If a name disappears one day, that is why.</p>
+        <div class="row" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn ghost" id="modelRefresh" type="button">Reload the list</button>
+          <button class="btn ghost" id="modelTest" type="button">Send a test reply</button>
+        </div>
+        <p class="hint" id="modelMsg" style="margin-top:8px"></p>
+
+        <hr style="border:none;border-top:1px solid var(--line);margin:18px 0" />
+        <label class="lbl">Backup</label>
+        <p class="hint">Every client, lead, review and timing you have is stored in this
+          browser and nowhere else. Clearing site data, or Safari not being opened for a
+          week, takes the lot. Download a copy now and again.</p>
+        <div class="row" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn ghost" id="dataExport" type="button">Download a backup</button>
+          <button class="btn ghost" id="dataImport" type="button">Restore from a backup</button>
+          <input id="dataFile" type="file" accept="application/json,.json" hidden />
+        </div>
+        <p class="hint" id="dataMsg" style="margin-top:8px"></p>
       </div>
       <div class="modal-foot"><button class="btn" id="settingsSave" type="button">Save</button></div>
     </div>

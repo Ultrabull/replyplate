@@ -776,13 +776,13 @@
           <h3><span class="emoji">💬</span> Answers when nobody can get to the phone</h3>
           <p><b>What it does.</b> A chat button sits on your website. It answers the questions you get over and over: your serving times, parking, vegan options, dogs, how to book. It only repeats the answers you wrote, and when it does not know something it says so and gives out your number.</p>
           <p style="margin-top:10px"><b>Why it is worth having.</b> Someone picking a restaurant at 9pm is standing on their phone, not making a call. Your page answers their question in your words, right then, while your staff stay on the floor. A page that answers nothing gives them nothing to act on.</p>
-          <p style="margin-top:12px"><a href="./chat-demo.html">See it working, ask it anything →</a></p>
+          <p style="margin-top:12px"><a href="#" data-rp-chat>See it working, ask it anything →</a></p>
         </div>
         <div class="card">
           <h3><span class="emoji">🍕</span> Takes the order without the phone call</h3>
           <p><b>What it does.</b> The same button opens your menu. The diner taps what they want, then sends the finished order as a text to your restaurant's phone number, from their own phone. Their real number comes with it, and they pay when they pick up. No card machine to set up, no app to install, and nothing new for you to log into. It lands in the same place a customer calling you would.</p>
           <p style="margin-top:10px"><b>Why it is worth having.</b> It gets to 7:40 on a Friday, the phone rings, and every pair of hands is carrying plates. Nobody gets to it, and a caller who got no answer is usually not sitting there waiting for one. This gives that person a way in that does not need anybody free to pick up.</p>
-          <p style="margin-top:12px"><a href="./chat-demo.html">Try the ordering →</a></p>
+          <p style="margin-top:12px"><a href="#" data-rp-order>Try the ordering →</a></p>
         </div>
       </div>
       <p class="cmp-note mid">Both live in one button on your site, reading <b>Order food or ask us</b>. A diner taps it and can do either, so the ones who came to ask a question end up seeing the menu.</p>
@@ -1064,6 +1064,10 @@ window.RP_CHAT = {
   ]
 };
 </script>
+<!-- The test bench must load BEFORE the widget: the widget reads its order
+     settings once as it boots. Both are deferred, so source order is run order.
+     With no ?test in the address this file adds nothing at all. -->
+<script src="./demo-test.js" defer></script>
 <script src="./chat-widget.js" defer></script>
 </body>
 </html>

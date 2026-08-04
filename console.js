@@ -32,6 +32,8 @@
     clientSelect: $("clientSelect"), settingsBtn: $("settingsBtn"),
     settingsModal: $("settingsModal"), settingsClose: $("settingsClose"), settingsSave: $("settingsSave"),
     apiKey: $("apiKey"), modelSel: $("modelSel"),
+    modelRefresh: $("modelRefresh"), modelTest: $("modelTest"), modelMsg: $("modelMsg"),
+    dataExport: $("dataExport"), dataImport: $("dataImport"), dataFile: $("dataFile"), dataMsg: $("dataMsg"),
     clientsList: $("clientsList"),
     cName: $("cName"), cCuisine: $("cCuisine"), cTone: $("cTone"), cReview: $("cReview"), cCity: $("cCity"),
     cSave: $("cSave"), cClear: $("cClear"),
@@ -640,7 +642,7 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     const cu = el("button", "btn sm"); cu.type = "button"; cu.textContent = "Copy the link";
     cu.addEventListener("click", () => copy(url, cu));
     const cq = el("a", "btn sm ghost"); cq.textContent = "Make a QR code";
-    cq.href = "https://www.qr-code-generator.com/"; cq.target = "_blank"; cq.rel = "noopener";
+    cq.href = "./qr-code.html"; cq.target = "_blank"; cq.rel = "noopener";
     cq.style.textDecoration = "none"; cq.style.display = "inline-block";
     const cc = el("button", "btn sm ghost"); cc.type = "button"; cc.textContent = "Copy the page file";
     cc.addEventListener("click", () => { cfgBox.value = JSON.stringify(pageConfig(chatKB, c), null, 2); copy(cfgBox.value, cc); });
@@ -1054,8 +1056,146 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     save(S.leads, state.leads); dom.leadName.value = ""; renderLeads();
   }
 
+
+  /* ---------- models, loaded from OpenRouter rather than typed in here ----------
+     Models get retired. A hard-coded name in a dropdown works right up until the
+     day it does not, and then every draft this console writes fails at the exact
+     moment you are sitting in front of a restaurant owner. So ask OpenRouter what
+     exists. The list endpoint needs no key, so this works before you have one.
+
+     A short fallback list is kept for the offline case only, and it is deliberately
+     not treated as the truth. */
+  const MODEL_FALLBACK = [
+    { id: "anthropic/claude-sonnet-4.5", name: "Claude Sonnet 4.5" },
+    { id: "openai/gpt-4o-mini", name: "GPT-4o mini" },
+  ];
+  const MODEL_PICKS = [
+    { match: /^anthropic\/claude.*(sonnet|opus)/i, note: "best replies" },
+    { match: /^openai\/gpt.*mini/i, note: "cheap" },
+    { match: /:free$/, note: "free, fine for testing" },
+  ];
+  let modelCache = null;
+
+  function fillModels(list, chosen) {
+    dom.modelSel.innerHTML = "";
+    list.forEach((m) => {
+      const o = el("option");
+      o.value = m.id;
+      o.textContent = m.name + (m.note ? " (" + m.note + ")" : "");
+      dom.modelSel.appendChild(o);
+    });
+    // Keep whatever was saved even if it is no longer offered, so nothing is
+    // silently switched underneath the operator without them seeing it.
+    if (chosen && !list.some((m) => m.id === chosen)) {
+      const o = el("option");
+      o.value = chosen;
+      o.textContent = chosen + " (saved, no longer listed)";
+      dom.modelSel.appendChild(o);
+    }
+    if (chosen) dom.modelSel.value = chosen;
+  }
+
+  async function loadModels(force) {
+    if (modelCache && !force) { fillModels(modelCache, state.model); return; }
+    dom.modelMsg.textContent = "Asking OpenRouter what it has…";
+    try {
+      const res = await fetch(ENDPOINT + "/models");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const all = ((await res.json()).data || []);
+      const picked = [];
+      const seen = new Set();
+      MODEL_PICKS.forEach((rule) => {
+        all.filter((m) => rule.match.test(m.id)).slice(0, 4).forEach((m) => {
+          if (seen.has(m.id)) return;
+          seen.add(m.id);
+          picked.push({ id: m.id, name: m.name || m.id, note: rule.note });
+        });
+      });
+      if (!picked.length) throw new Error("nothing matched");
+      modelCache = picked;
+      fillModels(picked, state.model);
+      const stillThere = all.some((m) => m.id === state.model);
+      dom.modelMsg.textContent = stillThere
+        ? picked.length + " models loaded. Your saved model still exists."
+        : "Careful: \"" + state.model + "\" is not on OpenRouter any more. Pick another one and save.";
+    } catch (e) {
+      fillModels(MODEL_FALLBACK, state.model);
+      dom.modelMsg.textContent = "Could not reach OpenRouter (" + e.message + "). Showing a short list from memory, which may be out of date.";
+    }
+  }
+
+  /* Proves the key and the model together, which is the only thing that matters.
+     Two minutes here beats finding out mid-demo. */
+  async function testModel() {
+    const model = dom.modelSel.value, key = dom.apiKey.value.trim() || state.key;
+    if (!key) { dom.modelMsg.textContent = "Put your OpenRouter key in first."; return; }
+    dom.modelMsg.textContent = "Writing a test reply with " + model + "…";
+    try {
+      const res = await fetch(ENDPOINT + "/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}`, "X-Title": "ReplyPlate" },
+        body: JSON.stringify({ model, max_tokens: 40, messages: [{ role: "user", content: 'Reply to this 5-star review in one short sentence: "Lovely pizza, quick service."' }] }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const d = (j && j.error && j.error.message) || ("HTTP " + res.status);
+        dom.modelMsg.textContent = res.status === 401 ? "The key was rejected (401)."
+          : res.status === 402 ? "Out of credits (402). Add credits or choose a free model."
+          : res.status === 404 ? "That model does not exist any more (404). Reload the list and pick another."
+          : "Failed: " + d;
+        return;
+      }
+      const out = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "";
+      dom.modelMsg.textContent = out ? "Working. It wrote: " + out.trim().slice(0, 90) : "Answered, but empty. Try another model.";
+    } catch (e) {
+      dom.modelMsg.textContent = "Could not reach OpenRouter: " + e.message;
+    }
+  }
+
+  /* ---------- backup ----------------------------------------------------
+     Everything this console knows lives in this browser and nowhere else:
+     every client, every lead, the review history, and rp.work, which is the
+     timing the whole price is worked out from. Clearing site data takes all
+     of it, and Safari drops script-written storage after seven days without
+     a visit. There was no way to get a copy out until now. */
+  function exportData() {
+    const out = { app: "replyplate", version: 1, exported: new Date().toISOString(), data: {} };
+    Object.values(S).forEach((k) => {
+      const v = localStorage.getItem(k);
+      if (v != null) out.data[k] = v;
+    });
+    // The API key is money. Never write it into a file that ends up in Downloads.
+    delete out.data[S.key];
+    const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+    const a = el("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "replyplate-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    const n = Object.keys(out.data).length;
+    dom.dataMsg.textContent = "Saved " + n + " sets of data. Your API key is deliberately not in the file, so type it back in after a restore.";
+  }
+
+  function importData(file) {
+    const rd = new FileReader();
+    rd.onload = () => {
+      let j;
+      try { j = JSON.parse(rd.result); } catch { dom.dataMsg.textContent = "That is not a backup file."; return; }
+      if (!j || j.app !== "replyplate" || !j.data) { dom.dataMsg.textContent = "That is not a ReplyPlate backup."; return; }
+      const keys = Object.keys(j.data).filter((k) => Object.values(S).includes(k));
+      if (!keys.length) { dom.dataMsg.textContent = "There is nothing in that file to restore."; return; }
+      const clients = (() => { try { return (JSON.parse(j.data[S.clients] || "[]") || []).length; } catch { return 0; } })();
+      if (!confirm("Restore " + clients + " client(s) from " + (j.exported || "").slice(0, 10) +
+                   "?\n\nThis replaces what is in this browser now. Download a backup of the current data first if you are not sure.")) return;
+      keys.forEach((k) => localStorage.setItem(k, j.data[k]));
+      dom.dataMsg.textContent = "Restored. Reloading…";
+      setTimeout(() => location.reload(), 700);
+    };
+    rd.readAsText(file);
+  }
+
   /* ---------- settings ---------- */
-  function openSettings() { dom.apiKey.value = state.key || ""; dom.modelSel.value = state.model; dom.settingsModal.hidden = false; }
+  function openSettings() { dom.apiKey.value = state.key || ""; dom.settingsModal.hidden = false; loadModels(false); }
   function closeSettings() { dom.settingsModal.hidden = true; }
   function saveSettings() {
     state.key = dom.apiKey.value.trim(); save(S.key, state.key);
@@ -1100,6 +1240,11 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.settingsBtn.addEventListener("click", openSettings);
     dom.settingsClose.addEventListener("click", closeSettings);
     dom.settingsSave.addEventListener("click", saveSettings);
+    dom.modelRefresh.addEventListener("click", () => loadModels(true));
+    dom.modelTest.addEventListener("click", testModel);
+    dom.dataExport.addEventListener("click", exportData);
+    dom.dataImport.addEventListener("click", () => dom.dataFile.click());
+    dom.dataFile.addEventListener("change", (e) => { if (e.target.files[0]) importData(e.target.files[0]); e.target.value = ""; });
     dom.settingsModal.addEventListener("click", (e) => { if (e.target === dom.settingsModal) closeSettings(); });
     dom.cSave.addEventListener("click", saveClient);
     dom.cClear.addEventListener("click", clearClientForm);

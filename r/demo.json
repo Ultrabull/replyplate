@@ -1,8 +1,8 @@
 {
   "name": "The Olive Table",
-  "subtitle": "Order collection, or ask us anything",
+  "subtitle": "Order pickup, or ask us anything",
   "phone": "(555) 010-2288",
-  "greeting": "Hello! Tap Order for collection above to order, or ask me anything about The Olive Table. I'll only tell you things the team has actually confirmed.",
+  "greeting": "Hello! Tap Order for pickup above to order, or ask me anything about The Olive Table. I'll only tell you things the team has actually confirmed.",
   "buttonText": "Order food or ask us",
   "answers": [
     {
@@ -74,7 +74,7 @@
       "a": "Children are welcome. We have a kids' menu, high chairs, and a changing table in the accessible restroom."
     },
     {
-      "chip": "Collection and delivery",
+      "chip": "Pickup and delivery",
       "q": [
         "do you deliver",
         "can i collect",
@@ -86,7 +86,7 @@
         "how do i order",
         "can i order online"
       ],
-      "a": "Collection only, no delivery. Tap Order for collection at the top of this chat, pick what you want, and send it to us from your own phone.\n\nYou pay when you collect. We'll text you back to say how long."
+      "a": "Pickup only, no delivery. Tap Order for pickup at the top of this chat, pick what you want, and send it to us from your own phone.\n\nYou pay when you collect. We'll text you back to say how long."
     },
     {
       "chip": "Prices",
@@ -99,7 +99,7 @@
         "is it expensive",
         "cost of a pizza"
       ],
-      "a": "Pizzas are $12 to $14, sides $4 to $5, drinks $3.\n\nTap Order for collection at the top of this chat to see every item with its price."
+      "a": "Pizzas are $12 to $14, sides $4 to $5, drinks $3.\n\nTap Order for pickup at the top of this chat to see every item with its price."
     }
   ],
   "order": {
@@ -108,11 +108,11 @@
     "phone": "+1 (555) 010-2288",
     "demo": true,
     "currency": "$",
-    "chip": "Order for collection",
-    "title": "Order for collection",
+    "chip": "Order for pickup",
+    "title": "Order for pickup",
     "subtitle": "Tap what you'd like",
     "barNote": "Tap the menu, pay when you collect",
-    "mode": "For collection",
+    "mode": "For pickup",
     "note": "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
   },
   "menu": [
@@ -157,5 +157,5 @@
       ]
     }
   ],
-  "pageSub": "Questions answered, and order for collection."
+  "pageSub": "Questions answered, and order for pickup."
 }

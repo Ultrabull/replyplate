@@ -65,12 +65,18 @@
 <script>
 (() => {
   "use strict";
-  const KEY = "rp.queue";
+  /* Which queue to show. Default is the live one, but ?q=rpdemo.queue points at
+     the demo restaurant's fake reviews, so the demo can be walked through without
+     any chance of a made-up review landing in the real feed. Only the two names
+     below are accepted, so a link can never aim this at arbitrary storage. */
+  const QUEUES = { "rp.queue": "rp.queue", "rpdemo.queue": "rpdemo.queue" };
+  const KEY = QUEUES[new URLSearchParams(location.search).get("q")] || "rp.queue";
+  const IS_DEMO = KEY !== "rp.queue";
   const $ = (id) => document.getElementById(id);
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
   const persist = (q) => { try { localStorage.setItem(KEY, JSON.stringify(q)); } catch {} };
   const STAR = (n) => "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
-  const SRC = { google: "Google", facebook: "Facebook" };
+  const SRC = { google: "Google" };   // Google only. Facebook retired reviews.
   let queue = load();
 
   let toastT;

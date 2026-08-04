@@ -383,18 +383,20 @@
     var num = String(ORDER.phone || "").replace(/[^0-9]/g, "");
     if (!num) return;
     var enc = encodeURIComponent(text);
-    var url = isWa() ? ("https://wa.me/" + num + "?text=" + enc) : ("sms:" + ORDER.phone + "?&body=" + enc);
-    var win = window.open(url, "_blank");
+    /* Both links need the digits only. A raw "+1 (555) 010-2288" leaves spaces
+       and brackets in the URI, which some phones silently refuse. */
+    var url = isWa() ? ("https://wa.me/" + num + "?text=" + enc)
+                     : ("sms:+" + num + "?&body=" + enc);
+    window.open(url, "_blank");
     showChat();
-    if (win) {
-      bubble("Your order is ready to send in " + app + ". Press send there and " +
-        (C.name || "we") + " will confirm shortly.", "bot");
-    } else {
-      /* Popup blocked, or no app to hand it to. Never leave the order stranded. */
-      bubble("Your browser stopped that window from opening. Here is your order, ready to copy and send to " +
-        (ORDER.phone || "us") + ".", "bot");
-      phonePreview(text);
-    }
+    /* Do not branch on what window.open returned. On a desktop an sms: link
+       hands back a perfectly truthy blank tab, so "ready to send" would print
+       to somebody who saw nothing happen. Say it plainly and always show the
+       order, which is right on every device and needs no browser sniffing. */
+    bubble("Your order is ready to send in " + app + ". Press send there and " +
+      (C.name || "we") + " will confirm shortly.\n\nIf nothing opened, here it is to copy and send to " +
+      (ORDER.phone || "us") + " yourself.", "bot");
+    phonePreview(text);
     clearBasket();
   }
 
@@ -489,7 +491,13 @@
   window.RPChat = {
     open: function () { open(); showChat(); },
     openOrder: function () { if (!ORDER) return open(); open(); showOrder(); },
-    close: close
+    close: close,
+    /* Read-only, for testing a knowledge base before it goes live. Always use
+       these rather than a copy of the scoring rules: a copy that drifts tells
+       you a question is answered when it is not. */
+    threshold: THRESHOLD,
+    findAnswer: findAnswer,
+    score: function (q, entry) { return score(tokens(q), norm(q), entry); }
   };
   document.addEventListener("click", function (e) {
     var o = e.target.closest("[data-rp-order]");
