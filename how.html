@@ -90,7 +90,7 @@
     <div class="picker" role="tablist">
       <button class="pick" role="tab" aria-selected="true" data-s="0"><b>A good review lands</b><span>What happens with a 5 star</span></button>
       <button class="pick" role="tab" aria-selected="false" data-s="1"><b>A bad review lands</b><span>The one you actually worry about</span></button>
-      <button class="pick" role="tab" aria-selected="false" data-s="2"><b>Someone orders</b><span>Collection, straight to you</span></button>
+      <button class="pick" role="tab" aria-selected="false" data-s="2"><b>Someone orders</b><span>Pickup, straight to you</span></button>
     </div>
 
     <div class="stage">
@@ -211,16 +211,16 @@
         } }
     ]},
 
-    { leftTitle: "Customer's phone", rightTitle: "Your WhatsApp", steps: [
+    { leftTitle: "Customer's phone", rightTitle: "Your phone", steps: [
       { cap: "A regular opens your website.", sub: "Or scans the code on the table.",
-        run: function () { bubble(left, "", '<div class="who">The Olive Table</div><p>Tap what you would like. Pay when you collect.</p>'); } },
+        run: function () { bubble(left, "", '<div class="who">The Olive Table</div><p>Tap what you would like. Pay when you pick up.</p>'); } },
       { cap: "They tap what they want.", sub: "Buttons, not typing, so the order is never ambiguous.",
         run: function () { bubble(left, "", '<div class="who">Their basket</div><p>2 x Margherita<br>1 x Garlic Bread</p>'); } },
       { cap: "The total is your prices, added up.", sub: "Never guessed, never a surprise at the till.",
-        run: function () { bubble(left, "reply", '<div class="who">Total</div><p><b>$29.00</b> for collection</p>'); } },
+        run: function () { bubble(left, "reply", '<div class="who">Total</div><p><b>$29.00</b> for pickup</p>'); } },
       { cap: "They send it from their own phone.", sub: "Which is also what proves they are real. No codes, no card.",
         run: function () {
-          phone(right, '<div class="notif" id="n2"><b>WhatsApp · (555) 010-2288</b>Order from your website:<br><br>2 x Margherita<br>1 x Garlic Bread<br><br>Total: about $29.00<br>Name: Sam<br>For collection</div>');
+          phone(right, '<div class="notif" id="n2"><b>Text · (555) 010-2288</b>Order from your website:<br><br>2 x Margherita<br>1 x Garlic Bread<br><br>Total: about $29.00<br>Name: Sam<br>For pickup</div>');
           later(reveal("n2"), 120);
         } },
       { cap: "You reply when you get a second.", sub: "No new system to learn, no app taking a cut of the ticket.",

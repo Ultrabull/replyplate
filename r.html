@@ -76,7 +76,7 @@
       }
       document.title = "Ask " + (cfg.name || "us");
       document.getElementById("rName").textContent = cfg.name || "Ask us";
-      document.getElementById("rSub").textContent = cfg.pageSub || "Questions answered, and order for collection.";
+      document.getElementById("rSub").textContent = cfg.pageSub || "Questions answered, and order for pickup.";
 
       var links = document.getElementById("rLinks");
       if (cfg.phone) links.insertAdjacentHTML("beforeend", '<a href="tel:' + cfg.phone.replace(/\s/g, "") + '">Call us</a>');

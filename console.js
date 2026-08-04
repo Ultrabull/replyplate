@@ -561,10 +561,10 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     const cfg = {
       name: client.name,
       // Say ordering out loud on the button, or diners never find it.
-      subtitle: ordering ? "Order collection, or ask us anything" : "Answers, day or night",
+      subtitle: ordering ? "Order pickup, or ask us anything" : "Answers, day or night",
       phone: phone || "",
       greeting: ordering
-        ? `Hello! Tap "${"Order for collection"}" above to order, or ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`
+        ? `Hello! Tap "${"Order for pickup"}" above to order, or ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`
         : `Hello! Ask me anything about ${client.name}. I'll only tell you things the team has actually confirmed.`,
       buttonText: ordering ? "Order food or ask us" : "Ask us a question",
       answers: kb,
@@ -576,12 +576,12 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
         method: dom.chMethod.value,
         phone: orderPhone,
         currency: dom.chCurrency.value.trim() || "$",
-        chip: "Order for collection",
-        title: "Order for collection",
+        chip: "Order for pickup",
+        title: "Order for pickup",
         subtitle: "Tap what you'd like",
-        barNote: "Tap the menu, pay when you collect",
-        mode: "For collection",
-        note: `You'll send this from your own phone. Nothing is paid here, and ${client.name} will confirm before you come.`,
+        barNote: "Tap the menu, pay when you pick up",
+        mode: "For pickup",
+        note: `You'll send this as a text from your own phone, to ${client.name}'s number. Nothing is paid here, and they'll confirm before you come.`,
       };
     }
     return `<!-- ${client.name} chat helper. Paste both lines just before </body> -->\n` +
@@ -657,7 +657,7 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
 
   function pageConfig(kb, client) {
     const cfg = JSON.parse(chatSnippet(kb, client).match(/window\.RP_CHAT = ([\s\S]*?);<\/script>/)[1]);
-    cfg.pageSub = "Questions answered, and order for collection.";
+    cfg.pageSub = "Questions answered, and order for pickup.";
     return cfg;
   }
 

@@ -1,6 +1,6 @@
 /* ReplyPlate website chat helper.
    Answers the questions a restaurant gets asked all day, and optionally takes a
-   collection order that the customer sends from their own phone.
+   pickup order that the customer sends from their own phone.
 
    DESIGN RULES, do not break them:
 
@@ -10,10 +10,12 @@
       real way to ask.
 
    2. Ordering never takes money and never routes the order itself. The customer
-      taps items, then sends the finished order from their own WhatsApp or texts.
-      That means no card handling, no refunds, and no order sitting unseen in a
-      dashboard nobody opens. It also verifies the customer for free, because the
-      message arrives from their real number.
+      taps items, then sends the finished order from their own phone to the
+      restaurant's phone number. A text message by default, because that is what
+      a US restaurant already has; set method:"whatsapp" for the ones that live
+      in it instead. That means no card handling, no refunds, and no order
+      sitting unseen in a dashboard nobody opens. It also verifies the customer
+      for free, because the message arrives from their real number.
 
    3. Prices are only ever what the owner typed. Totals are computed here in
       plain arithmetic, never inferred.
@@ -171,15 +173,15 @@
   panel.setAttribute("role", "dialog");
   panel.setAttribute("aria-label", "Ask " + (C.name || "us") + " a question");
   panel.innerHTML = ''
-    + '<div class="rpc-head"><div><b id="rpcTitle">' + esc(C.name || "Ask us") + '</b><small id="rpcSub">' + esc(C.subtitle || (ORDER ? "Order collection, or ask us anything" : "Quick answers, any time")) + '</small></div>'
+    + '<div class="rpc-head"><div><b id="rpcTitle">' + esc(C.name || "Ask us") + '</b><small id="rpcSub">' + esc(C.subtitle || (ORDER ? "Order pickup, or ask us anything" : "Quick answers, any time")) + '</small></div>'
     + '<div style="display:flex;align-items:center;gap:12px"><button class="rpc-back" id="rpcBack" type="button" style="display:none">‹ Back</button>'
     + '<button class="rpc-x" type="button" aria-label="Close">&times;</button></div></div>'
     + '<div class="rpc-view on" id="rpcChatView">'
     + (ORDER
         ? '  <button class="rpc-orderbar" id="rpcOrderBar" type="button">'
         +   '<span class="ic" aria-hidden="true">🍽</span>'
-        +   '<span class="tx"><b>' + esc(ORDER.chip || "Order for collection") + '</b>'
-        +   '<span>' + esc(ORDER.barNote || "Tap the menu, pay when you collect") + '</span></span>'
+        +   '<span class="tx"><b>' + esc(ORDER.chip || "Order for pickup") + '</b>'
+        +   '<span>' + esc(ORDER.barNote || "Tap the menu, pay when you pick up") + '</span></span>'
         +   '<span class="ar" aria-hidden="true">›</span></button>'
         : '')
     + '  <div class="rpc-log" id="rpcLog"></div>'
@@ -340,10 +342,15 @@
     if (ORDER.mode) lines.push(ORDER.mode);
     return lines.join("\n");
   }
+  /* Texting is the default and WhatsApp is the opt-in. Every US restaurant
+     already has a number that receives texts; far fewer run WhatsApp, and an
+     order that needs an app the diner has not installed is an order lost. */
+  function isWa() { return ORDER.method === "whatsapp"; }
+
   /* Shows what lands on the owner's phone. In demo mode this replaces opening
      WhatsApp, because a demo restaurant has no real number to open. */
   function phonePreview(text) {
-    var app = (ORDER.method === "sms") ? "Messages" : "WhatsApp";
+    var app = isWa() ? "WhatsApp" : "Messages";
     var d = document.createElement("div");
     d.className = "rpc-wa";
     var hd = document.createElement("div"); hd.className = "hd";
@@ -360,7 +367,7 @@
     var m = panel.querySelector("#rpcMenu"); m.innerHTML = ""; buildMenu();
   }
   function sendOrder() {
-    var app = (ORDER.method === "sms") ? "your messages" : "WhatsApp";
+    var app = isWa() ? "WhatsApp" : "your messages";
     var text = orderText();
 
     if (ORDER.demo) {
@@ -368,7 +375,7 @@
       bubble("That is as far as the demo goes. On a real restaurant's site, this opens " + app +
         " on your phone with the message below already typed, and you press send.", "bot");
       phonePreview(text);
-      bubble("It arrives on the owner's phone. Nothing is paid here, and your number is what tells them the order is real.", "bot");
+      bubble("It arrives on the restaurant's own phone number, like a text from any other customer. Nothing is paid here, and your number is what tells them the order is real.", "bot");
       clearBasket();
       return;
     }
@@ -376,7 +383,7 @@
     var num = String(ORDER.phone || "").replace(/[^0-9]/g, "");
     if (!num) return;
     var enc = encodeURIComponent(text);
-    var url = (ORDER.method === "sms") ? ("sms:" + ORDER.phone + "?&body=" + enc) : ("https://wa.me/" + num + "?text=" + enc);
+    var url = isWa() ? ("https://wa.me/" + num + "?text=" + enc) : ("sms:" + ORDER.phone + "?&body=" + enc);
     var win = window.open(url, "_blank");
     showChat();
     if (win) {
@@ -394,14 +401,14 @@
   function showOrder() {
     buildMenu();
     chatView.classList.remove("on"); orderView.classList.add("on");
-    backBtn.style.display = ""; title.textContent = ORDER.title || "Order for collection";
+    backBtn.style.display = ""; title.textContent = ORDER.title || "Order for pickup";
     sub.textContent = ORDER.subtitle || "Tap what you'd like";
     refreshBasket();
   }
   function showChat() {
     orderView.classList.remove("on"); chatView.classList.add("on");
     backBtn.style.display = "none"; title.textContent = C.name || "Ask us";
-    sub.textContent = C.subtitle || (ORDER ? "Order collection, or ask us anything" : "Quick answers, any time");
+    sub.textContent = C.subtitle || (ORDER ? "Order pickup, or ask us anything" : "Quick answers, any time");
   }
 
   /* Hold the page still behind the panel. iOS ignores overflow:hidden on body, so
