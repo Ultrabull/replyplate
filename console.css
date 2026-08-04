@@ -156,3 +156,34 @@ select{margin-bottom:0;width:auto}
 .ap-empty{color:var(--muted);font-size:14px;padding:20px;text-align:center;border:1px dashed var(--line);border-radius:12px}
 .chat-qs{font-size:12.5px;color:var(--muted);margin-bottom:9px;line-height:1.5}
 .ta.mono{font-family:var(--mono);font-size:12.5px;line-height:1.5}
+
+/* ── Google listing: post checker and photo tracker ───────────────────────── */
+.gp-verdict{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px;background:var(--card)}
+.gp-head{font-weight:800;font-size:15px;margin-bottom:4px}
+.gp-head.ok{color:#1a7346}
+.gp-head.warn{color:#8a5a00}
+.gp-head.bad{color:var(--accent)}
+.gp-count{font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.gp-verdict ul{list-style:none;display:grid;gap:8px}
+.gp-verdict li{position:relative;padding-left:22px;font-size:14px;line-height:1.5;color:var(--muted)}
+.gp-verdict li::before{position:absolute;left:0;top:0;font-weight:800}
+.gp-verdict li.stop::before{content:"✕";color:var(--accent)}
+.gp-verdict li.warn::before{content:"!";color:#8a5a00}
+.gp-verdict code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  background:rgba(0,0,0,.06);padding:1px 5px;border-radius:5px;color:var(--ink)}
+
+/* flags shown under a generated option, so a bad one cannot be pasted by accident */
+.gp-flags{display:grid;gap:5px;margin:8px 12px 12px}
+.gp-flags span{font-size:12.5px;line-height:1.45;padding:6px 9px;border-radius:8px}
+.gp-flags span.stop{background:rgba(176,61,41,.12);color:var(--accent);font-weight:600}
+.gp-flags span.warn{background:rgba(138,90,0,.12);color:#8a5a00}
+
+.gp-photo{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;min-height:48px}
+.gp-photo:hover{border-color:var(--accent)}
+.gp-photo.done{background:rgba(26,115,70,.07);border-color:rgba(26,115,70,.35)}
+.gp-photo input{margin-top:4px;flex:0 0 auto;width:18px;height:18px;accent-color:var(--accent)}
+.gp-photo b{display:block;font-size:14.5px}
+.gp-photo em{display:block;font-style:normal;color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.45}
+.gp-photo .when{display:block;font-size:11.5px;color:#1a7346;font-weight:600;margin-top:4px}
+.gp-progress{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px}

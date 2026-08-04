@@ -21,6 +21,7 @@
     <button class="tab" data-tab="autopilot">Autopilot ⚡</button>
     <button class="tab" data-tab="replies">Reply to reviews</button>
     <button class="tab" data-tab="getreviews">Get reviews</button>
+    <button class="tab" data-tab="gpost">Google listing</button>
     <button class="tab" data-tab="social">Social posts</button>
     <button class="tab" data-tab="report">Monthly report</button>
     <button class="tab" data-tab="chat">Website chat</button>
@@ -91,6 +92,53 @@
       <p class="hint">Wording for the review card and QR, plus email for clients who already hold diner addresses. Goes to <b>every</b> diner, never a filtered list: Google prohibits asking only happy customers and the penalty lands on the restaurant. Do not write diner SMS, the TCPA exposure is per message.</p>
       <button class="btn" id="grGo" type="button">Generate review requests</button>
       <div class="out" id="grOut"></div>
+    </section>
+
+    <!-- GOOGLE LISTING: posts and photos -->
+    <section class="panel" id="panel-gpost">
+      <h2>Google listing</h2>
+      <p class="hint">The client already made you a manager so you could answer reviews. The same access lets you post offers and add photos, and almost no restaurant does either. This is the shortest line between what you sell and a booked table.</p>
+
+      <div class="card form">
+        <h3>1. Post an offer, event or update</h3>
+        <p class="hint" style="margin-bottom:10px">Google rejects posts with a phone number in the body, so the checker below blocks that before you paste it in.</p>
+        <div class="row">
+          <label class="stars">Type:
+            <select id="gpType">
+              <option value="OFFER">Offer (a deal, with dates)</option>
+              <option value="EVENT">Event (something on, with dates)</option>
+              <option value="STANDARD" selected>Update (what is on this week)</option>
+            </select>
+          </label>
+          <label class="stars">Button:
+            <select id="gpCta">
+              <option value="">No button</option>
+              <option value="ORDER">Order online</option>
+              <option value="BOOK">Book</option>
+              <option value="LEARN_MORE" selected>Learn more</option>
+              <option value="SIGN_UP">Sign up</option>
+              <option value="CALL">Call now</option>
+            </select>
+          </label>
+        </div>
+        <input id="gpTopic" class="in" placeholder="What is it? e.g. Tuesday: half-price wood-fired pizzas, 5 to 7pm" />
+        <button class="btn" id="gpGo" type="button">Write the post</button>
+        <div class="out" id="gpOut"></div>
+      </div>
+
+      <div class="card form">
+        <h3>2. Check it before you paste it</h3>
+        <p class="hint" style="margin-bottom:10px">Paste the final wording here. This checks it against the rules Google actually rejects on.</p>
+        <textarea id="gpCheck" class="ta" rows="5" placeholder="Paste the post text here to check it"></textarea>
+        <div id="gpVerdict"></div>
+      </div>
+
+      <div class="card form">
+        <h3>3. Photos</h3>
+        <p class="hint" style="margin-bottom:10px">JPG or PNG, between 10KB and 5MB, at least 250 by 250 pixels, 720 by 720 recommended. Never a stock photo of food they do not serve. Tick these off as you go, saved per client on this device.</p>
+        <div id="gpPhotos"></div>
+        <p class="hint" style="margin-top:12px">Ask the owner to text you one photo a week. A listing with recent photos looks open. One with photos from 2019 looks shut.</p>
+      </div>
     </section>
 
     <!-- SOCIAL -->

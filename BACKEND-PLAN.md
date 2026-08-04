@@ -544,6 +544,31 @@ and you want to find it before the email path is switched off.
 > Dev Mode with the owner accepted as a Tester legitimately serves your first
 > 3–5 clients meanwhile.
 
+### Phase 5b — Google listing: posts and photos (2–3 days)
+
+The Manager access clients already grant for reviews also covers Local Posts and
+media. Almost no restaurant uses either, so it is free ground and it is the
+shortest line from this service to a booked table.
+
+- `POST /v4/accounts/{a}/locations/{l}/localPosts` for offers, events and
+  updates. `topicType` is `STANDARD` | `EVENT` | `OFFER` | `ALERT`; `summary` is
+  capped at 1500 characters; `callToAction.actionType` carries the button.
+  `OFFER` needs `event.title` plus start and end dates and takes an optional
+  `offer.couponCode`, `offer.redeemOnlineUrl` and `offer.termsConditions`.
+- Media upload for photos: JPG or PNG, 10KB to 5MB, minimum 250×250, 720×720
+  recommended.
+- **A phone number in `summary` gets the post rejected**, and you learn about it
+  days later. The console already blocks this in plain code before the operator
+  pastes anything in; keep that check server-side too, because a rejected post
+  looks identical to a post nobody saw.
+- Same 0 QPM gate as reviews until the Business Profile API application is
+  approved, so this ships operator-assisted first: the console writes and checks
+  the post, a person pastes it into the Business Profile UI. That is exactly how
+  review replies work today, so it adds no new manual burden per client beyond
+  the paste itself.
+
+---
+
 ### Phase 6 — SMS, compliant review requests, reports (4–6 days)
 
 - Twilio SMS for owner approvals via a Messaging Service using the branded short

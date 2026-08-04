@@ -6,7 +6,7 @@
   const S = {
     key: "rp.key", model: "rp.model",
     clients: "rp.clients", active: "rp.active", leads: "rp.leads",
-    queue: "rp.queue", seen: "rp.seen",
+    queue: "rp.queue", seen: "rp.seen", photos: "rp.photos",
   };
   const $ = (id) => document.getElementById(id);
   const el = (t, c) => { const n = document.createElement(t); if (c) n.className = c; return n; };
@@ -22,6 +22,7 @@
     leads: load(S.leads, []),
     queue: load(S.queue, []),
     seen: load(S.seen, []),
+    photos: load(S.photos, {}),
   };
 
   const dom = {
@@ -34,6 +35,8 @@
     rvStars: $("rvStars"), rvText: $("rvText"), rvGo: $("rvGo"), rvOut: $("rvOut"),
     grGo: $("grGo"), grOut: $("grOut"),
     soTopic: $("soTopic"), soCount: $("soCount"), soGo: $("soGo"), soOut: $("soOut"),
+    gpType: $("gpType"), gpCta: $("gpCta"), gpTopic: $("gpTopic"), gpGo: $("gpGo"), gpOut: $("gpOut"),
+    gpCheck: $("gpCheck"), gpVerdict: $("gpVerdict"), gpPhotos: $("gpPhotos"),
     ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
     ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
@@ -148,7 +151,7 @@
       const row = el("div", "client-row" + (c.id === state.activeId ? " active" : ""));
       const nm = el("div", "nm"); nm.innerHTML = `${c.name}<small>${[c.cuisine, c.city].filter(Boolean).join(" · ") || "—"}</small>`;
       const use = el("button"); use.type = "button"; use.textContent = c.id === state.activeId ? "✓ Active" : "Use";
-      use.addEventListener("click", () => { state.activeId = c.id; save(S.active, c.id); renderClients(); renderClientSelect(); });
+      use.addEventListener("click", () => { state.activeId = c.id; save(S.active, c.id); renderClients(); renderClientSelect(); renderPhotos(); });
       const edit = el("button"); edit.type = "button"; edit.textContent = "Edit";
       edit.addEventListener("click", () => fillClientForm(c));
       const del = el("button"); del.type = "button"; del.textContent = "Delete";
@@ -180,10 +183,11 @@
       if (!state.activeId) state.activeId = c.id;
     }
     save(S.clients, state.clients); save(S.active, state.activeId);
-    clearClientForm(); renderClients(); renderClientSelect();
+    clearClientForm(); renderClients(); renderClientSelect(); renderPhotos();
     toast("Saved");
   }
   function deleteClient(id) {
+    delete state.photos[id]; save(S.photos, state.photos);
     state.clients = state.clients.filter((c) => c.id !== id);
     if (state.activeId === id) state.activeId = state.clients[0] ? state.clients[0].id : null;
     save(S.clients, state.clients); save(S.active, state.activeId);
@@ -214,6 +218,153 @@
       const prompt = `For ${clientContext()}, write these, clearly labelled: 1) a receipt footer line (one sentence, fits on a printed receipt), 2) a table card / QR card (a heading of 4 to 6 words plus one line underneath), 3) a takeout bag sticker line (under 12 words), 4) an email for diners whose address the restaurant already holds from bookings or online orders (subject + body). Use this review link: ${link}`;
       renderResults(dom.grOut, splitBlocks(await generate(prompt, sys)));
     } catch (e) { setError(dom.grOut, e); } finally { dom.grGo.disabled = false; }
+  }
+
+  /* ---------- Google listing: posts and photos ----------
+
+     Worth knowing why this exists. Being a Manager on the client's Business
+     Profile was arranged so we could answer reviews. The same access lets us
+     post offers and add photos, and hardly any restaurant does either, so it is
+     free ground.
+
+     The checks below are the ones Google actually rejects posts for, not style
+     preferences. A phone number in the body is the big one: it gets the post
+     refused, and you find out days later. */
+
+  var GP_LIMIT = 1500;           // summary hard limit
+  var GP_SWEET = 300;            // past this, the reader stops
+
+  var PHOTO_JOBS = [
+    { id: "exterior", label: "The front of the building", why: "So somebody walking up recognises it. This is the one most listings are missing." },
+    { id: "interior", label: "The room, with people in it", why: "An empty dining room reads as a dead restaurant. Shoot it during service." },
+    { id: "food3", label: "Three dishes they actually sell", why: "Their food, not stock. A stock photo of food they do not serve is a complaint waiting to happen." },
+    { id: "team", label: "The team, or the owner", why: "Faces do more for a family place than another plate of pasta." },
+    { id: "menu", label: "The menu, readable", why: "People check the prices before they leave the house." },
+    { id: "drink", label: "The bar or the coffee", why: "Catches the search that is not about dinner." }
+  ];
+
+  /* Deterministic checks, run in plain code. Never ask the model whether its own
+     post is allowed. */
+  function checkPost(text, type) {
+    var t = String(text || "");
+    var issues = [];
+    var n = t.trim().length;
+
+    if (!n) return { issues: [], empty: true };
+
+    // Google rejects posts with a phone number in the description.
+    var phone = t.match(/(\+?\d[\d\s().-]{8,}\d)/);
+    if (phone && phone[0].replace(/\D/g, "").length >= 10) {
+      issues.push({ level: "stop", msg: "There is a phone number in the body. Google rejects posts for this. Use the Call now button instead.", found: phone[0].trim() });
+    }
+    if (n > GP_LIMIT) {
+      issues.push({ level: "stop", msg: "Too long. The limit is " + GP_LIMIT + " characters and this is " + n + "." });
+    }
+    if (n > GP_SWEET && n <= GP_LIMIT) {
+      issues.push({ level: "warn", msg: n + " characters. It will publish, but Google truncates the preview, so put the offer in the first sentence." });
+    }
+    var caps = t.replace(/[^A-Za-z]/g, "");
+    if (caps.length > 12 && (t.match(/[A-Z]/g) || []).length / caps.length > 0.5) {
+      issues.push({ level: "warn", msg: "Mostly capitals. Google's content policy calls this out and it reads as shouting." });
+    }
+    if (/[!?]{2,}/.test(t)) {
+      issues.push({ level: "warn", msg: "Repeated punctuation. Google lists extra characters as a reason to reject." });
+    }
+    if (/\b(?:https?:\/\/|www\.)\S+/i.test(t)) {
+      issues.push({ level: "warn", msg: "There is a link in the body. Put it on the button instead, where it is clickable." });
+    }
+    if ((type === "OFFER" || type === "EVENT") && !/\b(mon|tue|wed|thu|fri|sat|sun|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|today|tonight|this week|\d{1,2}(st|nd|rd|th)?\b)/i.test(t)) {
+      issues.push({ level: "warn", msg: "No date or day in the text. " + (type === "OFFER" ? "Offers" : "Events") + " need start and end dates in Google's form, and saying it in the words too helps." });
+    }
+    if (/\b(best|cheapest|number one|#1|guaranteed)\b/i.test(t)) {
+      issues.push({ level: "warn", msg: "A superlative claim. Keep it to what the restaurant can stand behind." });
+    }
+    return { issues: issues, chars: n, empty: false };
+  }
+
+  function renderVerdict() {
+    var r = checkPost(dom.gpCheck.value, dom.gpType.value);
+    var box = dom.gpVerdict;
+    if (r.empty) { box.innerHTML = ""; return; }
+    var stops = r.issues.filter(function (i) { return i.level === "stop"; });
+    var warns = r.issues.filter(function (i) { return i.level === "warn"; });
+    var head = stops.length
+      ? '<div class="gp-head bad">Do not post this yet</div>'
+      : (warns.length ? '<div class="gp-head warn">It will publish, but read these</div>'
+                      : '<div class="gp-head ok">Nothing here that Google rejects on</div>');
+    var list = r.issues.map(function (i) {
+      return '<li class="' + i.level + '">' + i.msg + (i.found ? ' <code>' + i.found + '</code>' : "") + "</li>";
+    }).join("");
+    box.innerHTML = '<div class="gp-verdict">' + head +
+      '<div class="gp-count">' + r.chars + " of " + GP_LIMIT + " characters</div>" +
+      (list ? "<ul>" + list + "</ul>" : "") + "</div>";
+  }
+
+  async function doGooglePost() {
+    if (!requireClient(dom.gpOut)) return;
+    var topic = dom.gpTopic.value.trim();
+    if (!topic) { toast("What is the post about?"); return; }
+    var type = dom.gpType.value, cta = dom.gpCta.value;
+    var typeWord = type === "OFFER" ? "Offer" : type === "EVENT" ? "Event" : "Update";
+    setLoading(dom.gpOut); dom.gpGo.disabled = true;
+    try {
+      var sys = "You write Google Business Profile posts for restaurants. Rules, all hard: " +
+        "keep the whole post under 300 characters, because Google truncates the preview; " +
+        "put the offer or the news in the FIRST sentence; " +
+        "NEVER include a phone number, Google rejects posts that contain one; " +
+        "never include a URL in the body, the button carries the link; " +
+        "no ALL CAPS, no repeated punctuation, no hashtags; " +
+        "no superlatives like best or number one; " +
+        "write in the restaurant's own voice, plain and specific, naming the actual dish or deal. " +
+        "Never invent a price, a date or a dish that was not given to you. " +
+        "Output exactly 3 options, numbered 1-3, nothing else.";
+      var prompt = "For " + clientContext() + ", write a Google " + typeWord + " post about: " + topic +
+        (cta ? ("\n\nThere will be a \"" + cta.replace(/_/g, " ").toLowerCase() + "\" button under it, so end in a way that leads into it, without naming the button.") : "") +
+        (type === "OFFER" ? "\n\nThis is an Offer post, so Google will ask separately for start and end dates and an optional coupon code. Mention the days it runs in the words." : "") +
+        (type === "EVENT" ? "\n\nThis is an Event post, so Google will ask separately for a title and start and end dates. Mention when it is in the words." : "");
+      var blocks = splitBlocks(await generate(prompt, sys));
+      renderResults(dom.gpOut, blocks);
+      /* Run every option through the same checks the operator would, so a bad one
+         cannot get pasted in by accident. */
+      var cards = dom.gpOut.querySelectorAll(".result");
+      blocks.forEach(function (b, i) {
+        var r = checkPost(b, type);
+        if (!r.issues.length || !cards[i]) return;
+        var flag = el("div", "gp-flags");
+        flag.innerHTML = r.issues.map(function (x) {
+          return '<span class="' + x.level + '">' + (x.level === "stop" ? "Blocked: " : "Check: ") + x.msg + "</span>";
+        }).join("");
+        cards[i].appendChild(flag);
+      });
+    } catch (e) { setError(dom.gpOut, e); } finally { dom.gpGo.disabled = false; }
+  }
+
+  function renderPhotos() {
+    var c = activeClient();
+    dom.gpPhotos.innerHTML = "";
+    if (!c) {
+      var e = el("div", "empty"); e.textContent = "Pick a client to track their photos."; dom.gpPhotos.appendChild(e); return;
+    }
+    var got = state.photos[c.id] || {};
+    PHOTO_JOBS.forEach(function (j) {
+      var row = el("label", "gp-photo" + (got[j.id] ? " done" : ""));
+      var box = el("input"); box.type = "checkbox"; box.checked = !!got[j.id];
+      box.addEventListener("change", function () {
+        var m = state.photos[c.id] || (state.photos[c.id] = {});
+        if (box.checked) m[j.id] = Date.now(); else delete m[j.id];
+        save(S.photos, state.photos);
+        renderPhotos();
+      });
+      var txt = el("div");
+      txt.innerHTML = "<b>" + j.label + "</b><em>" + j.why + "</em>" +
+        (got[j.id] ? '<span class="when">Added ' + new Date(got[j.id]).toLocaleDateString() + "</span>" : "");
+      row.appendChild(box); row.appendChild(txt);
+      dom.gpPhotos.appendChild(row);
+    });
+    var done = PHOTO_JOBS.filter(function (j) { return got[j.id]; }).length;
+    var bar = el("div", "gp-progress");
+    bar.textContent = done + " of " + PHOTO_JOBS.length + " done for " + c.name;
+    dom.gpPhotos.appendChild(bar);
   }
 
   async function doSocial() {
@@ -791,7 +942,11 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
   /* ---------- wire ---------- */
   function wire() {
     initTabs();
-    dom.clientSelect.addEventListener("change", () => { state.activeId = dom.clientSelect.value || null; save(S.active, state.activeId); renderClients(); });
+    dom.gpGo.addEventListener("click", doGooglePost);
+    dom.gpCheck.addEventListener("input", renderVerdict);
+    dom.gpType.addEventListener("change", renderVerdict);
+    renderPhotos();
+    dom.clientSelect.addEventListener("change", () => { state.activeId = dom.clientSelect.value || null; save(S.active, state.activeId); renderClients(); renderPhotos(); });
     dom.settingsBtn.addEventListener("click", openSettings);
     dom.settingsClose.addEventListener("click", closeSettings);
     dom.settingsSave.addEventListener("click", saveSettings);

@@ -43,7 +43,17 @@
   /* App-style tile grid. The tile itself carries the message, so an owner who
      never taps still gets all four. Tapping only adds the detail. */
   .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (min-width:700px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  @media (min-width:700px){.tiles{grid-template-columns:repeat(5,1fr)}}
+  /* Five tiles in two columns leaves one alone, so the last one spans the row and
+     lays out sideways. It keeps its sub-line: the whole point of these tiles is
+     that the message is on the tile, not hidden behind the tap. */
+  @media (max-width:699px){
+    .tiles > :last-child:nth-child(odd){grid-column:1 / -1;min-height:0;flex-direction:row;
+      align-items:center;justify-content:flex-start;text-align:left;gap:14px;padding:16px 18px}
+    .tiles > :last-child:nth-child(odd) .ico{margin-bottom:0;font-size:26px;flex:0 0 auto}
+    .tiles > :last-child:nth-child(odd) b{flex:0 0 auto}
+    .tiles > :last-child:nth-child(odd) .sub{flex:1;min-width:0}
+  }
   .tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 14px 18px;
     display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;cursor:pointer;
     font:inherit;color:var(--ink);min-height:132px;transition:border-color .15s,background .15s,transform .1s}
@@ -252,6 +262,7 @@
         <li>A reply to <b>every</b> Google review, good ones posted by us</li>
         <li>Your QR code, so <b>every</b> diner gets asked</li>
         <li><b>8</b> social posts, written and put up</li>
+        <li>Offers and photos put on your Google listing</li>
         <li>One page on what your reviews are saying</li>
       </ul>
     </div>
@@ -283,6 +294,8 @@
           <span class="ico" aria-hidden="true">📱</span><b>Posts</b><span class="sub">8 a month, put up</span></button>
         <button class="tile" role="tab" id="tile-3" aria-selected="false" aria-controls="tilepanel">
           <span class="ico" aria-hidden="true">✋</span><b>Your OK</b><span class="sub">Nothing rough without it</span></button>
+        <button class="tile" role="tab" id="tile-4" aria-selected="false" aria-controls="tilepanel">
+          <span class="ico" aria-hidden="true">📍</span><b>Listing</b><span class="sub">Offers and photos on Google</span></button>
       </div>
       <div class="tilepanel" id="tilepanel" role="tabpanel" aria-live="polite"></div>
     </section>
@@ -442,7 +455,10 @@
             "You never share a password. You add us the way you would add a member of staff, and you can remove us whenever you like. Social is optional. Google reviews are the part that matters most."] },
       { h: "Nothing rough goes out without you",
         p: ["Low ratings, complaints, anything sensitive: it goes to your phone first, with a calm reply already written. You are never staring at a blank box at 11pm while angry.",
-            "One tap to approve it, edit it, or tell us to leave that one alone. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us."] }
+            "One tap to approve it, edit it, or tell us to leave that one alone. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us."] },
+      { h: "Your Google listing stops sitting still",
+        p: ["Your listing is where people decide, and most restaurants only ever touch it to fix their hours. We put your offers on it: Tuesday, half-price wood-fired pizzas, 5 to 7, showing up when somebody searches you.",
+            "We keep the photos current too, because a listing whose last photo is from 2019 reads as closed down. Text us a picture of tonight's special and it goes up. Same manager access you already gave us for the reviews, so there is nothing new to set up."] }
     ];
     var wrap = document.getElementById("tiles"), panel = document.getElementById("tilepanel");
     if (!wrap || !panel) return;
@@ -510,6 +526,11 @@
         q: ["who writes the replies","is it ai","is it a robot","is it automated","is it a real person","do humans write it",
             "is this chatgpt","who writes them","are they written by ai","is it a template","are they generic"],
         a: "AI writes the first version, using your rules, your tone and the things you would never say. A person here checks the work. The good replies we put up on your Google profile for you.\n\nAnything negative, low-starred or sensitive is read by a person and held for you, every time. It goes to your phone with the reply already written. Nothing posts until you approve it, edit it, or tell us to leave that one alone, and that is not a setting that can be switched off.\n\nIt is not a template. Half of people say a generic, copy-paste reply puts them off, so a reply that reads like a form letter is worse than none." },
+      { chip: "Your Google listing",
+        q: ["google listing","business profile","do you post offers","google posts","can you put offers on google",
+            "do you add photos","photos on google","who updates my listing","google offers","listing photos",
+            "what else do you do with my listing","do you post on google"],
+        a: "Yes, and hardly any restaurant does it. Your listing is where people decide, and most owners only touch it to fix their hours.\n\nWe put your offers on it, like Tuesday half-price pizzas 5 to 7, so it shows when somebody searches you. We keep the photos current too, because a listing whose last photo is from 2019 reads as closed down. Text us a picture of tonight's special and it goes up.\n\nIt uses the same manager access you already gave us for the reviews, so there is nothing new to set up." },
       { chip: "Social posts",
         q: ["can you do social media","do you post for me","social media","how many posts","how many social posts","what do you post",
             "does it post to instagram","do you post on instagram","do you post on facebook","posting","content"],
