@@ -90,6 +90,14 @@
   .tilepanel h3{font-size:17px;margin-bottom:8px}
   .tilepanel p{color:var(--muted);font-size:15px}
   .tilepanel p+p{margin-top:9px}
+  .tilepanel .qlist{margin:14px 0 0;padding-left:0;list-style:none;counter-reset:qq;display:grid;gap:9px}
+  .tilepanel .qlist li{counter-increment:qq;position:relative;padding-left:34px;font-size:15px;line-height:1.45}
+  .tilepanel .qlist li::before{content:counter(qq);position:absolute;left:0;top:1px;width:23px;height:23px;
+    border-radius:50%;background:var(--line);color:var(--accent);font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;line-height:1}
+  .tilepanel .qlist li b{color:var(--accent)}
+  .tilepanel .qnote{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14.5px}
+  .tilepanel .btn{margin-top:16px}
   .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
   .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;position:relative}
   .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:22px;width:34px;height:34px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
@@ -97,6 +105,23 @@
   .step p{color:var(--muted);font-size:15px}
 
   .honest{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
+  /* The honest list, tap to open. The claim itself is always on screen: only the
+     reasoning behind it folds away. These lines are legally load-bearing, so
+     nothing here may hide the claim, and with JavaScript off <details> still
+     opens on a tap because the browser does it, not us. */
+  .honest.folds{padding:8px 22px}
+  .hf{border-bottom:1px solid var(--line)}
+  .hf:last-child{border-bottom:none}
+  .hf summary{cursor:pointer;list-style:none;padding:17px 34px 17px 0;font-weight:700;
+    font-size:16px;line-height:1.45;position:relative;color:var(--ink);min-height:48px}
+  .hf summary::-webkit-details-marker{display:none}
+  .hf summary::after{content:"+";position:absolute;right:0;top:15px;color:var(--accent);
+    font-weight:800;font-size:23px;line-height:1}
+  .hf[open] summary::after{content:"–"}
+  .hf summary:hover{color:var(--accent)}
+  .hf summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .hf > p{color:var(--muted);font-size:15px;line-height:1.6;padding:0 0 18px}
+  @media (max-width:560px){.honest.folds{padding:6px 18px}.hf summary{font-size:15.5px}}
   .honest p{color:var(--muted);font-size:15px;margin-bottom:14px}
   .honest p:last-child{margin-bottom:0}
   .honest b{color:var(--ink)}
@@ -366,7 +391,7 @@
       <div class="tiles numbered" role="tablist" aria-label="How it works" id="steps">
         <button class="tile" role="tab" id="step-0" aria-selected="true" aria-controls="steppanel">
           <span class="n" aria-hidden="true">1</span><span class="ico" aria-hidden="true">⏱</span>
-          <b>Setup</b><span class="sub">15 minutes, once</span></button>
+          <b>Setup</b><span class="sub">Ten questions, once</span></button>
         <button class="tile" role="tab" id="step-1" aria-selected="false" aria-controls="steppanel">
           <span class="n" aria-hidden="true">2</span><span class="ico" aria-hidden="true">🔁</span>
           <b>The work</b><span class="sub">Ours from then on</span></button>
@@ -381,16 +406,43 @@
 
     <section>
       <h2 class="section-title">Before you buy, the honest version</h2>
-      <div class="honest">
-        <p><b>Every diner, not just the happy ones.</b> Everyone sees the same QR code. Filtering to only the happy ones breaks Google's rules, and the FTC treats review suppression as deceptive, so we will not do it.</p>
-        <p><b>We will not promise a better rating.</b> Nobody honest will. Google will even draft replies free on some accounts and the writing is fine, but it still needs you to log in and press send, every time, forever.</p>
-        <p><b>Google reviews only.</b> Not Yelp, not TripAdvisor, not OpenTable. Facebook retired star ratings, so no tool can reply to those. We do handle your Facebook and Instagram posts.</p>
-        <p><b>Anything negative waits for you.</b> It reaches your phone with a calm reply already written and waits. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us.</p>
-        <p><b>AI writes the first version. A person checks it.</b> Nothing posts under an invented employee name. Replies go out as your restaurant, because that is whose name is on them.</p>
-        <p><b>One person, and much of it by hand.</b> ReplyPlate is run by one person, and today a good part of the work is done by hand. Your reviews get worked every business day, not within a minute of landing.</p>
-        <p><b>We will not text your diners.</b> Texting strangers in the US carries damages of hundreds of dollars a message. We ask with a printed code instead, and a code left in the office drawer gets you nothing, which is why we push receipts first.</p>
-        <p><b>If you leave, you keep the work.</b> Every reply we posted stays up, in your name, and we never take them down. Your review code keeps working forever, because it points at Google and not at us. We come off your Google profile the same day you say so. Nothing you paid for gets switched off behind you.</p>
-        <p><b>If <span data-price>$199</span> is the difference between tight and fine this month, don't buy it.</b> It will still be <span data-price>$199</span> in the autumn, and that is our real price, not an introductory rate.</p>
+      <div class="honest folds">
+        <details class="hf" open>
+          <summary>Every diner, not just the happy ones.</summary>
+          <p>Everyone sees the same QR code. Filtering to only the happy ones breaks Google's rules, and the FTC treats review suppression as deceptive, so we will not do it.</p>
+        </details>
+        <details class="hf">
+          <summary>We will not promise a better rating.</summary>
+          <p>Nobody honest will. Google will even draft replies free on some accounts and the writing is fine, but it still needs you to log in and press send, every time, forever.</p>
+        </details>
+        <details class="hf">
+          <summary>Google reviews only.</summary>
+          <p>Not Yelp, not TripAdvisor, not OpenTable. Facebook retired star ratings, so no tool can reply to those. We do handle your Facebook and Instagram posts.</p>
+        </details>
+        <details class="hf">
+          <summary>Anything negative waits for you.</summary>
+          <p>It reaches your phone with a calm reply already written and waits. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us.</p>
+        </details>
+        <details class="hf">
+          <summary>AI writes the first version. A person checks it.</summary>
+          <p>Nothing posts under an invented employee name. Replies go out as your restaurant, because that is whose name is on them.</p>
+        </details>
+        <details class="hf">
+          <summary>One person, and much of it by hand.</summary>
+          <p>ReplyPlate is run by one person, and today a good part of the work is done by hand. Your reviews get worked every business day, not within a minute of landing.</p>
+        </details>
+        <details class="hf">
+          <summary>We will not text your diners.</summary>
+          <p>Texting strangers in the US carries damages of hundreds of dollars a message. We ask with a printed code instead, and a code left in the office drawer gets you nothing, which is why we push receipts first.</p>
+        </details>
+        <details class="hf">
+          <summary>If you leave, you keep the work.</summary>
+          <p>Every reply we posted stays up, in your name, and we never take them down. Your review code keeps working forever, because it points at Google and not at us. We come off your Google profile the same day you say so. Nothing you paid for gets switched off behind you.</p>
+        </details>
+        <details class="hf">
+          <summary>If <span data-price>$199</span> is the difference between tight and fine this month, don't buy it.</summary>
+          <p>It will still be <span data-price>$199</span> in the autumn, and that is our real price, not an introductory rate.</p>
+        </details>
       </div>
     </section>
 
@@ -427,7 +479,7 @@
 
     <div class="final">
       <h2>Get it off your list this week.</h2>
-      <p>Fifteen minutes to set up. <span data-price>$199</span> a month. Cancel any month. Usually live within two business days.</p>
+      <p>Ten questions to set up, about five minutes. <span data-price>$199</span> a month. Cancel any month. Usually live within two business days.</p>
       <a class="btn" data-cta href="#">Start for <span data-price>$199</span>/mo</a>
     </div>
   </main>
@@ -525,7 +577,13 @@
         t.tabIndex = j === i ? 0 : -1;
       });
       var d = panels[i];
-      panel.innerHTML = "<h3>" + d.h + "</h3>" + d.p.map(function (x) { return "<p>" + x + "</p>"; }).join("");
+      /* Panels can carry a numbered list and a button as well as prose, so the
+         setup tile can show the actual ten questions rather than describe them. */
+      panel.innerHTML = "<h3>" + d.h + "</h3>"
+        + d.p.map(function (x) { return "<p>" + x + "</p>"; }).join("")
+        + (d.list ? '<ol class="qlist">' + d.list.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ol>" : "")
+        + (d.note ? '<p class="qnote">' + d.note + "</p>" : "")
+        + (d.cta ? '<a class="btn" href="' + d.cta.href + '">' + d.cta.text + "</a>" : "");
       if (focus) tabs[i].focus();
     }
     tabs.forEach(function (t, i) {
@@ -647,9 +705,22 @@
   })();
 
   tileGrid("steps", "steppanel", [
-    { h: "Fifteen minutes, once, and then you are done setting up",
-      p: ["Ten questions, so we write the way you talk: what you sell, what you would never say, and how tight you want the leash. Fill them in yourself in about five minutes, or do it on a call if you would rather. Either way it only happens once.",
-          "Then you add us as a manager on Google, the way you would add a member of staff. About 30 seconds, you never share a password, and you can remove us in two clicks. Facebook and Instagram are optional, and Google is the one that matters."] },
+    { h: "Ten questions, once, and you are done setting up",
+      p: ["Here they are, so you know exactly what you are being asked. Most of them you answer by tapping, and you can skip any of them."],
+      list: [
+        "What is the place called, and where is it?",
+        "Who are we dealing with, and which phone should we reach you on?",
+        "What do you sell, in your own words?",
+        "How should a reply sound? Warm, straight, or playful.",
+        "<b>What must we never say?</b> The one that saves you from a reply that makes you wince.",
+        "Where is your Google listing?",
+        "What do people ask you all day? This becomes the chat on your site.",
+        "Do you want pickup ordering, and on which phone?",
+        "What are your opening hours, including the days you are shut?",
+        "Anything coming up, or anything still sore?"
+      ],
+      note: "About five minutes. Then you add us as a manager on Google, the way you would add a member of staff. Thirty seconds, you never share a password, and you can remove us in two clicks. Facebook and Instagram are optional. Google is the one that matters.",
+      cta: { href: "./start.html", text: "Answer the ten questions →" } },
     { h: "From then on the work is ours, not yours",
       p: ["Every new review gets a reply written in your voice, and we put the good ones up. Anything negative or sensitive is held every time and comes to your phone instead.",
           "Your review code keeps asking every diner, your offers and photos go on your Google listing, and 8 social posts a month get written and put up. Your reviews get worked every business day. We are one person and we would rather say that than pretend it is instant."] },
