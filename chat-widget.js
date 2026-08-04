@@ -101,6 +101,7 @@
     + '.rpc-chips{display:flex;flex-wrap:wrap;gap:7px}'
     + '.rpc-chip{background:#fff;border:1px solid #e6ddd1;color:' + accent + ';font:600 13px inherit;padding:7px 12px;border-radius:999px;cursor:pointer}'
     + '.rpc-chip:hover{background:#f7ece4}'
+    + '.rpc-chip.more{border-style:dashed;color:#8a7b6e}'
     + '.rpc-chip.go{background:' + accent + ';color:#fff;border-color:' + accent + '}'
     + '.rpc-form{display:flex;gap:8px;padding:11px;border-top:1px solid #e6ddd1;background:#fff;flex:0 0 auto}'
     + '.rpc-in{flex:1;border:1px solid #e6ddd1;border-radius:10px;padding:10px 12px;font:15px inherit;outline:none;min-width:0}'
@@ -214,20 +215,41 @@
     d.textContent = text;
     log.appendChild(d); log.scrollTop = log.scrollHeight;
   }
+  /* How many topics to show before the "more" chip. Showing four out of
+     seventeen made the helper look like it barely knew anything, which is the
+     opposite of the truth and the opposite of what it is for. */
+  var CHIPS_SHOWN = 6;
+
+  function chipFor(e, wrap) {
+    var label = (e.chip || (e.q && e.q[0]) || "").trim();
+    if (!label) return null;
+    var c = document.createElement("button");
+    c.className = "rpc-chip"; c.type = "button"; c.textContent = label;
+    /* A chip already knows its answer, so hand it over. Never search for it:
+       the chip label is a heading, not one of the phrasings, so "What it costs"
+       could score below the threshold and fall back on its own answer. */
+    c.addEventListener("click", function () { ask(label, e); });
+    wrap.appendChild(c);
+    return c;
+  }
+
   function chips() {
     var wrap = document.createElement("div"); wrap.className = "rpc-chips";
-    /* No order chip when the sticky bar is showing it: one ask, not two. */
-    C.answers.slice(0, 4).forEach(function (e) {
-      var label = (e.chip || (e.q && e.q[0]) || "").trim();
-      if (!label) return;
-      var c = document.createElement("button");
-      c.className = "rpc-chip"; c.type = "button"; c.textContent = label;
-      /* A chip already knows its answer, so hand it over. Never search for it:
-         the chip label is a heading, not one of the phrasings, so "What it costs"
-         could score below the threshold and fall back on its own answer. */
-      c.addEventListener("click", function () { ask(label, e); });
-      wrap.appendChild(c);
-    });
+    var shown = C.answers.slice(0, CHIPS_SHOWN);
+    var rest = C.answers.slice(CHIPS_SHOWN);
+    shown.forEach(function (e) { chipFor(e, wrap); });
+
+    if (rest.length) {
+      var more = document.createElement("button");
+      more.className = "rpc-chip more"; more.type = "button";
+      more.textContent = "+ " + rest.length + " more";
+      more.addEventListener("click", function () {
+        more.remove();
+        rest.forEach(function (e) { chipFor(e, wrap); });
+        log.scrollTop = log.scrollHeight;
+      });
+      wrap.appendChild(more);
+    }
     log.appendChild(wrap); log.scrollTop = log.scrollHeight;
   }
   function fallback() {
@@ -421,6 +443,40 @@
 
   btn.addEventListener("click", open);
   if (MOUNT) open();
+
+  /* The launcher is fixed, so it floats over whatever is at the bottom of the
+     page. On this site that was the footer: seven links and the email address
+     sat underneath it and could not be tapped at all. The widget puts the button
+     there, so the widget reserves the room for it.
+
+     The padding goes on the last real block rather than on <body>, so it extends
+     that element's own background instead of leaving a strip of a different
+     colour under a coloured footer. */
+  function reserveRoom() {
+    if (MOUNT) return;                       // embedded, nothing floats
+    var kids = [].slice.call(document.body.children).filter(function (n) {
+      if (n === btn || n === panel) return false;
+      var tag = n.tagName;
+      if (tag === "SCRIPT" || tag === "STYLE" || tag === "LINK" || tag === "TEMPLATE") return false;
+      return n.getBoundingClientRect().height > 0;
+    });
+    var last = kids[kids.length - 1];
+    if (!last) return;
+    if (last.dataset.rpcPad === undefined) {
+      last.dataset.rpcPad = parseFloat(getComputedStyle(last).paddingBottom) || 0;
+    }
+    var base = parseFloat(last.dataset.rpcPad) || 0;
+    var need = btn.offsetHeight + 34;        // button, plus its own bottom offset and a gap
+    if (base < need) last.style.paddingBottom = need + "px";
+  }
+  /* Re-measure when the button wraps to two lines or the page reflows. */
+  if (window.ResizeObserver) {
+    try { new ResizeObserver(reserveRoom).observe(btn); } catch (e) {}
+  }
+  window.addEventListener("resize", reserveRoom);
+  if (document.readyState === "complete") reserveRoom();
+  else window.addEventListener("load", reserveRoom);
+  reserveRoom();
 
   // Public hooks, so a page can drive the widget from its own buttons.
   window.RPChat = {
