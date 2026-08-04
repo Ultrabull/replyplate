@@ -44,6 +44,7 @@
     soTopic: $("soTopic"), soCount: $("soCount"), soGo: $("soGo"), soOut: $("soOut"),
     gpType: $("gpType"), gpCta: $("gpCta"), gpTopic: $("gpTopic"), gpGo: $("gpGo"), gpOut: $("gpOut"),
     gpCheck: $("gpCheck"), gpVerdict: $("gpVerdict"), gpPhotos: $("gpPhotos"),
+    glSlug: $("glSlug"), glMake: $("glMake"), glOut: $("glOut"),
     cRev90: $("cRev90"),
     wlNumber: $("wlNumber"), wlPost: $("wlPost"), wlHours: $("wlHours"), wlCap: $("wlCap"),
     wlClients: $("wlClients"), wlManual: $("wlManual"), wlAdd: $("wlAdd"), wlUndo: $("wlUndo"),
@@ -1319,6 +1320,29 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     rd.readAsText(file);
   }
 
+
+  /* ---------- the ordering link that goes in Google Maps ----------------
+     Google lets a restaurant add its own "Order online" link to its listing and
+     mark it preferred, which puts it above DoorDash and Grubhub in the sheet a
+     diner sees. Ours is the hosted page, opened straight on the menu with
+     ?order so nobody has to hunt for it after tapping a button that said Order. */
+  function buildOrderLink() {
+    const slug = (dom.glSlug.value || "").trim().toLowerCase();
+    if (!/^[a-z0-9-]{1,60}$/.test(slug)) {
+      dom.glOut.textContent = "Use lowercase letters, numbers and dashes only, the same slug as their r/<slug>.json file.";
+      return;
+    }
+    const url = "https://reply-plate.com/r.html?c=" + slug + "&order";
+    dom.glOut.innerHTML = "";
+    const code = el("code");
+    code.textContent = url;
+    code.style.cssText = "display:block;word-break:break-all;margin-bottom:8px";
+    const b = el("button", "btn ghost");
+    b.type = "button"; b.textContent = "Copy";
+    b.addEventListener("click", () => copy(url, b));
+    dom.glOut.appendChild(code); dom.glOut.appendChild(b);
+  }
+
   /* ---------- settings ---------- */
   function openSettings() { dom.apiKey.value = state.key || ""; dom.settingsModal.hidden = false; loadModels(false); }
   function closeSettings() { dom.settingsModal.hidden = true; }
@@ -1334,6 +1358,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
   function wire() {
     initTabs();
     dom.gpGo.addEventListener("click", doGooglePost);
+    dom.glMake.addEventListener("click", buildOrderLink);
     dom.wlPost.addEventListener("input", () => {
       state.wcfg.postSecs = Math.max(0, Math.min(600, +dom.wlPost.value || 0));
       save(S.wcfg, state.wcfg); renderWorkload();

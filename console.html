@@ -116,6 +116,21 @@
       <p class="hint">The client already made you a manager so you could answer reviews. The same access lets you post offers and add photos, and almost no restaurant does either. This is the shortest line between what you sell and a booked table.</p>
 
       <div class="card form">
+        <h3>Their ordering link, for Google Maps</h3>
+        <p class="hint">Google lets a restaurant put its own link in the "Order online" list on its listing,
+          free, marked <b>Preferred by business</b> above DoorDash and the rest. This is the link to give them.
+          It opens straight on their menu.</p>
+        <div class="row">
+          <input id="glSlug" class="in" placeholder="Their slug, e.g. the-olive-table" />
+          <button class="btn ghost" id="glMake" type="button">Build the link</button>
+        </div>
+        <p class="hint" id="glOut" style="margin-top:10px"></p>
+        <p class="hint" style="margin-top:8px">Then: Business Profile → <b>Food ordering</b> → <b>Add a link</b> → paste → turn on preferred → Save.
+          Before they discount it, read the note in the setup guide: Grubhub's contract still asks for the same prices
+          everywhere and DoorDash ranks you lower when yours are cheaper. A free side beats a price cut.</p>
+      </div>
+
+      <div class="card form">
         <h3>1. Post an offer, event or update</h3>
         <p class="hint" style="margin-bottom:10px">Google rejects posts with a phone number in the body, so the checker below blocks that before you paste it in.</p>
         <div class="row">

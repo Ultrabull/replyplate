@@ -468,7 +468,16 @@
   }
 
   btn.addEventListener("click", open);
-  if (MOUNT) open();
+  /* Google Maps lets a restaurant post its own "Order online" link. Somebody
+     arriving from that button pressed Order, so land them on the menu rather
+     than on the chat and make them find it. openOrder=true in the config, or
+     ?order in the address, both do it. */
+  if (MOUNT) {
+    open();
+    var wantsOrder = C.openOrder === true ||
+      (typeof location !== "undefined" && /(^|[?&])order(=|&|$)/.test(location.search));
+    if (wantsOrder && ORDER) showOrder();
+  }
 
   /* The launcher is fixed, so it floats over whatever is at the bottom of the
      page. On this site that was the footer: seven links and the email address
