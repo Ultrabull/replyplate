@@ -307,6 +307,9 @@
       d["Anything else"] ? "Also:\n" + d["Anything else"] : "",
       d["Pickup ordering"] ? "Pickup ordering: " + d["Pickup ordering"] : "",
       d["Orders go to"] ? "Orders go to: " + d["Orders go to"] : "",
+      /* What they will give for a direct order. This is the line that goes on
+         the Google Maps ordering link, so it must not get lost in an inbox. */
+      d["For ordering direct"] ? "For ordering direct: " + d["For ordering direct"] : "",
     ].filter(Boolean).join("\n\n");
     if (notes && dom.chNotes && !dom.chNotes.value.trim()) dom.chNotes.value = notes;
     if (d["Orders go to"] && dom.chOrderPhone && !dom.chOrderPhone.value.trim()) dom.chOrderPhone.value = d["Orders go to"];

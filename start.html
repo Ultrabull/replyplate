@@ -207,6 +207,18 @@
         </div>
         <div style="margin-top:10px"><label class="s" for="q8b">If yes, which phone should orders land on?</label>
           <input type="tel" id="q8b" name="Orders go to" placeholder="(415) 555 0199" /></div>
+
+        <div style="margin-top:16px">
+          <label class="s" for="q8c" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
+            What could you give someone who orders direct?</label>
+          <p class="why" style="margin-bottom:11px">Google lets you put your own ordering link on your listing, above
+            DoorDash and the rest. A small thank you for using it is what makes people switch, and you keep the
+            commission either way.
+            <b>Give something that is not a price cut if you can.</b> Grubhub's contract asks you to keep prices the same
+            everywhere and DoorDash quietly ranks you lower when yours are cheaper. A free side has none of that
+            trouble and pulls just as hard.</p>
+          <textarea id="q8c" name="For ordering direct" placeholder="A free garlic bread with any pizza"></textarea>
+        </div>
       </div>
 
       <div class="q">
@@ -286,6 +298,9 @@
               "Dogs allowed", "Kids menu and high chairs", "Booking a table", "Big groups",
               "Wheelchair access", "Outdoor seating", "Do you deliver", "Card or cash",
               "Wifi", "Corkage and BYO", "Set menus"] },
+      q8c: { items: ["A free side", "A free drink", "A free dessert", "Extra topping on the house",
+              "A stamp on a loyalty card", "Ready faster than the apps", "Skip the queue at the counter",
+              "10% off (price cut, see the note)", "Nothing for now"] },
       q9: { items: ["Closed Mondays", "Open seven days", "Lunch and dinner", "Dinner only",
               "Closed Sunday evening", "Later on Friday and Saturday", "Kitchen shuts an hour before we do"] },
       q10: { items: ["We run a weekly offer", "We are closing for a break soon",
