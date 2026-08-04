@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="theme-color" content="#161210" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Restaurant websites, built by ReplyPlate</title>
+<meta name="description" content="One page for your restaurant that works on a phone, shows the menu without a download, and has a chat on it that answers questions and takes collection orders." />
+<style>
+  :root{
+    --ink:#f3ecdf; --muted:#a4977f; --bg:#161210; --card:#1f1915; --line:#382d20;
+    --accent:#d0a34e; --accent2:#8a6a2c; --ok:#5cb383;
+    /* The mock restaurant site inside the frame is light, so it reads as a real
+       website sitting on a dark page instead of another panel of this one. */
+    --m-bg:#fbf8f2; --m-ink:#241c17; --m-mute:#7a6c5d; --m-line:#e7ded1; --m-accent:#b03d29;
+    --m-skel:#e9e1d5;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;
+    -webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(60% 40% at 50% -6%,rgba(208,163,78,.16),transparent 70%),
+      radial-gradient(50% 34% at 92% 12%,rgba(138,106,44,.12),transparent 72%),
+      radial-gradient(46% 30% at 4% 44%,rgba(176,61,41,.07),transparent 70%)}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay}
+  a{color:inherit}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  .btn{display:inline-block;background:var(--accent);color:#1a1204;padding:15px 26px;min-height:48px;
+    border-radius:999px;font-weight:700;text-decoration:none;font-size:16px;border:none;cursor:pointer;
+    transition:transform .1s,background .15s}
+  .btn:hover{background:#ddb45f}
+  .btn:active{transform:scale(.97)}
+  .btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+  .btn.ghost:hover{background:rgba(208,163,78,.12)}
+  header{padding:18px 0;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(8px);z-index:10;border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;text-decoration:none}
+  .logo .mark{width:28px;height:28px;display:block;flex:0 0 auto;filter:drop-shadow(0 2px 6px rgba(208,163,78,.28))}
+  section{padding:46px 0}
+  .section-title{font-size:clamp(24px,4vw,34px);text-align:center;margin-bottom:10px;letter-spacing:-.3px}
+  .section-sub{text-align:center;color:var(--muted);max-width:620px;margin:0 auto 30px}
+  footer{padding:30px 0 50px;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+
+  .hero{padding:52px 0 16px;text-align:center}
+  .hero h1{font-size:clamp(30px,6vw,50px);line-height:1.1;letter-spacing:-.5px;margin-bottom:16px}
+  .hero h1 span{color:var(--accent)}
+  .hero p.sub{font-size:clamp(17px,2.4vw,20px);color:var(--muted);max-width:660px;margin:0 auto 26px}
+  .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .trust{margin-top:16px;font-size:14px;color:var(--muted)}
+
+  /* ── The build demo ──────────────────────────────────────────────────────
+     A website assembles itself inside a browser frame, then narrows to a
+     phone. It is the whole pitch happening rather than being described.
+     Everything here is drawn by the browser: no images, nothing to download.
+     The HTML ships fully built. The script only takes pieces away in order to
+     put them back, so with JavaScript off, or reduced motion asked for, the
+     visitor simply sees the finished site.
+  ─────────────────────────────────────────────────────────────────────────── */
+  .build{margin:26px auto 0;max-width:860px}
+  .frame{max-width:860px;margin:0 auto;background:#0f0c0a;border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(0,0,0,.9);
+    transition:max-width .7s cubic-bezier(.22,.8,.3,1),border-radius .5s}
+  .frame.phone{max-width:310px;border-radius:26px}
+  .chrome{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#191412;border-bottom:1px solid var(--line)}
+  .chrome i{width:9px;height:9px;border-radius:50%;background:#3a2f24;flex:0 0 auto}
+  .chrome .url{flex:1;margin-left:8px;background:#0f0c0a;border-radius:999px;padding:4px 12px;
+    font-size:11.5px;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* The chat pill floats over the page, exactly as it does on a real site, so
+     the screen keeps room under the menu for it to sit without hiding a price. */
+  .screen{position:relative;background:var(--m-bg);padding:14px 14px 58px;display:grid;gap:10px}
+  .frame.phone .screen{padding:11px 11px 54px;gap:8px}
+
+  .blk{background:var(--m-skel);border-radius:12px;position:relative;overflow:hidden;
+    transition:background .45s ease,box-shadow .45s ease,border-color .45s ease;
+    border:1px solid transparent;min-height:44px}
+  .blk > *{opacity:0;transform:translateY(7px);transition:opacity .4s ease .06s,transform .4s ease .06s}
+  .blk.on{background:transparent}
+  .blk.on > *{opacity:1;transform:none}
+  /* While a block is still a placeholder, a light band runs across it, the way a
+     page looks while it is loading. It stops the moment the block is built. */
+  .blk::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.75) 50%,transparent 80%);
+    transform:translateX(-100%);animation:shim 1.35s ease-in-out infinite}
+  .blk.on::after{display:none}
+  @keyframes shim{to{transform:translateX(100%)}}
+
+  .s-nav{display:flex;align-items:center;gap:10px;padding:9px 12px;min-height:44px}
+  .s-nav.on{border-color:var(--m-line);background:#fff}
+  .s-logo{color:var(--m-ink);font-size:14.5px;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+  .s-nav .sp{flex:1}
+  .s-nav .lnk{color:var(--m-mute);font-size:12px;font-weight:600}
+  .s-nav .pill{background:var(--m-accent);color:#fff;font-size:11.5px;font-weight:700;
+    padding:6px 12px;border-radius:999px;white-space:nowrap}
+  .frame.phone .s-nav .lnk{display:none}
+
+  .s-hero{padding:20px 16px 18px;text-align:left;min-height:112px}
+  .s-hero.on{background:linear-gradient(135deg,#2a211a,#4a3126 60%,#6d3a24);border-color:transparent}
+  .s-hero b{display:block;color:#fff;font-size:clamp(17px,2.6vw,24px);line-height:1.15;letter-spacing:-.3px}
+  .s-hero .open{display:inline-block;margin-top:7px;color:#ffe6c9;font-size:12px;font-weight:600}
+  .s-hero .open i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#7ad3a4;margin-right:6px}
+  .s-hero .row{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+  .s-hero .row span{background:#fff;color:var(--m-ink);font-size:12px;font-weight:700;
+    padding:8px 14px;border-radius:999px}
+  .s-hero .row span.o{background:rgba(255,255,255,.16);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+
+  .s-menu{padding:12px;min-height:120px}
+  .s-menu.on{background:#fff;border-color:var(--m-line)}
+  .s-menu h5{color:var(--m-mute);font-size:10.5px;font-weight:800;letter-spacing:.7px;
+    text-transform:uppercase;margin-bottom:9px}
+  .s-menu .items{display:grid;grid-template-columns:1fr 1fr;gap:7px 22px}
+  .frame.phone .s-menu .items{grid-template-columns:1fr}
+  .s-menu .it{display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+    border-bottom:1px dashed var(--m-line);padding-bottom:6px}
+  .s-menu .it b{color:var(--m-ink);font-size:13px;font-weight:600}
+  .s-menu .it span{color:var(--m-accent);font-size:13px;font-weight:800;white-space:nowrap}
+
+  .s-chat{position:absolute;right:16px;bottom:16px;background:var(--m-accent);color:#fff;
+    font-size:12px;font-weight:700;padding:10px 16px;border-radius:999px;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,.5);white-space:nowrap;
+    transform:scale(.4);opacity:0;transition:transform .45s cubic-bezier(.2,1.5,.4,1),opacity .3s}
+  .s-chat.on{transform:scale(1);opacity:1}
+  .frame.phone .s-chat{right:13px;bottom:13px;font-size:11px;padding:9px 13px}
+
+  .steps{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .steps span{font-size:11.5px;font-weight:700;color:var(--muted);border:1px solid var(--line);
+    border-radius:999px;padding:5px 12px;transition:color .3s,border-color .3s,background .3s}
+  .steps span.is-done{color:var(--accent);border-color:var(--accent2);background:rgba(208,163,78,.10)}
+  .replay{margin:14px auto 0;display:block;background:none;border:1px solid var(--line);color:var(--muted);
+    font:600 13px inherit;padding:10px 18px;border-radius:999px;cursor:pointer;min-height:44px}
+  .replay:hover{border-color:var(--accent);color:var(--accent)}
+  .replay:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  /* ── The real work ─────────────────────────────────────────────────────── */
+  .work{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:700px){.work{grid-template-columns:1fr 1fr}}
+  .w{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:20px 22px;transition:transform .18s ease,border-color .18s,box-shadow .18s}
+  .w:hover{transform:translateY(-4px);border-color:var(--accent2);box-shadow:0 22px 46px -24px rgba(0,0,0,.85)}
+  .w:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .w .k{font-size:10.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--accent)}
+  .w b{display:block;font-size:17.5px;margin:6px 0 5px;letter-spacing:-.2px}
+  .w p{color:var(--muted);font-size:14.5px}
+  .w .go{display:inline-block;margin-top:11px;color:var(--accent);font-size:13.5px;font-weight:700}
+  .w:hover .go{text-decoration:underline}
+
+  /* ── Drag to compare ─────────────────────────────────────────────────────
+     Two whole websites drawn on top of each other, and the drag wipes between
+     them. Both fill the box edge to edge, so wherever the line sits there is
+     something on each side of it. Bullet points would leave half the panel
+     blank, which is what a comparison must never do.
+  ─────────────────────────────────────────────────────────────────────────── */
+  .cmp2{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    max-width:820px;margin:0 auto;height:var(--h,404px);touch-action:pan-y;background:#12100e}
+  .cmp2:focus-within{outline:2px solid var(--accent);outline-offset:3px}
+  .pane{position:absolute;inset:0;overflow:hidden}
+  .pane.after{clip-path:inset(0 0 0 var(--x,50%))}
+  /* Both sites are drawn inside an identically placed phone, so the line cuts
+     through the same device rather than through two different layouts. Wherever
+     you stop it, the left of the phone is the old site and the right is the new
+     one, lined up pixel for pixel. */
+  .stage{position:absolute;inset:0;background:
+      radial-gradient(70% 60% at 50% 0%,rgba(208,163,78,.10),transparent 70%),#12100e;
+    display:flex;align-items:center;justify-content:center}
+  .ph{width:296px;height:calc(var(--h,404px) - 44px);border-radius:24px;overflow:hidden;
+    position:relative;background:#fff;box-shadow:0 24px 60px -18px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.07)}
+  .labels{display:flex;justify-content:space-between;max-width:820px;margin:0 auto 10px;
+    font-size:10.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+  .labels .l{color:var(--muted)}
+  .labels .r{color:var(--accent)}
+  @media (max-width:420px){.labels{font-size:9.5px}}
+
+  /* The site a lot of restaurants still have. Everything here is a real thing
+     seen on real restaurant sites, not a strawman. */
+  .old{position:absolute;inset:0;background:#eef1f5;font-family:Georgia,"Times New Roman",serif;
+    padding:10px;color:#333}
+  .old .obar{background:linear-gradient(#5c7fa8,#3f5f85);color:#dbe6f2;font-size:9.5px;padding:6px 8px;
+    border-radius:3px;border:1px solid #2d4c70;white-space:nowrap;overflow:hidden}
+  .old .obar b{color:#fff;margin-right:9px;font-size:10.5px}
+  .old .obar u{margin-right:7px;text-decoration:underline}
+  .old h4{text-align:center;font-size:16px;color:#20406b;margin:14px 0 3px;font-weight:400}
+  .old .oclaim{text-align:center;font-size:11px;color:#a33;margin-bottom:11px;font-style:italic}
+  .old .obroken{background:#dde3ea;border:1px dashed #97a5b6;border-radius:2px;height:74px;
+    display:flex;align-items:center;justify-content:center;color:#8a97a7;font-size:10.5px;
+    font-family:var(--font);margin-bottom:11px}
+  .old .opdf{background:#fff;border:1px solid #c3ccd8;border-radius:2px;padding:8px 10px;font-size:11.5px;
+    color:#20406b;margin-bottom:11px;line-height:1.4}
+  .old .opdf span{display:block;color:#7b8798;font-size:10px}
+  .old .otiny{font-size:10px;color:#6b7482;line-height:1.85;text-align:center}
+  .old .otiny i{font-style:normal;color:#20406b;text-decoration:underline}
+
+  /* The one we build. Same pieces as the frame at the top of the page. */
+  .new{position:absolute;inset:0;background:var(--m-bg);padding:10px;display:grid;
+    grid-template-rows:auto auto auto;gap:9px;align-content:start}
+  .new .nnav{background:#fff;border:1px solid var(--m-line);border-radius:11px;padding:9px 12px;
+    display:flex;align-items:center;gap:10px}
+  .new .nnav b{font-size:14px;color:var(--m-ink);white-space:nowrap}
+  .new .nnav .sp{flex:1}
+  .new .nnav .pill{background:var(--m-accent);color:#fff;font-size:11px;font-weight:700;
+    padding:6px 12px;border-radius:999px;white-space:nowrap}
+  .new .nhero{background:linear-gradient(135deg,#2a211a,#4a3126 60%,#6d3a24);border-radius:11px;
+    padding:15px 14px}
+  .new .nhero b{display:block;color:#fff;font-size:17px;line-height:1.15;letter-spacing:-.2px}
+  .new .nhero em{display:inline-block;font-style:normal;color:#ffe6c9;font-size:11.5px;
+    font-weight:600;margin-top:6px}
+  .new .nhero em i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#7ad3a4;
+    margin-right:6px;font-style:normal}
+  .new .nhero .row{display:flex;gap:7px;margin-top:11px}
+  .new .nhero .row span{background:#fff;color:var(--m-ink);font-size:11.5px;font-weight:700;
+    padding:7px 13px;border-radius:999px}
+  .new .nhero .row span.o{background:rgba(255,255,255,.16);color:#fff;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+  .new .nmenu{background:#fff;border:1px solid var(--m-line);border-radius:11px;padding:11px 12px}
+  .new .nmenu h5{color:var(--m-mute);font-size:10px;font-weight:800;letter-spacing:.7px;
+    text-transform:uppercase;margin-bottom:8px}
+  .new .nmenu .it{display:flex;justify-content:space-between;gap:10px;align-items:baseline;
+    border-bottom:1px dashed var(--m-line);padding-bottom:5px;margin-bottom:5px}
+  .new .nmenu .it:last-child{border-bottom:0;margin-bottom:0}
+  .new .nmenu .it b{color:var(--m-ink);font-size:12.5px;font-weight:600}
+  .new .nmenu .it span{color:var(--m-accent);font-size:12.5px;font-weight:800}
+  .new .nchat{position:absolute;right:12px;bottom:12px;background:var(--m-accent);color:#fff;
+    font-size:11px;font-weight:700;padding:9px 13px;border-radius:999px;white-space:nowrap;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,.5)}
+
+  .cmp2 .bar{position:absolute;top:0;bottom:0;left:var(--x,50%);width:3px;background:var(--m-accent);
+    z-index:2;pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.14)}
+  .cmp2 .knob{position:absolute;top:50%;left:var(--x,50%);width:44px;height:44px;margin:-22px 0 0 -22px;
+    border-radius:50%;background:var(--m-accent);color:#fff;display:flex;align-items:center;
+    justify-content:center;font-weight:800;font-size:16px;z-index:2;pointer-events:none;
+    box-shadow:0 6px 18px -4px rgba(0,0,0,.5)}
+  .cmp2 input[type=range]{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;z-index:3;
+    opacity:0;cursor:ew-resize;-webkit-appearance:none;appearance:none;background:transparent}
+  .cmp2 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:48px;height:var(--h,404px)}
+  .cmp2 input[type=range]::-moz-range-thumb{width:48px;height:var(--h,404px);border:0;background:transparent}
+  .cmp-hint{text-align:center;color:var(--muted);font-size:12.5px;margin-top:12px}
+
+  /* The written version of the same comparison, under the panel. It carries the
+     argument on its own for anyone who never drags anything. */
+  .swap{list-style:none;max-width:820px;margin:18px auto 0;display:grid;gap:10px}
+  @media (min-width:700px){.swap{grid-template-columns:1fr 1fr}}
+  .swap li{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+    font-size:14px;line-height:1.5}
+  .swap li .was{color:var(--muted);display:block}
+  .swap li .was::before{content:"✕ ";color:#c96a52;font-weight:800}
+  .swap li .now{display:block;margin-top:4px}
+  .swap li .now::before{content:"✓ ";color:var(--ok);font-weight:800}
+
+  /* ── What is on every one ──────────────────────────────────────────────── */
+  .feat{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:640px){.feat{grid-template-columns:1fr 1fr}}
+  @media (min-width:900px){.feat{grid-template-columns:repeat(3,1fr)}}
+  .f{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;
+    transition:transform .18s ease,border-color .18s}
+  .f:hover{transform:translateY(-3px);border-color:var(--accent2)}
+  .f .ico{font-size:26px;line-height:1;display:block;margin-bottom:9px}
+  .f b{display:block;font-size:16px;margin-bottom:5px}
+  .f p{color:var(--muted);font-size:14.5px}
+
+  .honest{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;max-width:760px;margin:0 auto}
+  .honest p{color:var(--muted);font-size:15px;margin-bottom:14px}
+  .honest p:last-child{margin-bottom:0}
+  .honest b{color:var(--ink)}
+
+  .pricing{max-width:480px;margin:0 auto;text-align:center;background:var(--card);
+    border:2px solid var(--accent);border-radius:22px;padding:34px 28px;
+    box-shadow:0 26px 70px -18px rgba(0,0,0,.55)}
+  .pricing .price{font-size:46px;font-weight:800;line-height:1.1}
+  .pricing .price small{display:block;font-size:15px;color:var(--muted);font-weight:600;margin-top:6px}
+  .pricing ul{list-style:none;text-align:left;margin:20px 0;display:flex;flex-direction:column;gap:10px}
+  /* The list item is the flex container, so anything inside it that is an element
+     becomes a flex item of its own. Wrapping the sentence in one span keeps a
+     <span data-price> from being torn out of the middle of it. */
+  .pricing li{display:flex;gap:10px;align-items:flex-start;font-size:15px;text-align:left}
+  .pricing li::before{content:"✓";color:var(--ok);font-weight:800;flex:0 0 auto}
+  .pricing li > span{flex:1;min-width:0}
+  .pricing .note{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.55}
+
+  .final{text-align:center;background:#211a11;border:1px solid #3f331f;border-radius:24px;
+    padding:48px 26px;margin:24px 0;position:relative;overflow:hidden}
+  .final::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 0%,rgba(208,163,78,.20),transparent 62%)}
+  .final > *{position:relative}
+  .final h2{font-size:clamp(24px,4vw,32px);margin-bottom:10px}
+  .final p{color:var(--muted);margin-bottom:22px}
+
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .55s cubic-bezier(.22,.8,.3,1),transform .55s cubic-bezier(.22,.8,.3,1)}
+  .rv.in{opacity:1;transform:none}
+
+  @media (max-width:560px){
+    .cta-row{flex-direction:column;align-items:stretch}
+    .cta-row .btn{width:100%}
+    section{padding:34px 0}
+    .hero{padding:36px 0 10px}
+    .cmp2{--h:392px}
+    .ph{width:270px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .rv{opacity:1;transform:none;transition:none}
+    .frame,.blk,.blk > *,.s-chat,.w,.f,.steps span{transition:none}
+    .blk::after{display:none}
+    .w:hover,.f:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+  <header><div class="wrap nav">
+    <a class="logo" href="./index.html">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle cx="16" cy="16" r="15" fill="url(#lg)"/>
+        <circle cx="16" cy="16" r="11.5" fill="none" stroke="#1a1204" stroke-opacity=".28" stroke-width="1.1"/>
+        <path d="M10 12.6h12a1.6 1.6 0 0 1 1.6 1.6v4.4a1.6 1.6 0 0 1-1.6 1.6h-5.1l-3.1 2.6a.5.5 0 0 1-.82-.38V20.2H10a1.6 1.6 0 0 1-1.6-1.6v-4.4A1.6 1.6 0 0 1 10 12.6Z" fill="#1a1204"/>
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#e6be6c"/><stop offset="1" stop-color="#8a6a2c"/></linearGradient></defs>
+      </svg><span data-brand>ReplyPlate</span></a>
+    <a class="btn" data-quote href="#quote">Get a price</a>
+  </div></header>
+
+  <main class="wrap">
+
+    <section class="hero">
+      <h1>They look you up first. <span>Give them something worth finding.</span></h1>
+      <p class="sub">We build the website. One page that opens fast on a phone, shows your menu without a download, and puts <b>call</b> and <b>directions</b> where a hungry person can hit them with a thumb. The chat that takes collection orders comes with it.</p>
+      <div class="cta-row">
+        <a class="btn" data-quote href="#quote">Get a price</a>
+        <a class="btn ghost" href="./chat-demo.html">Open a finished one</a>
+      </div>
+      <p class="trust">Usually ready in about a week. You own the domain and the files.</p>
+    </section>
+
+    <!-- The build demo. Ships fully built; the script takes it apart to rebuild it. -->
+    <div class="build">
+      <div class="frame" id="frame">
+        <div class="chrome" aria-hidden="true">
+          <i></i><i></i><i></i>
+          <span class="url">theolivetable.com</span>
+        </div>
+        <div class="screen">
+          <div class="blk s-nav on" data-at="1">
+            <b class="s-logo">The Olive Table</b>
+            <span class="lnk">Menu</span><span class="lnk">Find us</span>
+            <span class="sp"></span>
+            <span class="pill">Order</span>
+          </div>
+          <div class="blk s-hero on" data-at="2">
+            <b>Wood-fired pizza on Mill Street</b>
+            <span class="open"><i></i>Open until 10 tonight</span>
+            <span class="row"><span>Call us</span><span class="o">Directions</span></span>
+          </div>
+          <div class="blk s-menu on" data-at="3">
+            <h5>Tonight's menu</h5>
+            <div class="items">
+              <div class="it"><b>Margherita</b><span>$12</span></div>
+              <div class="it"><b>Diavola</b><span>$15</span></div>
+              <div class="it"><b>Garlic bread</b><span>$6</span></div>
+              <div class="it"><b>Tiramisu</b><span>$7</span></div>
+            </div>
+          </div>
+          <div class="s-chat on" data-at="4" aria-hidden="true">Order food or ask us</div>
+        </div>
+      </div>
+      <div class="steps" id="steps" aria-hidden="true">
+        <span class="is-done">Layout</span>
+        <span class="is-done">Your words</span>
+        <span class="is-done">Your menu</span>
+        <span class="is-done">The chat</span>
+        <span class="is-done">On a phone</span>
+      </div>
+      <button class="replay" id="rebuild" type="button" hidden>Build it again</button>
+      <p class="cmp-hint">That is not a picture. It is the browser drawing a page, the same way yours will be.</p>
+    </div>
+
+    <section>
+      <h2 class="section-title">These are real pages. Open them.</h2>
+      <p class="section-sub">Every link below is something already built and working. Nothing here is a mockup, and there is nothing to sign up for.</p>
+      <div class="work">
+        <a class="w" href="./chat-demo.html">
+          <span class="k">A whole restaurant site</span>
+          <b>The Olive Table</b>
+          <p>Menu, hours, directions, and the chat on the corner. Tap the chat, add a pizza, and watch it build the order. It never asks for a card.</p>
+          <span class="go">Open it →</span>
+        </a>
+        <a class="w" href="./how.html">
+          <span class="k">A walkthrough that plays itself</span>
+          <b>Watch a review get answered</b>
+          <p>A review lands, a reply gets written, the owner says yes. Built out of moving text, not a video, so it loads instantly on a phone.</p>
+          <span class="go">Open it →</span>
+        </a>
+        <a class="w" href="./qr-code.html">
+          <span class="k">A working tool</span>
+          <b>The QR code maker</b>
+          <p>Paste a link, get a code you can print. The whole encoder runs in your browser, so your link never leaves your phone.</p>
+          <span class="go">Open it →</span>
+        </a>
+        <a class="w" href="./r.html?c=demo">
+          <span class="k">For owners with no website</span>
+          <b>The one-link version</b>
+          <p>Your menu, your chat and your ordering on a page of ours. Put the link in your Instagram bio or on a table sticker and you are done.</p>
+          <span class="go">Open it →</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Drag the line</h2>
+      <p class="section-sub">On the left, what a lot of restaurant sites still do. On the right, what we build instead. Drag the handle, or use the arrow keys.</p>
+      <p class="labels" aria-hidden="true"><span class="l">← Typical restaurant site</span><span class="r">The one we build →</span></p>
+      <div class="cmp2" id="cmp2" style="--x:50%">
+        <div class="pane before" aria-hidden="true"><div class="stage"><div class="ph"><div class="old">
+            <div class="obar"><b>Marios Pizzeria</b><u>Home</u><u>About Us</u><u>Menu</u><u>Gallery</u><u>Contact</u></div>
+            <h4>Welcome to our website!</h4>
+            <p class="oclaim">Best pizza in town!!!</p>
+            <div class="obroken">image not found</div>
+            <div class="opdf">Download our menu <span>(menu_final_v3.pdf, 4.2 MB)</span></div>
+            <p class="otiny">Opening hours: please call for details<br />Tel 555 010 2288 &nbsp;·&nbsp; <i>Find us on Facebook</i></p>
+        </div></div></div></div>
+        <div class="pane after" aria-hidden="true"><div class="stage"><div class="ph">
+          <div class="new">
+            <div class="nnav"><b>The Olive Table</b><span class="sp"></span><span class="pill">Order</span></div>
+            <div class="nhero">
+              <b>Wood-fired pizza on Mill Street</b>
+              <em><i></i>Open until 10 tonight</em>
+              <span class="row"><span>Call us</span><span class="o">Directions</span></span>
+            </div>
+            <div class="nmenu">
+              <h5>Tonight's menu</h5>
+              <div class="it"><b>Margherita</b><span>$12</span></div>
+              <div class="it"><b>Diavola</b><span>$15</span></div>
+              <div class="it"><b>Garlic bread</b><span>$6</span></div>
+            </div>
+            <span class="nchat">Order food or ask us</span>
+          </div>
+        </div></div></div>
+        <div class="bar" aria-hidden="true"></div>
+        <div class="knob" aria-hidden="true">↔</div>
+        <input type="range" min="0" max="100" value="50" id="wipe" aria-label="Compare a typical restaurant site with the one we build" />
+      </div>
+      <ul class="swap">
+        <li><span class="was">Menu is a PDF that downloads, opens sideways, and needs pinching to read a price</span>
+            <span class="now">Menu is on the page as real text, readable in one hand</span></li>
+        <li><span class="was">The phone number is part of a picture, so nothing happens when you tap it</span>
+            <span class="now">Call and Directions are buttons, at the top, and they work on the first tap</span></li>
+        <li><span class="was">"Welcome to our website", which says nothing about the food or the street</span>
+            <span class="now">The heading says what you sell and where you are</span></li>
+        <li><span class="was">Hours are near the bottom, and they still show the old Sunday times</span>
+            <span class="now">Tonight's hours sit under your name, changed the day you tell us</span></li>
+      </ul>
+      <p class="cmp-hint">Both sides are drawn by the browser on this page. Not a single image was loaded, which is rather the point.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">On every one we build</h2>
+      <p class="section-sub">Not a list of settings. These are the six things that decide whether somebody walks in.</p>
+      <div class="feat">
+        <div class="f"><span class="ico" aria-hidden="true">📱</span><b>Made for a phone first</b>
+          <p>People look you up standing on the sidewalk, deciding between you and the place across the road. It has to work in one hand, in daylight.</p></div>
+        <div class="f"><span class="ico" aria-hidden="true">🍕</span><b>A menu, not a download</b>
+          <p>Real text on the page, with prices. Change a price and tell us. It is live the same day, and you never open a PDF editor.</p></div>
+        <div class="f"><span class="ico" aria-hidden="true">📞</span><b>Call and Directions on top</b>
+          <p>Two buttons, above everything else. Tap one and the phone dials. Tap the other and Maps opens. That is what most visitors came for.</p></div>
+        <div class="f"><span class="ico" aria-hidden="true">💬</span><b>The chat, on your site</b>
+          <p>The same one you can try on this page. It answers the questions you get asked all day and takes a collection order. Included while you subscribe.</p></div>
+        <div class="f"><span class="ico" aria-hidden="true">🕐</span><b>Hours that match Google</b>
+          <p>Your site and your Google listing say the same thing. Nobody drives over on a Monday to find the door locked.</p></div>
+        <div class="f"><span class="ico" aria-hidden="true">📸</span><b>Your food, not stock photos</b>
+          <p>We use pictures of your plates. A stock photo of a salad reads as a place that closed two years ago, and people can tell.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Before you ask</h2>
+      <div class="honest">
+        <p><b>It does not take card payments.</b> People order and pay when they pick up, or on the phone. That means no card fees, no refunds to process, and no chargebacks landing on you six weeks later.</p>
+        <p><b>It is one good page, not ten.</b> A restaurant needs the food, the hours, the address and a way to reach you. Ten pages is somewhere for information to go stale.</p>
+        <p><b>It does not replace DoorDash or Uber Eats.</b> Those apps have people on them who have never heard of you. Keep them. This is for the people who already searched your name, where you keep the whole ticket.</p>
+        <p><b>You own it.</b> The domain goes in your name, not mine, and the files are yours. If you leave, the site keeps working and you can hand it to anyone.</p>
+        <p><b>Already have a site?</b> Often the cheaper answer is fixing that one. Send me the link and I will tell you straight which of the two is the better spend, including when it is neither.</p>
+        <p><b>It takes about a week.</b> Most of that is waiting on your photos and your menu. The building is the fast part.</p>
+      </div>
+    </section>
+
+    <section id="quote">
+      <h2 class="section-title">What it costs</h2>
+      <p class="section-sub">One price to build it. No monthly fee for the website itself, and nothing that renews without you noticing.</p>
+      <div class="pricing">
+        <div class="price"><span data-webprice>$1,200</span><small>once, to build and put it live</small></div>
+        <ul>
+          <li><span>The page, written and built around your food</span></li>
+          <li><span>Your menu entered, with prices</span></li>
+          <li><span>Call, directions and hours set up</span></li>
+          <li><span>The chat and collection ordering on it</span></li>
+          <li><span>Hosting, which costs you nothing to keep running</span></li>
+          <li><span>Small changes are free while you subscribe to <b data-brand>ReplyPlate</b> at <b data-price>$199</b> a month</span></li>
+        </ul>
+        <a class="btn" data-quote href="#" style="width:100%">Get a price for your place</a>
+        <p class="note">Not a subscriber? You still own it, and I quote any change before I start. The domain is about $15 a year, paid by you, to you.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="final">
+        <h2>Send me your restaurant's name.</h2>
+        <p>I will look you up, then tell you what I would change and what it would cost. No call needed, and no pitch if the answer is that you do not need one.</p>
+        <a class="btn" data-quote href="#">Get a price</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p><b data-brand>ReplyPlate</b> also answers your Google reviews, asks every diner for one, and writes your social posts, for <span data-price>$199</span> a month.
+      <a href="./index.html" style="color:var(--accent)">See that instead →</a></p>
+    <p style="margin-top:6px">
+      <a href="./index.html" style="color:var(--accent)">Home</a> ·
+      <a href="./chat-demo.html" style="color:var(--accent)">Chat and ordering</a> ·
+      <a href="./how.html" style="color:var(--accent)">Watch it work</a> ·
+      <a href="./details.html" style="color:var(--accent)">Costs and questions</a> ·
+      <a data-email href="#">hello@example.com</a></p>
+  </footer>
+
+<script>
+  /* ── EDIT THIS ONE BLOCK ──────────────────────────────────────────────────
+     webPrice: what you charge to build a restaurant site, one time.
+               This is the only number on this page you need to decide.
+     price   : your monthly ReplyPlate price (keep the $)
+     email   : where restaurant owners reach you
+  ────────────────────────────────────────────────────────────────────────── */
+  const CONFIG = {
+    brand:    "ReplyPlate",
+    price:    "$199",
+    webPrice: "$1,200",
+    email:    "hello@reply-plate.com",
+  };
+  (function () {
+    document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
+    document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = CONFIG.price; });
+    document.querySelectorAll("[data-webprice]").forEach(function (n) { n.textContent = CONFIG.webPrice; });
+    var quote = "mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("A website for my restaurant") +
+      "&body=" + encodeURIComponent("My restaurant is called:\n\nWe are in:\n\nOur website now (or none):\n");
+    document.querySelectorAll("[data-quote]").forEach(function (a) { a.href = quote; });
+    document.querySelectorAll("[data-email]").forEach(function (a) {
+      a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email;
+    });
+
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ── The build sequence ───────────────────────────────────────────────
+       The page arrives already built. This only runs when the frame scrolls
+       into view, and it starts by stripping the "on" classes it is about to
+       put back. If it never runs, nothing is missing.
+    ─────────────────────────────────────────────────────────────────────── */
+    var frame = document.getElementById("frame");
+    var stepsEl = document.getElementById("steps");
+    var rebuild = document.getElementById("rebuild");
+    if (frame && !reduce && "IntersectionObserver" in window) {
+      var blocks = [].slice.call(frame.querySelectorAll("[data-at]"));
+      var pills = stepsEl ? [].slice.call(stepsEl.children) : [];
+      var token = 0, played = false;
+
+      function build() {
+        var mine = ++token;
+        if (rebuild) rebuild.hidden = true;
+        blocks.forEach(function (b) { b.classList.remove("on"); });
+        pills.forEach(function (p) { p.classList.remove("is-done"); });
+        frame.classList.remove("phone");
+
+        var i = 0;
+        function next() {
+          if (mine !== token || !frame.isConnected) return;
+          if (i < blocks.length) {
+            blocks[i].classList.add("on");
+            if (pills[i]) pills[i].classList.add("is-done");
+            i++;
+            setTimeout(next, i === blocks.length ? 780 : 640);
+            return;
+          }
+          /* Last beat: it becomes a phone, because that is where it matters. */
+          frame.classList.add("phone");
+          if (pills[blocks.length]) pills[blocks.length].classList.add("is-done");
+          setTimeout(function () {
+            if (mine !== token) return;
+            if (rebuild) rebuild.hidden = false;
+          }, 700);
+        }
+        setTimeout(next, 340);
+      }
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting || played) return;
+          played = true; io.disconnect(); build();
+        });
+      }, { threshold: 0.35 });
+      io.observe(frame);
+      if (rebuild) rebuild.addEventListener("click", build);
+    }
+
+    /* ── Drag to compare ──────────────────────────────────────────────────
+       A range input stretched invisibly over the panel. That gets dragging,
+       touch and the arrow keys for free, and it stays usable with a keyboard.
+
+       The slider's whole travel is mapped onto the phone rather than onto the
+       panel, so every millimetre of the drag changes something. Dragging across
+       the dark space either side would move the line and show nothing new.
+    ─────────────────────────────────────────────────────────────────────── */
+    var cmp = document.getElementById("cmp2"), wipe = document.getElementById("wipe");
+    if (cmp && wipe) {
+      var phone = cmp.querySelector(".ph");
+      var setX = function () {
+        var v = +wipe.value;
+        if (phone) {
+          var box = cmp.getBoundingClientRect(), p = phone.getBoundingClientRect();
+          if (box.width > 0 && p.width > 0) {
+            var px = (p.left - box.left) + (p.width * v / 100);
+            cmp.style.setProperty("--x", (px / box.width * 100).toFixed(2) + "%");
+            return;
+          }
+        }
+        cmp.style.setProperty("--x", v + "%");
+      };
+      wipe.addEventListener("input", setX);
+      window.addEventListener("resize", setX);
+      setX();
+    }
+
+    /* Reveal on scroll. Decorative only: if it cannot run, everything shows. */
+    var targets = document.querySelectorAll(".work, .cmp2, .feat, .honest, .pricing, .final");
+    if (!reduce && "IntersectionObserver" in window) {
+      targets.forEach(function (n) { n.classList.add("rv"); });
+      var io2 = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          e.target.classList.add("in");
+          io2.unobserve(e.target);
+        });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+      targets.forEach(function (n) { io2.observe(n); });
+    }
+  })();
+
+  /* The chat on this page is the same file that goes on a restaurant's site.
+     Using it here is the demonstration. */
+  window.RP_CHAT = {
+    accent: "#b8893a",
+    name: "ReplyPlate",
+    subtitle: "Ask about the website",
+    email: CONFIG.email,
+    buttonText: "Questions? Ask here",
+    greeting: "Ask me anything about the websites we build. This chat is the same one that goes on your site, so you are using the thing while you ask about it.",
+    answers: [
+      { chip: "What it costs",
+        q: ["how much is a website","how much does a website cost","website price","what does it cost","how much","price",
+            "is there a monthly fee","do i pay monthly","any hidden costs","what about hosting","hosting cost","do i pay for hosting",
+            "how much is the domain","domain cost"],
+        a: CONFIG.webPrice + " once, to build it and put it live. There is no monthly fee for the website itself.\n\nHosting costs you nothing. The domain, the theolivetable.com part, is about $15 a year and you pay that directly so it stays in your name.\n\nSmall changes are free while you subscribe to ReplyPlate at " + CONFIG.price + " a month. If you do not subscribe, I quote any change before I start it." },
+      { chip: "How long it takes",
+        q: ["how long does it take","when will it be ready","how fast","turnaround","how quickly can you build it","when do i get it",
+            "what do you need from me","what do i have to send you","what do you need"],
+        a: "About a week, and most of that is waiting on you.\n\nI need three things: photos of your food, your menu with prices, and your hours. Send those and the building is the fast part." },
+      { chip: "Can it take orders?",
+        q: ["can it take orders","online ordering","does it take orders","can people order","order food","takeout orders",
+            "collection orders","pickup orders","does it take payment","can i take card payments","credit card","stripe","do you take a cut",
+            "commission","do you take commission"],
+        a: "Yes, for collection. Somebody taps the items, the chat adds it up, and they send the finished order from their own phone. It arrives as a normal message with their real number on it.\n\nIt never takes a card. They pay when they pick up. That means no card fees, no refunds to process and no chargebacks.\n\nWe never take a cut of an order. Not a percentage, not a per-order fee." },
+      { chip: "I already have a site",
+        q: ["i already have a website","i have a site","can you fix my website","should i replace it","do i need a new one",
+            "can you update my current site","what if i have a website","my site is old","wix","squarespace","wordpress","godaddy"],
+        a: "Send me the link before you buy anything.\n\nQuite often the cheaper answer is fixing what you have: a readable menu, a working call button, hours that match Google. I will tell you which of the two is the better spend, including when the answer is that you do not need me at all.\n\nIf your site is on Wix, Squarespace or WordPress, the chat can usually be added to it without rebuilding anything." },
+      { chip: "Do I own it?",
+        q: ["do i own it","who owns the website","is it mine","am i locked in","what if i leave","what happens if i stop paying",
+            "can i take it elsewhere","can another person work on it","do you hold my domain","is there a contract","am i tied in"],
+        a: "You own it. The domain goes in your name, not mine, and the files are yours.\n\nThere is no contract on the website. If you stop working with me the site keeps running and you can hand it to anybody else.\n\nThat is deliberate. A website you cannot take with you is a hostage, not a purchase." },
+      { chip: "Does it replace DoorDash?",
+        q: ["does it replace doordash","do i still need doordash","uber eats","delivery","do you do delivery","can it deliver",
+            "should i leave the apps","grubhub","what about the apps"],
+        a: "No, and you should keep them.\n\nThe apps put you in front of people who have never heard of you, and that is worth paying for. What they are bad at is the person who already knows your name and searched for it. That person costs you a commission for no reason.\n\nYour own page is for that person. You keep the whole ticket." },
+      { chip: "What's on the page",
+        q: ["what do i get","what is included","what is on it","how many pages","is it one page","what does the site have",
+            "can i have more pages","do i get a menu page","what about photos","who takes the photos","do you use stock photos"],
+        a: "One page that does the whole job: your name and what you sell, tonight's hours, Call and Directions as buttons at the top, your menu with prices as real text, your photos, and the chat.\n\nNot ten pages. Ten pages is ten places for something to go out of date.\n\nPhotos should be yours. Snap them on a phone in daylight and they will beat stock every time. A stock photo of a salad reads as a place that closed." },
+      { chip: "Will it show up on Google?",
+        q: ["will it show on google","google search","seo","will people find it","search engine","will i rank","google ranking",
+            "how do people find my site"],
+        a: "It is built so Google can read it: real text, a proper title, your address, and hours that match your listing.\n\nWhat I will not promise is a ranking. Anyone who promises you a position on Google is guessing.\n\nFor a restaurant, your Google listing does more work than your website does. That is the part we spend most of our time on." },
+      { chip: "Does it work on a phone?",
+        q: ["does it work on a phone","mobile","is it mobile friendly","does it work on iphone","android","tablet","small screen",
+            "how fast does it load","is it fast","loading speed","slow"],
+        a: "Phone first, because that is where nearly everybody opens it. Usually standing outside, deciding between you and the place across the road.\n\nIt is light on purpose. No heavy sliders, no video that autoplays, nothing that has to be downloaded before your menu shows up. The demo at the top of this page loads with zero images." },
+      { chip: "Who builds it",
+        q: ["who builds it","who are you","is it an agency","do you outsource","who will i deal with","is it a template",
+            "do you use a template","is it ai generated","who do i talk to"],
+        a: "One person, in the US, who answers his own email. You deal with me from the first message to the last.\n\nIt is not a template with your logo dropped in. The words are written about your restaurant, which is why I ask for your menu before I quote." },
+      { chip: "No website at all",
+        q: ["i dont have a website","no website","i have nothing","i only have facebook","only instagram","is a website worth it",
+            "do i even need a website","can i just use instagram"],
+        a: "Then start with the cheap version. There is a one-link page on this site: your menu, hours and ordering chat on a page of ours, with a link you can put in your Instagram bio or on a table sticker.\n\nIt costs a lot less than a full site and it does most of the job. If it earns its keep, we build you the real thing later.\n\nHave a look at it under \"These are real pages\" above." }
+    ]
+  };
+</script>
+<script src="./chat-widget.js" defer></script>
+</body>
+</html>
