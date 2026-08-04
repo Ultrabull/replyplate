@@ -286,8 +286,8 @@
   </section>
 
   <section class="addons">
-      <h2 class="section-title">Two optional extras: be easy to reach, and easy to order from</h2>
-      <p class="section-sub">Your <span data-price>$199</span> a month is the review service. That is the core of what you buy, and nothing here changes it. These two are optional, priced separately, and you can skip either one. Both do the same job: cut the wait between a hungry person and your kitchen.</p>
+      <h2 class="section-title">Both of these come with the subscription</h2>
+      <p class="section-sub">The chat and the collection ordering are in your <span data-price>$199</span>, not sold on top of it. Switch either one off if you do not want it. Both do the same job: cut the wait between a hungry person and your kitchen.</p>
       <div class="grid two">
         <div class="card">
           <h3><span class="emoji">💬</span> Answers when nobody can get to the phone</h3>
@@ -316,8 +316,8 @@
       </div>
 
       <div class="sums" id="calc">
-        <h4>Work out the ordering extra with your numbers</h4>
-        <p class="slip-intro" style="margin-bottom:20px">This sum is only about the ordering extra. Your <span data-price>$199</span> review service is separate and is not part of it.</p>
+        <h4>What the ordering is worth, with your numbers</h4>
+        <p class="slip-intro" style="margin-bottom:20px">This is commission you would stop handing over. It is on top of the review work, not instead of it, and there is nothing extra to pay for it.</p>
 
         <div class="ctl">
           <label for="cOrders">Orders a month you could move across <b id="vOrders">20</b></label>
@@ -408,7 +408,7 @@
 
       /* No pass or fail against a price. The review subscription is bought either
          way, so comparing this extra's saving to it was the wrong sum, and the
-         extra is priced separately. Show the money and let the owner judge. */
+         ordering comes with it. Show the money and let the owner judge. */
       var v = $c("outVerdict"), lbl = $c("outVerdictLbl");
       if (cut <= 0) {
         lbl.textContent = "Commission saved";
