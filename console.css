@@ -187,3 +187,21 @@ select{margin-bottom:0;width:auto}
 .gp-photo em{display:block;font-style:normal;color:var(--muted);font-size:12.5px;margin-top:2px;line-height:1.45}
 .gp-photo .when{display:block;font-size:11.5px;color:#1a7346;font-weight:600;margin-top:4px}
 .gp-progress{font-size:12.5px;color:var(--muted);text-align:center;margin-top:10px}
+
+/* ── Workload: the reply counter and the ceiling it computes ─────────────── */
+.wl-big{font-size:30px;font-weight:800;line-height:1.15;color:var(--accent)}
+.wl-big small{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-top:4px;letter-spacing:.02em}
+.wl-cap{background:var(--soft,#f7ece4);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px}
+.wl-cap b{display:block;font-size:15.5px;margin-bottom:4px}
+.wl-cap span{display:block;font-size:13.5px;color:var(--muted);line-height:1.55}
+
+.wl-row{display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:9px}
+.wl-nm b{display:block;font-size:15px}
+.wl-nm small{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+.wl-n{font-size:22px;font-weight:800;text-align:right;line-height:1.1}
+.wl-n small{display:block;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.wl-n.near{color:var(--accent)}
+.wl-bar{grid-column:1 / -1;height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}
+.wl-bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .2s}
+.wl-foot{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}

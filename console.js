@@ -6,7 +6,7 @@
   const S = {
     key: "rp.key", model: "rp.model",
     clients: "rp.clients", active: "rp.active", leads: "rp.leads",
-    queue: "rp.queue", seen: "rp.seen", photos: "rp.photos",
+    queue: "rp.queue", seen: "rp.seen", photos: "rp.photos", work: "rp.work", wcfg: "rp.wcfg",
   };
   const $ = (id) => document.getElementById(id);
   const el = (t, c) => { const n = document.createElement(t); if (c) n.className = c; return n; };
@@ -23,6 +23,9 @@
     queue: load(S.queue, []),
     seen: load(S.seen, []),
     photos: load(S.photos, {}),
+    /* work[clientId] = [{t: when, s: seconds spent}] — one entry per reply used */
+    work: load(S.work, {}),
+    wcfg: load(S.wcfg, { postSecs: 60, hoursPerClient: 2 }),
   };
 
   const dom = {
@@ -37,6 +40,9 @@
     soTopic: $("soTopic"), soCount: $("soCount"), soGo: $("soGo"), soOut: $("soOut"),
     gpType: $("gpType"), gpCta: $("gpCta"), gpTopic: $("gpTopic"), gpGo: $("gpGo"), gpOut: $("gpOut"),
     gpCheck: $("gpCheck"), gpVerdict: $("gpVerdict"), gpPhotos: $("gpPhotos"),
+    cRev90: $("cRev90"),
+    wlNumber: $("wlNumber"), wlPost: $("wlPost"), wlHours: $("wlHours"), wlCap: $("wlCap"),
+    wlClients: $("wlClients"), wlManual: $("wlManual"), wlAdd: $("wlAdd"), wlUndo: $("wlUndo"),
     ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
     ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
@@ -90,14 +96,14 @@
       .filter((s) => s.length > 2);
     return parts.length ? parts : [text.trim()];
   }
-  function renderResults(container, blocks) {
+  function renderResults(container, blocks, onUse) {
     container.innerHTML = "";
     blocks.forEach((b) => {
       const card = el("div", "result");
       const t = el("div", "txt"); t.textContent = b;
       const bar = el("div", "bar");
       const cp = el("button", "copy"); cp.type = "button"; cp.textContent = "Copy";
-      cp.addEventListener("click", () => copy(b, cp));
+      cp.addEventListener("click", () => { copy(b, cp); if (onUse) onUse(); });
       bar.appendChild(cp);
       card.appendChild(t); card.appendChild(bar);
       container.appendChild(card);
@@ -163,17 +169,17 @@
   function fillClientForm(c) {
     editingClientId = c.id;
     dom.cName.value = c.name || ""; dom.cCuisine.value = c.cuisine || ""; dom.cTone.value = c.tone || "";
-    dom.cReview.value = c.reviewLink || ""; dom.cCity.value = c.city || "";
+    dom.cReview.value = c.reviewLink || ""; dom.cCity.value = c.city || ""; dom.cRev90.value = c.rev90 || "";
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function clearClientForm() {
     editingClientId = null;
-    [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity].forEach((i) => i.value = "");
+    [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90].forEach((i) => i.value = "");
   }
   function saveClient() {
     const name = dom.cName.value.trim();
     if (!name) { toast("Give the restaurant a name"); return; }
-    const data = { name, cuisine: dom.cCuisine.value.trim(), tone: dom.cTone.value.trim(), reviewLink: dom.cReview.value.trim(), city: dom.cCity.value.trim() };
+    const data = { name, cuisine: dom.cCuisine.value.trim(), tone: dom.cTone.value.trim(), reviewLink: dom.cReview.value.trim(), city: dom.cCity.value.trim(), rev90: dom.cRev90.value.trim() };
     if (editingClientId) {
       const c = state.clients.find((x) => x.id === editingClientId);
       if (c) Object.assign(c, data);
@@ -183,11 +189,12 @@
       if (!state.activeId) state.activeId = c.id;
     }
     save(S.clients, state.clients); save(S.active, state.activeId);
-    clearClientForm(); renderClients(); renderClientSelect(); renderPhotos();
+    clearClientForm(); renderClients(); renderClientSelect(); renderPhotos(); renderWorkload();
     toast("Saved");
   }
   function deleteClient(id) {
     delete state.photos[id]; save(S.photos, state.photos);
+    delete state.work[id]; save(S.work, state.work);
     state.clients = state.clients.filter((c) => c.id !== id);
     if (state.activeId === id) state.activeId = state.clients[0] ? state.clients[0].id : null;
     save(S.clients, state.clients); save(S.active, state.activeId);
@@ -201,11 +208,63 @@
     if (!review) { toast("Paste a review first"); return; }
     const stars = dom.rvStars.value;
     setLoading(dom.rvOut); dom.rvGo.disabled = true;
+    /* The clock starts when you ask for the drafts and stops when you take one.
+       That covers reading the review and choosing, which is the part that varies.
+       It cannot see you pasting into Google, so a fixed allowance is added for
+       that in the Workload tab and the tab says so. */
+    const startedAt = Date.now();
+    const forClient = state.activeId;
+    let logged = false;
     try {
       const sys = `You write review replies for restaurants. Rules: be warm, specific, and human; match the brand voice; keep each reply 2-4 sentences; thank by name only if the reviewer gave one; for negative reviews, apologize sincerely, take it offline (invite them to contact the restaurant), and never argue or make excuses; NEVER invent facts or confirm private details. Output exactly 3 distinct reply options, numbered 1-3, nothing else.`;
       const prompt = `Write 3 reply options for this ${stars}-star review of ${clientContext()}.\n\nReview:\n"""${review}"""`;
-      renderResults(dom.rvOut, splitBlocks(await generate(prompt, sys)));
+      renderResults(dom.rvOut, splitBlocks(await generate(prompt, sys)), () => {
+        /* Copying a second option from the same review is still one reply. */
+        if (logged) return;
+        logged = true;
+        logReply(forClient, Math.round((Date.now() - startedAt) / 1000));
+        toast("Logged. " + repliesThisMonth(forClient) + " this month");
+      });
     } catch (e) { setError(dom.rvOut, e); } finally { dom.rvGo.disabled = false; }
+  }
+
+  /* ---------- workload ----------
+
+     The point of this is not admin. It is that you cannot honestly set a fair
+     use ceiling until you know how long a reply actually takes you, and nobody
+     remembers accurately. So it measures rather than asks.
+
+     The median is used rather than the mean. One reply where you got up to
+     serve a customer will drag a mean into nonsense; the median ignores it. */
+
+  const MONTH = () => new Date().toISOString().slice(0, 7);
+
+  function logReply(clientId, secs, when) {
+    if (!clientId) return;
+    const list = state.work[clientId] || (state.work[clientId] = []);
+    /* Bin anything absurd: you walked away mid-reply, not spent an hour on it. */
+    const s = (secs > 0 && secs < 1800) ? secs : null;
+    list.push({ t: when || Date.now(), s: s });
+    save(S.work, state.work);
+  }
+  function repliesThisMonth(clientId) {
+    const m = MONTH();
+    return (state.work[clientId] || []).filter((r) => new Date(r.t).toISOString().slice(0, 7) === m).length;
+  }
+  function allTimings() {
+    const out = [];
+    Object.keys(state.work).forEach((k) => (state.work[k] || []).forEach((r) => { if (r.s) out.push(r.s); }));
+    return out.sort((a, b) => a - b);
+  }
+  function median(list) {
+    if (!list.length) return null;
+    const mid = Math.floor(list.length / 2);
+    return list.length % 2 ? list[mid] : Math.round((list[mid - 1] + list[mid]) / 2);
+  }
+  function fmtMins(secs) {
+    if (secs == null) return "not measured yet";
+    const m = Math.floor(secs / 60), s = secs % 60;
+    return m ? (m + "m " + (s ? s + "s" : "").trim()).trim() : s + "s";
   }
 
   async function doGetReviews() {
@@ -657,6 +716,71 @@ Return ONLY minified JSON, no markdown: {"answers":[{"chip":"","q":["",""],"a":"
     };
   }
 
+  function renderWorkload() {
+    if (!dom.wlNumber) return;
+    const cfg = state.wcfg;
+    dom.wlPost.value = cfg.postSecs;
+    dom.wlHours.value = cfg.hoursPerClient;
+
+    const times = allTimings();
+    const med = median(times);
+    const allIn = med == null ? null : med + (+cfg.postSecs || 0);
+
+    /* Under about ten samples the median moves a lot, so say so rather than
+       letting a number that will change next week look settled. */
+    let head;
+    if (!times.length) {
+      head = '<div class="wl-big">Nothing measured yet</div>' +
+        '<p class="hint">Write a few replies on the <b>Reply to reviews</b> tab. Copying one logs it, and the timing starts when you ask for the drafts.</p>';
+    } else {
+      head = '<div class="wl-big">' + fmtMins(allIn) + ' <small>a reply, all in</small></div>' +
+        '<p class="hint">' + fmtMins(med) + ' measured, from asking for the drafts to taking one, plus ' +
+        cfg.postSecs + 's for pasting it into Google. From ' + times.length +
+        (times.length === 1 ? ' reply' : ' replies') + '.' +
+        (times.length < 10 ? ' <b>Too few to trust yet.</b> Ten is where it settles down.' : '') +
+        '</p>';
+    }
+    dom.wlNumber.innerHTML = head;
+
+    if (allIn == null) { dom.wlCap.innerHTML = ""; }
+    else {
+      const budget = (+cfg.hoursPerClient || 2) * 3600;
+      const cap = Math.max(1, Math.floor(budget / allIn));
+      const rounded = cap >= 20 ? Math.round(cap / 5) * 5 : cap;
+      dom.wlCap.innerHTML = '<div class="wl-cap"><b>Your ceiling looks like about ' + rounded + ' replies a month.</b>' +
+        '<span>That is ' + cfg.hoursPerClient + ' hours divided by ' + fmtMins(allIn) + ' each. ' +
+        (times.length < 10 ? 'Come back once you have measured ten before you put it in an agreement.'
+                           : 'Anything past it is where the fair-use conversation belongs, and negative reviews are never part of that count.') +
+        '</span></div>';
+    }
+
+    /* Per client, this month */
+    dom.wlClients.innerHTML = "";
+    if (!state.clients.length) {
+      const e = el("div", "empty"); e.textContent = "No clients yet."; dom.wlClients.appendChild(e); return;
+    }
+    const capNow = allIn ? Math.floor(((+cfg.hoursPerClient || 2) * 3600) / allIn) : null;
+    let monthTotal = 0;
+    state.clients.forEach((c) => {
+      const n = repliesThisMonth(c.id);
+      monthTotal += n;
+      const row = el("div", "wl-row");
+      const pct = capNow ? Math.min(100, Math.round((n / capNow) * 100)) : 0;
+      const near = capNow && n >= capNow * 0.8;
+      const base = c.rev90 ? Math.round(+c.rev90 / 3) : null;
+      row.innerHTML =
+        '<div class="wl-nm"><b>' + c.name + '</b>' +
+          '<small>' + (base != null ? 'about ' + base + ' reviews a month when they joined' : 'no baseline recorded') + '</small></div>' +
+        '<div class="wl-n' + (near ? ' near' : '') + '">' + n + '<small>this month</small></div>' +
+        '<div class="wl-bar"><i style="width:' + pct + '%"></i></div>';
+      dom.wlClients.appendChild(row);
+    });
+    const foot = el("div", "wl-foot");
+    foot.innerHTML = monthTotal + (monthTotal === 1 ? " reply" : " replies") + " logged this month" +
+      (allIn ? ", roughly " + (Math.round((monthTotal * allIn) / 360) / 10) + " hours" : "") + ".";
+    dom.wlClients.appendChild(foot);
+  }
+
   function loadFromAutopilot() {
     const c = activeClient();
     if (!c) { toast("Pick a client first"); return; }
@@ -943,10 +1067,36 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
   function wire() {
     initTabs();
     dom.gpGo.addEventListener("click", doGooglePost);
+    dom.wlPost.addEventListener("input", () => {
+      state.wcfg.postSecs = Math.max(0, Math.min(600, +dom.wlPost.value || 0));
+      save(S.wcfg, state.wcfg); renderWorkload();
+    });
+    dom.wlHours.addEventListener("input", () => {
+      state.wcfg.hoursPerClient = Math.max(0.5, Math.min(20, +dom.wlHours.value || 2));
+      save(S.wcfg, state.wcfg); renderWorkload();
+    });
+    dom.wlAdd.addEventListener("click", () => {
+      const c = activeClient();
+      if (!c) { toast("Pick a client first"); return; }
+      const n = Math.max(1, Math.min(200, parseInt(dom.wlManual.value, 10) || 0));
+      if (!n) { toast("How many?"); return; }
+      /* No seconds: these were not measured, so they must not move the median. */
+      for (let i = 0; i < n; i++) logReply(c.id, null);
+      dom.wlManual.value = "";
+      renderWorkload();
+      toast("Added " + n + " to " + c.name);
+    });
+    dom.wlUndo.addEventListener("click", () => {
+      const c = activeClient();
+      if (!c || !(state.work[c.id] || []).length) { toast("Nothing to undo"); return; }
+      state.work[c.id].pop(); save(S.work, state.work);
+      renderWorkload(); toast("Removed the last one");
+    });
+    renderWorkload();
     dom.gpCheck.addEventListener("input", renderVerdict);
     dom.gpType.addEventListener("change", renderVerdict);
     renderPhotos();
-    dom.clientSelect.addEventListener("change", () => { state.activeId = dom.clientSelect.value || null; save(S.active, state.activeId); renderClients(); renderPhotos(); });
+    dom.clientSelect.addEventListener("change", () => { state.activeId = dom.clientSelect.value || null; save(S.active, state.activeId); renderClients(); renderPhotos(); renderWorkload(); });
     dom.settingsBtn.addEventListener("click", openSettings);
     dom.settingsClose.addEventListener("click", closeSettings);
     dom.settingsSave.addEventListener("click", saveSettings);

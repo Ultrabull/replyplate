@@ -23,6 +23,7 @@
     <button class="tab" data-tab="getreviews">Get reviews</button>
     <button class="tab" data-tab="gpost">Google listing</button>
     <button class="tab" data-tab="social">Social posts</button>
+    <button class="tab" data-tab="workload">Workload</button>
     <button class="tab" data-tab="report">Monthly report</button>
     <button class="tab" data-tab="chat">Website chat</button>
     <button class="tab" data-tab="outreach">Find clients</button>
@@ -41,6 +42,7 @@
         <input id="cTone" class="in" placeholder="Voice & tone (e.g. warm, playful, a little cheeky)" />
         <input id="cReview" class="in" placeholder="Google review link (https://g.page/r/...)" />
         <input id="cCity" class="in" placeholder="City / area (optional)" />
+        <input id="cRev90" class="in" type="number" min="0" inputmode="numeric" placeholder="Reviews they got in the last 90 days (check their listing)" />
         <div class="row">
           <button class="btn" id="cSave" type="button">Save client</button>
           <button class="btn ghost" id="cClear" type="button">Clear</button>
@@ -151,6 +153,42 @@
       </label>
       <button class="btn" id="soGo" type="button">Generate posts</button>
       <div class="out" id="soOut"></div>
+    </section>
+
+    <!-- WORKLOAD -->
+    <section class="panel" id="panel-workload">
+      <h2>Workload</h2>
+      <p class="hint">You cannot set a fair-use ceiling honestly until you know how long a reply really takes you, and nobody remembers that accurately. This measures it instead. Every time you copy a reply on the <b>Reply to reviews</b> tab it gets logged against that client, with how long you took.</p>
+
+      <div class="card form">
+        <h3>Your number</h3>
+        <div id="wlNumber"></div>
+        <div class="row" style="margin-top:14px">
+          <label class="stars">Add per reply for pasting into Google:
+            <input id="wlPost" class="in" type="number" min="0" max="600" step="15" style="width:90px;margin-bottom:0" />
+            <span class="hint" style="margin:0">seconds</span>
+          </label>
+          <label class="stars">Hours a month you will give one client's replies:
+            <input id="wlHours" class="in" type="number" min="0.5" max="20" step="0.5" style="width:80px;margin-bottom:0" />
+          </label>
+        </div>
+        <div id="wlCap"></div>
+      </div>
+
+      <div class="card form">
+        <h3>This month, by client</h3>
+        <div id="wlClients"></div>
+      </div>
+
+      <div class="card form">
+        <h3>Log one by hand</h3>
+        <p class="hint" style="margin-bottom:10px">For replies you did outside the console, or a backlog session. This adds to the count but not to the timing, because it was not measured.</p>
+        <div class="row">
+          <input id="wlManual" class="in" type="number" min="1" max="200" step="1" placeholder="How many" style="flex:0 0 130px;margin-bottom:0" />
+          <button class="btn ghost" id="wlAdd" type="button">Add to this month</button>
+          <button class="btn ghost sm" id="wlUndo" type="button">Undo last</button>
+        </div>
+      </div>
     </section>
 
     <!-- MONTHLY REPORT -->

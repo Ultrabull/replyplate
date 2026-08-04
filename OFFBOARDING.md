@@ -123,7 +123,12 @@ it for one month.
 Do not fix that with a setup fee or a minimum term. Both cost more in lost sales
 than they save, and both contradict what the site promises.
 
-Fix it with the order you work in:
+The console measures this for you. The **Workload** tab logs every reply you copy
+and how long you took, and turns the median into a ceiling: two hours a month
+divided by your real minutes per reply. Do not put a number in an agreement until
+that tab has ten measured replies in it.
+
+Fix the front-loading with the order you work in:
 
 | When | Do | Why |
 |---|---|---|
