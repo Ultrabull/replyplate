@@ -43,13 +43,16 @@
   /* App-style tile grid. The tile itself carries the message, so an owner who
      never taps still gets all four. Tapping only adds the detail. */
   .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (min-width:700px){.tiles{grid-template-columns:repeat(5,1fr)}}
+  @media (min-width:700px){.tiles{grid-template-columns:repeat(5,1fr)}
+    .tiles.numbered{grid-template-columns:repeat(3,1fr)}}
   /* Five tiles in two columns leaves one alone, so the last one spans the row and
      lays out sideways. It keeps its sub-line: the whole point of these tiles is
      that the message is on the tile, not hidden behind the tap. */
   @media (max-width:699px){
     .tiles > :last-child:nth-child(odd){grid-column:1 / -1;min-height:0;flex-direction:row;
       align-items:center;justify-content:flex-start;text-align:left;gap:14px;padding:16px 18px}
+    .tiles.numbered > :last-child:nth-child(odd){padding-left:44px}
+    .tiles > :last-child:nth-child(odd) .n{top:50%;transform:translateY(-50%);left:14px}
     .tiles > :last-child:nth-child(odd) .ico{margin-bottom:0;font-size:26px;flex:0 0 auto}
     .tiles > :last-child:nth-child(odd) b{flex:0 0 auto}
     .tiles > :last-child:nth-child(odd) .sub{flex:1;min-width:0}
@@ -60,7 +63,14 @@
   .tile:hover{border-color:var(--accent2)}
   .tile:active{transform:scale(.98)}
   .tile:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .tile{position:relative}
   .tile .ico{font-size:30px;line-height:1;margin-bottom:10px}
+  /* "How it works" is a sequence, not a set, so the numbers stay visible. */
+  .tiles.numbered .tile{padding-top:26px}
+  .tile .n{position:absolute;top:10px;left:12px;width:22px;height:22px;border-radius:50%;
+    background:var(--line);color:var(--muted);font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;line-height:1}
+  .tile[aria-selected="true"] .n{background:var(--accent);color:#1a1204}
   .tile b{font-size:16px;font-weight:800}
   .tile .sub{font-size:12.5px;color:var(--muted);line-height:1.35}
   .tile[aria-selected="true"]{border-color:var(--accent);background:#251e14;box-shadow:0 12px 30px -14px rgba(0,0,0,.6)}
@@ -302,11 +312,19 @@
 
     <section>
       <h2 class="section-title">How it works</h2>
-      <div class="steps">
-        <div class="step"><h3>Fifteen minutes, once</h3><p>A short call. You tell us how your place talks and what you'd never say. Then you add us as a manager on Google, the way you'd add a member of staff. About 30 seconds, no password, and you can remove us in two clicks. Facebook and Instagram are optional.</p></div>
-        <div class="step"><h3>We do the work</h3><p>Every review gets a reply written in your voice, and we put the good ones up. Anything negative is held every time and comes to your phone. Review requests keep going out, and 8 posts a month get written and put up.</p></div>
-        <div class="step"><h3>It stops being your problem to remember</h3><p>You get a message when something needs your OK, and one page at month end on where your rating sits and what people are actually saying.</p></div>
+      <p class="section-sub" style="margin-bottom:22px">Three steps, and only the first one needs you for more than a moment.</p>
+      <div class="tiles numbered" role="tablist" aria-label="How it works" id="steps">
+        <button class="tile" role="tab" id="step-0" aria-selected="true" aria-controls="steppanel">
+          <span class="n" aria-hidden="true">1</span><span class="ico" aria-hidden="true">⏱</span>
+          <b>Setup</b><span class="sub">15 minutes, once</span></button>
+        <button class="tile" role="tab" id="step-1" aria-selected="false" aria-controls="steppanel">
+          <span class="n" aria-hidden="true">2</span><span class="ico" aria-hidden="true">🔁</span>
+          <b>The work</b><span class="sub">Ours from then on</span></button>
+        <button class="tile" role="tab" id="step-2" aria-selected="false" aria-controls="steppanel">
+          <span class="n" aria-hidden="true">3</span><span class="ico" aria-hidden="true">📲</span>
+          <b>Your part</b><span class="sub">One tap, when it matters</span></button>
       </div>
+      <div class="tilepanel" id="steppanel" role="tabpanel" aria-live="polite"></div>
       <p style="text-align:center;margin-top:26px"><a class="btn" href="./how.html">Watch it happen, step by step →</a></p>
       <p class="cmp-note mid">A short walkthrough that plays itself. Setup is written out click by click in the <a href="./connect.html">setup guide</a>, and putting your review code on your receipts is in the <a href="./till.html">receipts guide</a>.</p>
     </section>
@@ -438,38 +456,22 @@
       });
     })();
 
-  /* The "what changes" tiles. Modelled on a phone app's home grid, because that
-     is a shape restaurant owners already know how to read. The tile carries its
-     message on its own, so nothing is hidden behind a tap: the panel only adds
-     detail for anyone who wants it. */
-  (function () {
-    var PANELS = [
-      { h: "Every Google review gets answered, and the good ones get posted",
-        p: ["Every new review gets a reply written in the words you'd actually use, naming the thing the diner actually wrote about. Not a template, because half of people say a form letter puts them off.",
-            "The straightforward good ones we put up on your Google profile ourselves. There is nothing for you to copy or paste. Prefer to see every one first? Say so and we will."] },
-      { h: "Your quiet happy diners stop staying quiet",
-        p: ["Right now only the annoyed ones bother finding your page, so it reads like a complaints book. The people who had a lovely night meant to leave a review and forgot in the car park.",
-            "We make you a QR code and you put it wherever suits: the receipt, the table, the takeout bag. Everyone sees the same code. Asking only the happy ones breaks Google's rules and the penalty lands on your listing, so we will not do it."] },
-      { h: "Eight posts a month, written and put up",
-        p: ["Your specials, your events, your room. Written for your restaurant, not pulled off a stock calendar, and posted to your Facebook and Instagram if you connect them.",
-            "You never share a password. You add us the way you would add a member of staff, and you can remove us whenever you like. Social is optional. Google reviews are the part that matters most."] },
-      { h: "Nothing rough goes out without you",
-        p: ["Low ratings, complaints, anything sensitive: it goes to your phone first, with a calm reply already written. You are never staring at a blank box at 11pm while angry.",
-            "One tap to approve it, edit it, or tell us to leave that one alone. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us."] },
-      { h: "Your Google listing stops sitting still",
-        p: ["Your listing is where people decide, and most restaurants only ever touch it to fix their hours. We put your offers on it: Tuesday, half-price wood-fired pizzas, 5 to 7, showing up when somebody searches you.",
-            "We keep the photos current too, because a listing whose last photo is from 2019 reads as closed down. Text us a picture of tonight's special and it goes up. Same manager access you already gave us for the reviews, so there is nothing new to set up."] }
-    ];
-    var wrap = document.getElementById("tiles"), panel = document.getElementById("tilepanel");
+  /* Tile grids. Modelled on a phone app's home grid, because that is a shape
+     restaurant owners already know how to read. The tile carries its own message,
+     so nothing is hidden behind a tap: the panel only adds detail for anyone who
+     wants it. Used twice, so it is written once. */
+  function tileGrid(gridId, panelId, panels) {
+    var wrap = document.getElementById(gridId), panel = document.getElementById(panelId);
     if (!wrap || !panel) return;
     var tabs = [].slice.call(wrap.querySelectorAll(".tile"));
+    if (tabs.length !== panels.length) return;
 
     function show(i, focus) {
       tabs.forEach(function (t, j) {
         t.setAttribute("aria-selected", j === i ? "true" : "false");
         t.tabIndex = j === i ? 0 : -1;
       });
-      var d = PANELS[i];
+      var d = panels[i];
       panel.innerHTML = "<h3>" + d.h + "</h3>" + d.p.map(function (x) { return "<p>" + x + "</p>"; }).join("");
       if (focus) tabs[i].focus();
     }
@@ -485,7 +487,37 @@
       });
     });
     show(0);
-  })();
+  }
+
+  tileGrid("tiles", "tilepanel", [
+    { h: "Every Google review gets answered, and the good ones get posted",
+      p: ["Every new review gets a reply written in the words you'd actually use, naming the thing the diner actually wrote about. Not a template, because half of people say a form letter puts them off.",
+          "The straightforward good ones we put up on your Google profile ourselves. There is nothing for you to copy or paste. Prefer to see every one first? Say so and we will."] },
+    { h: "Your quiet happy diners stop staying quiet",
+      p: ["Right now only the annoyed ones bother finding your page, so it reads like a complaints book. The people who had a lovely night meant to leave a review and forgot in the car park.",
+          "We make you a QR code and you put it wherever suits: the receipt, the table, the takeout bag. Everyone sees the same code. Asking only the happy ones breaks Google's rules and the penalty lands on your listing, so we will not do it."] },
+    { h: "Eight posts a month, written and put up",
+      p: ["Your specials, your events, your room. Written for your restaurant, not pulled off a stock calendar, and posted to your Facebook and Instagram if you connect them.",
+          "You never share a password. You add us the way you would add a member of staff, and you can remove us whenever you like. Social is optional. Google reviews are the part that matters most."] },
+    { h: "Nothing rough goes out without you",
+      p: ["Low ratings, complaints, anything sensitive: it goes to your phone first, with a calm reply already written. You are never staring at a blank box at 11pm while angry.",
+          "One tap to approve it, edit it, or tell us to leave that one alone. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us."] },
+    { h: "Your Google listing stops sitting still",
+      p: ["Your listing is where people decide, and most restaurants only ever touch it to fix their hours. We put your offers on it: Tuesday, half-price wood-fired pizzas, 5 to 7, showing up when somebody searches you.",
+          "We keep the photos current too, because a listing whose last photo is from 2019 reads as closed down. Text us a picture of tonight's special and it goes up. Same manager access you already gave us for the reviews, so there is nothing new to set up."] }
+  ]);
+
+  tileGrid("steps", "steppanel", [
+    { h: "Fifteen minutes, once, and then you are done setting up",
+      p: ["A short call. You tell us how your place talks, what you would never say, and how tight you want the leash. After that it knows your GM's name and your Tuesday deal.",
+          "Then you add us as a manager on Google, the way you would add a member of staff. About 30 seconds, you never share a password, and you can remove us in two clicks. Facebook and Instagram are optional, and Google is the one that matters."] },
+    { h: "From then on the work is ours, not yours",
+      p: ["Every new review gets a reply written in your voice, and we put the good ones up. Anything negative or sensitive is held every time and comes to your phone instead.",
+          "Your review code keeps asking every diner, your offers and photos go on your Google listing, and 8 social posts a month get written and put up. Your reviews get worked every business day. We are one person and we would rather say that than pretend it is instant."] },
+    { h: "Your part is one tap, and only when it matters",
+      p: ["You get a message when something needs your OK, with the reply already written. Approve it, edit it, or tell us to leave that one alone.",
+          "At month end you get one page on where your rating sits and what people are actually saying. That is the whole relationship. No dashboard to open, no login to remember."] }
+  ]);
   </script>
 
   <script>
