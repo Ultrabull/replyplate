@@ -13,7 +13,18 @@
     --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;
+    position:relative;overflow-x:hidden}
+  /* Grain and a warm wash behind everything. Both are drawn by the browser, so
+     there is nothing to download and nothing that can fail to load. */
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(60% 40% at 50% -6%,rgba(208,163,78,.16),transparent 70%),
+      radial-gradient(50% 34% at 92% 12%,rgba(138,106,44,.12),transparent 72%),
+      radial-gradient(46% 30% at 4% 44%,rgba(176,61,41,.07),transparent 70%)}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay}
   a{color:inherit}
   .wrap{max-width:960px;margin:0 auto;padding:0 20px}
   .btn{display:inline-block;background:var(--accent);color:#1a1204;padding:14px 26px;border-radius:999px;font-weight:700;text-decoration:none;font-size:16px;transition:transform .1s,background .15s;border:none;cursor:pointer}
@@ -24,7 +35,7 @@
   header{padding:18px 0;position:sticky;top:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);z-index:10;border-bottom:1px solid var(--line)}
   .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px}
-  .logo .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-block}
+  .logo .mark{width:28px;height:28px;display:block;flex:0 0 auto;filter:drop-shadow(0 2px 6px rgba(208,163,78,.28))}
   .hero{padding:64px 0 40px;text-align:center}
   .hero h1{font-size:clamp(30px,6vw,50px);line-height:1.1;letter-spacing:-.5px;margin-bottom:16px}
   .hero h1 span{color:var(--accent)}
@@ -92,7 +103,34 @@
 
   .sample .card h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px}
   .sample .quote{font-size:15.5px;line-height:1.6}
-  .sample .reply{border-color:var(--accent)}
+  .sample .reply{border-color:var(--accent);position:relative;overflow:hidden}
+  /* While it types, a soft sweep runs behind the card. Motion that is the product
+     rather than decoration: this is the thing they are buying, happening. */
+  .sample .reply.writing::before{content:"";position:absolute;inset:-40% -60%;pointer-events:none;
+    background:conic-gradient(from 0deg,transparent 0 62%,rgba(208,163,78,.16) 78%,transparent 92%);
+    animation:sweep 2.6s linear infinite}
+  @keyframes sweep{to{transform:rotate(1turn)}}
+  .sample .reply > *{position:relative}
+  .sample .reply h4{display:flex;align-items:center;gap:8px}
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:0 0 auto;opacity:.35}
+  .sample .reply.writing .pulse{opacity:1;animation:blip 1.1s ease-in-out infinite}
+  @keyframes blip{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(208,163,78,.5)}
+    50%{transform:scale(1.25);box-shadow:0 0 0 7px rgba(208,163,78,0)}}
+  .caret{display:inline-block;width:2px;height:1.05em;background:var(--accent);vertical-align:-2px;
+    margin-left:1px;animation:caret 1s steps(1) infinite}
+  @keyframes caret{50%{opacity:0}}
+  .replay{margin-top:14px;background:none;border:1px solid var(--line);color:var(--muted);
+    font:600 13px inherit;padding:9px 16px;border-radius:999px;cursor:pointer;min-height:44px}
+  .replay:hover{border-color:var(--accent);color:var(--accent)}
+  .replay:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  /* Cards lift a little on hover. Cheap, and it makes the page feel built. */
+  .card,.tile,.getstrip,.honest{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+  .sample .card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -22px rgba(0,0,0,.8)}
+  @media (prefers-reduced-motion:reduce){
+    .sample .reply.writing::before,.sample .reply.writing .pulse,.caret{animation:none}
+    .card,.tile,.getstrip,.honest{transition:none}
+    .sample .card:hover{transform:none}
+  }
 
   .getstrip{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin-bottom:8px}
   .gs-lbl{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);text-align:center;margin-bottom:14px}
@@ -244,7 +282,14 @@
 </head>
 <body>
   <header><div class="wrap nav">
-    <div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div>
+    <div class="logo">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <circle cx="16" cy="16" r="15" fill="url(#lg)"/>
+          <circle cx="16" cy="16" r="11.5" fill="none" stroke="#1a1204" stroke-opacity=".28" stroke-width="1.1"/>
+          <path d="M10 12.6h12a1.6 1.6 0 0 1 1.6 1.6v4.4a1.6 1.6 0 0 1-1.6 1.6h-5.1l-3.1 2.6a.5.5 0 0 1-.82-.38V20.2H10a1.6 1.6 0 0 1-1.6-1.6v-4.4A1.6 1.6 0 0 1 10 12.6Z" fill="#1a1204"/>
+          <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e6be6c"/><stop offset="1" stop-color="#8a6a2c"/></linearGradient></defs>
+        </svg><span data-brand>ReplyPlate</span></div>
     <a class="btn" data-cta href="#start">Start for <span data-price>$199</span>/mo</a>
   </div></header>
 
@@ -287,8 +332,9 @@
           <p class="quote">"Waited 35 minutes for our food on a Tuesday with maybe six other tables in the room. Fries were cold when they finally came. Our server Marcus was lovely, that's the only reason this isn't one star."</p>
         </div>
         <div class="card reply">
-          <h4>What we'd write, held for your OK</h4>
-          <p class="quote">"Thirty-five minutes on a quiet Tuesday isn't right, and cold fries after that wait is worse. That's on the kitchen, not on Marcus, and I'm glad he looked after you. I've walked the timing through with the line this week. If you'll give us another go, ask for me at the door and I'll make sure it lands better."</p>
+          <h4><span class="pulse" aria-hidden="true"></span>What we'd write, held for your OK</h4>
+          <p class="quote" id="liveReply">"Thirty-five minutes on a quiet Tuesday isn't right, and cold fries after that wait is worse. That's on the kitchen, not on Marcus, and I'm glad he looked after you. I've walked the timing through with the line this week. If you'll give us another go, ask for me at the door and I'll make sure it lands better."</p>
+          <button class="replay" id="replay" type="button" hidden>Watch it write again</button>
         </div>
       </div>
       <p class="cmp-note mid">Written for a restaurant that doesn't exist. Note what it does: it names the wait, the fries and Marcus, and it doesn't thank anyone for their valued feedback. A reply like this would never post on its own. It goes to your phone and waits.<br><a data-book href="#start" style="color:var(--accent);font-weight:700">Want five written against your own reviews, free? Ask here →</a></p>
@@ -517,6 +563,88 @@
           "The same button opens your menu. A diner taps what they want and sends it to your WhatsApp from their own phone, and pays when they collect. No card machine, nothing new for you to log into, and no delivery app taking a slice.",
           "This is in the price, not an upsell. No website? We give you a link and a code to put in your Instagram bio instead."] }
   ]);
+
+  /* The sample reply writes itself the first time it comes into view.
+
+     The full text is in the HTML, so with JavaScript off, or if this never runs,
+     the reader still sees the finished reply. Nothing here is load bearing: it
+     only ever removes text it is about to put back. */
+  (function () {
+    var el = document.getElementById("liveReply");
+    var replay = document.getElementById("replay");
+    if (!el) return;
+    var card = el.closest(".card");
+    var full = el.textContent;
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || !("IntersectionObserver" in window)) return;
+
+    var token = 0, played = false;
+
+    function write() {
+      var mine = ++token, i = 0;
+      card.classList.add("writing");
+      if (replay) replay.hidden = true;
+      el.textContent = "";
+      var caret = document.createElement("span");
+      caret.className = "caret"; caret.setAttribute("aria-hidden", "true");
+      el.appendChild(caret);
+
+      (function tick() {
+        if (mine !== token || !el.isConnected) return;
+        i += 1;
+        caret.remove();
+        el.textContent = full.slice(0, i);
+        el.appendChild(caret);
+        if (i < full.length) {
+          /* Pause a beat on sentence ends. A perfectly even crawl reads as a
+             machine; this reads as somebody choosing their words. */
+          var ch = full.charAt(i - 1);
+          var wait = ch === "." || ch === "," ? 190 : 16;
+          setTimeout(tick, wait);
+        } else {
+          caret.remove();
+          card.classList.remove("writing");
+          if (replay) replay.hidden = false;
+        }
+      })();
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting || played) return;
+        played = true;
+        io.disconnect();
+        setTimeout(write, 260);
+      });
+    }, { threshold: 0.45 });
+    io.observe(card);
+
+    if (replay) replay.addEventListener("click", write);
+  })();
+
+  /* Stat numbers count up when they arrive. */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || !("IntersectionObserver" in window)) return;
+    var nums = [].slice.call(document.querySelectorAll(".hero-proof .stat b"));
+    if (!nums.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        var b = e.target, small = b.querySelector("small");
+        var target = parseInt(b.firstChild.nodeValue, 10);
+        if (isNaN(target)) return;
+        var n = 0, step = Math.max(40, Math.round(420 / target));
+        (function tick() {
+          n += 1;
+          b.firstChild.nodeValue = String(n);
+          if (n < target) setTimeout(tick, step);
+        })();
+      });
+    }, { threshold: 0.6 });
+    nums.forEach(function (n) { io.observe(n); });
+  })();
 
   tileGrid("steps", "steppanel", [
     { h: "Fifteen minutes, once, and then you are done setting up",
