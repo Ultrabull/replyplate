@@ -77,16 +77,16 @@
       "chip": "Pickup and delivery",
       "q": [
         "do you deliver",
-        "can i collect",
-        "do you do takeaway",
+        "can i pick up",
+        "do you do takeout",
         "takeout",
-        "can i order to collect",
+        "can i order to pick up",
         "pick up",
         "do you do delivery",
         "how do i order",
         "can i order online"
       ],
-      "a": "Pickup only, no delivery. Tap Order for pickup at the top of this chat, pick what you want, and send it to us from your own phone.\n\nYou pay when you collect. We'll text you back to say how long."
+      "a": "Pickup only, no delivery. Tap Order for pickup at the top of this chat, pick what you want, and send it to us from your own phone.\n\nYou pay when you pick up. We'll text you back to say how long."
     },
     {
       "chip": "Prices",
@@ -104,14 +104,14 @@
   ],
   "order": {
     "enabled": true,
-    "method": "whatsapp",
+    "method": "sms",
     "phone": "+1 (555) 010-2288",
     "demo": true,
     "currency": "$",
     "chip": "Order for pickup",
     "title": "Order for pickup",
     "subtitle": "Tap what you'd like",
-    "barNote": "Tap the menu, pay when you collect",
+    "barNote": "Tap the menu, pay when you pick up",
     "mode": "For pickup",
     "note": "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
   },
