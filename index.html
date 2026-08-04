@@ -320,18 +320,19 @@
 
   <main class="wrap">
     <section class="hero">
-      <h1>The reviews you meant to answer <span>are still sitting there.</span></h1>
-      <p class="sub">We write the reply to every Google review and put the good ones up for you. Anything negative gets more care, not less: it reaches your phone with a calm reply already written, and waits for your OK. Your website gets a chat that answers questions and takes pickup orders, in the same price. <b><span data-price>$199</span> a month</b>, flat, cancel any month.</p>
+      <h1>They searched your name. <span>The app still took a quarter of it.</span></h1>
+      <p class="sub">They tap <b>Order online</b> on your Google listing and every button there belongs to DoorDash or Grubhub. We put <b>your own link in that list</b>, plus a chat that answers questions and takes pickup orders, straight to your phone. No commission, both in the price.</p>
+      <p class="sub" style="margin-top:-10px">We also write the reply to every Google review and put the good ones up. Anything negative gets more care, not less: it lands on your phone with a reply already written, waiting for your OK. <b><span data-price>$199</span> a month</b>, flat, cancel any month.</p>
       <div class="cta-row">
         <a class="btn" data-cta href="#start">Start for <span data-price>$199</span>/mo</a>
-        <a class="btn ghost" href="./start.html">Answer 10 questions instead</a>
+        <a class="btn ghost" href="./commission.html">See what the apps cost you</a>
       </div>
       <div class="hero-proof">
-        <div class="stat"><b>9<small>in 10</small></b><span>expect the business to reply</span></div>
-        <div class="stat"><b>4<small>in 10</small></b><span>unlikely to use a business that never replies</span></div>
-        <div class="stat"><b>1<small>in 2</small></b><span>put off by a generic, templated reply</span></div>
+        <div class="stat"><b>$10<small>gone</small></b><span>what a 25% commission takes from a $40 order</span></div>
+        <div class="stat"><b>3<small>to 5%</small></b><span>what an independent restaurant nets, before that</span></div>
+        <div class="stat"><b>0<small>percent</small></b><span>what an order through your own link costs you</span></div>
       </div>
-      <p class="proof-note">Rounded from published consumer review surveys. That last one is why nothing we write is a template.</p>
+      <p class="proof-note">Commission is DoorDash's published middle rate, margin is the commonly cited range for independent restaurants. Estimates for comparison, not quotes. Keep the apps for strangers: this is about the regulars. <a href="./commission.html" style="color:var(--accent);font-weight:700">See the whole sum →</a></p>
       <p class="trust" style="margin-top:14px"><a href="./how.html" style="color:var(--accent);font-weight:700">Watch a review come in and get answered →</a></p>
       <p class="trust">No contract • Cancel any month • Usually live within two business days</p>
     </section>
@@ -342,9 +343,10 @@
         <li>A reply to <b>every</b> Google review, good ones posted by us</li>
         <li>Your QR code, so <b>every</b> diner gets asked</li>
         <li><b>8</b> social posts, written and put up</li>
+        <li>Your own ordering link on your Google listing, <b>above the apps</b></li>
         <li>Offers and photos put on your Google listing</li>
         <li>A chat on your site that answers your regular questions</li>
-        <li>Pickup orders texted straight to your phone</li>
+        <li>Pickup orders texted straight to your phone, <b>no commission</b></li>
         <li>One page on what your reviews are saying</li>
       </ul>
     </div>
@@ -488,7 +490,7 @@
 
   <footer class="wrap">
     <p><b data-brand>ReplyPlate</b>. Google reviews answered and social posts written, for independent restaurants. <span data-price>$199</span> a month, no contract. Run from the US by one person who answers his own email.</p>
-    <p style="margin-top:6px"><a href="./how.html" style="color:var(--accent)">Watch it work</a> · <a href="./connect.html" style="color:var(--accent)">Setup guide</a> · <a href="./qr-code.html" style="color:var(--accent)">Make your code</a> · <a href="./till.html" style="color:var(--accent)">Receipts guide</a> · <a href="./details.html" style="color:var(--accent)">Costs and questions</a> · <a href="./chat-demo.html" style="color:var(--accent)">Chat and ordering</a> · <a href="./start.html" style="color:var(--accent)">Get started</a> &middot; <a href="./websites.html" style="color:var(--accent)">Websites we build</a> · <a data-email href="#">hello@example.com</a></p>
+    <p style="margin-top:6px"><a href="./how.html" style="color:var(--accent)">Watch it work</a> · <a href="./connect.html" style="color:var(--accent)">Setup guide</a> · <a href="./qr-code.html" style="color:var(--accent)">Make your code</a> · <a href="./till.html" style="color:var(--accent)">Receipts guide</a> · <a href="./details.html" style="color:var(--accent)">Costs and questions</a> · <a href="./chat-demo.html" style="color:var(--accent)">Chat and ordering</a> · <a href="./commission.html" style="color:var(--accent)">What the apps cost</a> · <a href="./start.html" style="color:var(--accent)">Get started</a> &middot; <a href="./websites.html" style="color:var(--accent)">Websites we build</a> · <a data-email href="#">hello@example.com</a></p>
   </footer>
 
   <script>
@@ -690,13 +692,19 @@
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;
         io.unobserve(e.target);
-        var b = e.target, small = b.querySelector("small");
-        var target = parseInt(b.firstChild.nodeValue, 10);
-        if (isNaN(target)) return;
+        var b = e.target;
+        /* Keep whatever sits around the number, so "$10" counts up as money and
+           not as a bare 10. And refuse to animate a zero: counting up to it
+           would land on 1 and stop there, which is how "0 percent" turned into
+           "1 percent" the first time this ran. */
+        var m = String(b.firstChild.nodeValue).match(/^(\D*)(\d+)(\D*)$/);
+        if (!m) return;
+        var pre = m[1], target = parseInt(m[2], 10), post = m[3];
+        if (!(target > 0)) return;
         var n = 0, step = Math.max(40, Math.round(420 / target));
         (function tick() {
           n += 1;
-          b.firstChild.nodeValue = String(n);
+          b.firstChild.nodeValue = pre + n + post;
           if (n < target) setTimeout(tick, step);
         })();
       });

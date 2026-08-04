@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="theme-color" content="#161210" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>What the apps cost you, and what to do about it | ReplyPlate</title>
+<meta name="description" content="The real cost of a delivery app order, whether hiring your own driver beats it, and the cheaper middle option most restaurants miss. Worked out with numbers, not slogans." />
+<style>
+  :root{
+    --ink:#f3ecdf; --muted:#a4977f; --bg:#161210; --card:#1f1915; --line:#382d20;
+    --accent:#d0a34e; --accent2:#8a6a2c; --ok:#5cb383; --bad:#e0705a;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;
+    -webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(70% 44% at 50% -6%,rgba(208,163,78,.14),transparent 70%)}
+  a{color:var(--accent)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  header{padding:18px 0;border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;text-decoration:none}
+  .logo .mark{width:28px;height:28px;display:block;flex:0 0 auto}
+  .hero{padding:52px 0 10px;text-align:center}
+  .hero h1{font-size:clamp(28px,5.6vw,44px);line-height:1.08;letter-spacing:-.5px;margin-bottom:16px}
+  .hero h1 span{color:var(--accent)}
+  .hero p.sub{color:var(--muted);font-size:17.5px;max-width:560px;margin:0 auto}
+  section{padding:38px 0}
+  h2{font-size:clamp(22px,3.8vw,30px);letter-spacing:-.3px;margin-bottom:8px}
+  .lede{color:var(--muted);font-size:16px;margin-bottom:22px}
+  p{margin-bottom:14px}
+  p:last-child{margin-bottom:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:16px}
+  .card h3{font-size:18px;margin-bottom:10px}
+  .card p{color:var(--muted);font-size:15.5px}
+  .card p b{color:var(--ink)}
+
+  /* Tables scroll inside themselves, never the page. */
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);
+    border-radius:16px;background:var(--card);margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;min-width:440px}
+  th,td{padding:13px 16px;text-align:left;font-size:15px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td,tr:last-child th{border-bottom:none}
+  thead th{font-size:13px;color:var(--muted);font-weight:700;background:#241d15}
+  td.n{text-align:right;white-space:nowrap;font-weight:700}
+  td.n.bad{color:var(--bad)}
+  td.n.good{color:var(--ok)}
+  tr.tot td{border-top:2px solid var(--accent);font-weight:800}
+  tr.tot td.n{color:var(--accent)}
+  .win{background:rgba(208,163,78,.12);box-shadow:inset 2px 0 0 var(--accent)}
+  .est{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:22px}
+
+  .big{background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:26px 24px;
+    text-align:center;margin:8px 0 18px}
+  .big .k{font-size:11.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .big .v{font-size:clamp(38px,9vw,60px);font-weight:800;color:var(--accent);line-height:1.05;margin:8px 0 6px;
+    letter-spacing:-.02em}
+  .big .s{color:var(--muted);font-size:14.5px}
+
+  .warn{background:#2a1610;border:1px solid #7d3423;border-radius:18px;padding:22px 24px;margin-bottom:16px}
+  .warn h3{color:#ffd0c2;font-size:18px;margin-bottom:10px}
+  .warn p{color:#e6c3b8;font-size:15.5px}
+  .warn p b{color:#fff}
+
+  /* the calculator */
+  .calc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
+  .ctl{margin-bottom:18px}
+  .ctl label{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--muted);margin-bottom:9px}
+  .ctl label b{color:var(--accent);font-weight:800;font-size:16px;white-space:nowrap}
+  .ctl input[type=range]{width:100%;height:44px;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer;display:block}
+  .ctl input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:var(--line)}
+  .ctl input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line)}
+  .ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;
+    background:var(--accent);border:3px solid var(--bg);margin-top:-11px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .ctl input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--accent);
+    border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .ctl input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:999px}
+  .rows{margin-top:6px}
+  .r{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:11px 0;
+    border-bottom:1px solid var(--line);font-size:15.5px}
+  .r:last-child{border-bottom:none}
+  .r span{color:var(--muted)}
+  .r b{white-space:nowrap;font-weight:800}
+  .r.hi{border-top:2px solid var(--accent);margin-top:4px;padding-top:14px}
+  .r.hi b{color:var(--accent)}
+  .verdict{margin-top:16px;font-size:15px;line-height:1.6;color:var(--muted)}
+  .verdict b{color:var(--ink)}
+
+  .btn{display:inline-block;background:var(--accent);color:#1a1204;padding:15px 28px;min-height:50px;
+    border-radius:999px;font-weight:700;font-size:16px;text-decoration:none;border:none;cursor:pointer;
+    font-family:inherit;transition:background .15s,transform .1s}
+  .btn:hover{background:#ddb45f}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+  .final{text-align:center;background:#211a11;border:1px solid #3f331f;border-radius:24px;padding:44px 26px;margin:22px 0}
+  .final h2{margin-bottom:10px}
+  .final p{color:var(--muted);margin-bottom:22px}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  footer{padding:26px 0 60px;text-align:center;color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);margin-top:20px}
+  .src{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px}
+  @media (max-width:560px){section{padding:30px 0}.card,.warn,.calc{padding:20px 18px}}
+</style>
+</head>
+<body>
+  <header><div class="wrap nav">
+    <a class="logo" href="./index.html">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle cx="16" cy="16" r="15" fill="url(#lg)"/>
+        <circle cx="16" cy="16" r="11.5" fill="none" stroke="#1a1204" stroke-opacity=".28" stroke-width="1.1"/>
+        <path d="M10 12.6h12a1.6 1.6 0 0 1 1.6 1.6v4.4a1.6 1.6 0 0 1-1.6 1.6h-5.1l-3.1 2.6a.5.5 0 0 1-.82-.38V20.2H10a1.6 1.6 0 0 1-1.6-1.6v-4.4A1.6 1.6 0 0 1 10 12.6Z" fill="#1a1204"/>
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#e6be6c"/><stop offset="1" stop-color="#8a6a2c"/></linearGradient></defs>
+      </svg><span data-brand>ReplyPlate</span></a>
+    <a class="btn" data-cta href="#start" style="padding:11px 18px;min-height:44px;font-size:14px">Start for <span data-price>$199</span>/mo</a>
+  </div></header>
+
+  <main class="wrap">
+    <div class="hero">
+      <h1>They searched your name. <span>The app still took a quarter of it.</span></h1>
+      <p class="sub">Here is what a delivery app order really costs, whether hiring your own driver beats it, and the middle option most restaurants have never been shown. Worked out with numbers you can check.</p>
+    </div>
+
+    <section>
+      <h2>Start with the one number that matters</h2>
+      <p class="lede">Independent restaurants run on three to five percent net profit. Here is what a commission does to that.</p>
+      <div class="big">
+        <div class="k">On a $40 order, a 25% commission takes</div>
+        <div class="v">$10.00</div>
+        <div class="s">Your whole profit on that order was about $1.60</div>
+      </div>
+      <p class="est">Net margin figure is the commonly cited three to five percent range for independent restaurants.
+        The commission is DoorDash's published Plus rate. Both are estimates for comparison, not a quote.</p>
+      <div class="card">
+        <p>A commission does not dent your margin on those orders. It removes it. You cook the food, you buy the
+          ingredients, you pay the kitchen, and the order roughly breaks even.</p>
+        <p style="margin-top:12px"><b>That is fine for a stranger.</b> The apps put you in front of people who have
+          never heard of you, and finding new customers is worth paying for.</p>
+        <p style="margin-top:12px"><b>It is not fine for a regular.</b> Somebody who searched your name, on Google,
+          because they already wanted your food, and then tapped DoorDash because that was the only button there.
+          You paid a finder's fee to be found by somebody who had already found you.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>So should you hire your own driver?</h2>
+      <p class="lede">Usually no, and the reason is not the wage.</p>
+      <div class="tw">
+        <table>
+          <caption class="sr-only">What one delivery costs with your own driver</caption>
+          <thead><tr><th>Your own driver, per delivery</th><th style="text-align:right">Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Wage at $16 an hour, plus payroll tax and workers' comp, at 2.5 deliveries an hour</td><td class="n">$7.36</td></tr>
+            <tr><td>Mileage, six miles there and back</td><td class="n">$4.20</td></tr>
+            <tr><td>Card processing on $40</td><td class="n">$1.46</td></tr>
+            <tr><td>Insurance, spread across the month</td><td class="n">$0.40</td></tr>
+            <tr class="tot"><td>Total</td><td class="n">$13.42</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="est">An estimate for comparison, not a quote. Wages, mileage and insurance vary by state and by
+        insurer, and the mileage figure follows the federal reimbursement rate. Get your own numbers before you hire
+        anybody.</p>
+
+      <div class="card">
+        <h3>The number that decides it is deliveries per hour</h3>
+        <p>At <b>4 an hour</b>, in a tight radius, your own driver costs about <b>$10.66</b> and starts to compete.
+          At <b>1.5 an hour</b> it is a disaster. A driver sitting in the car park waiting is still being paid.</p>
+        <p style="margin-top:12px">Almost nobody works out their real figure before hiring. Slide it below and see
+          where you land.</p>
+      </div>
+
+      <div class="warn">
+        <h3>The part that can end a business</h3>
+        <p><b>Your driver's own car insurance almost certainly excludes delivery.</b> Personal policies do. And your
+          general liability policy excludes cars.</p>
+        <p style="margin-top:12px">So if your driver hits somebody on the way to a drop, their insurer denies it,
+          your liability policy denies it, and <b>you are liable</b>, because they were working for you when it
+          happened.</p>
+        <p style="margin-top:12px">The cover for this is called <b>hired and non-owned auto</b>, roughly
+          <b>$150 a month</b>. If you hire drivers and skip it, one crash costs more than every commission you
+          would ever have paid.</p>
+      </div>
+
+      <div class="card">
+        <h3>And using the staff you already have is worse than it sounds</h3>
+        <p>Sending a server out for twenty five minutes does not cost you their wage. It costs you the tables they
+          were not serving. On a Friday that is the most expensive delivery you will ever make.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>The option most restaurants have never been shown</h2>
+      <p class="lede">Take the order yourself. Pay a flat fee for the driver only.</p>
+      <div class="card">
+        <p>DoorDash and Uber both sell the driver on their own, without the marketplace. The order comes in through
+          your website, the customer sees your name and not theirs, and you pay roughly <b>$7 a delivery</b>. No
+          commission, no hiring, no scheduling, no insurance of your own.</p>
+        <p style="margin-top:12px">The reason it wins is simple. <b>A commission grows with the order. A flat fee
+          does not.</b></p>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Order size</th><th style="text-align:right">25% commission</th><th style="text-align:right">Flat fee</th><th style="text-align:right">You keep</th></tr></thead>
+          <tbody>
+            <tr><td>$25</td><td class="n">$6.25</td><td class="n">$7.49</td><td class="n bad">−$1.24</td></tr>
+            <tr><td>$40</td><td class="n">$10.00</td><td class="n">$7.49</td><td class="n good">+$2.51</td></tr>
+            <tr class="win"><td>$80</td><td class="n">$20.00</td><td class="n">$7.49</td><td class="n good">+$12.51</td></tr>
+            <tr class="win"><td>$120</td><td class="n">$30.00</td><td class="n">$7.49</td><td class="n good">+$22.51</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="est">An estimate for comparison, not a quote. The flat fee is the published rate for DoorDash Drive
+        on-demand, checked August 2026, and it moves with distance and with who you buy it through. Get your own
+        quote before you decide.</p>
+      <div class="card">
+        <p><b>Above roughly a $30 order the flat fee wins, and the gap widens from there.</b> The family order on a
+          Friday night, the one you most want, is where a commission hurts most and a flat fee barely notices.</p>
+      </div>
+    </section>
+
+    <section id="calc">
+      <h2>Your numbers, not ours</h2>
+      <p class="lede">Move the sliders. Nothing is sent anywhere and nothing is stored.</p>
+      <div class="calc">
+        <div class="ctl">
+          <label for="cAvg">Your average delivery order <b id="vAvg">$40</b></label>
+          <input type="range" id="cAvg" min="15" max="150" step="5" value="40" />
+        </div>
+        <div class="ctl">
+          <label for="cOrders">Delivery orders a month <b id="vOrders">120</b></label>
+          <input type="range" id="cOrders" min="10" max="800" step="10" value="120" />
+        </div>
+        <div class="ctl">
+          <label for="cRate">The app's commission <b id="vRate">25%</b></label>
+          <input type="range" id="cRate" min="15" max="30" step="1" value="25" />
+        </div>
+        <div class="ctl">
+          <label for="cPerHr">Deliveries your own driver would manage an hour <b id="vPerHr">2.5</b></label>
+          <input type="range" id="cPerHr" min="1" max="5" step="0.5" value="2.5" />
+        </div>
+        <div class="rows">
+          <div class="r"><span>The app takes, a month</span><b id="oApp">$1,200</b></div>
+          <div class="r"><span>Your own driver would cost</span><b id="oOwn">$1,610</b></div>
+          <div class="r"><span>A flat fee per delivery would cost</span><b id="oFlat">$899</b></div>
+          <div class="r hi"><span id="bestLbl">Cheapest option</span><b id="oBest">Flat fee</b></div>
+        </div>
+        <p class="verdict" id="verdict"></p>
+      </div>
+      <p class="est">Every figure here is an estimate for comparison, not a quote, and it deliberately leaves out the
+        one thing nobody can put a number on: the apps bring you customers who have never heard of you. That is worth
+        paying for. This sum is only about the ones who already know your name.</p>
+    </section>
+
+    <section>
+      <h2>Where we come into it</h2>
+      <p class="lede">Plainly, so there is no confusion.</p>
+      <div class="card">
+        <h3>What we do</h3>
+        <p>We put <b>your own ordering link on your Google listing</b>, in the same list as DoorDash and Grubhub,
+          marked as the one you would rather people used. And we put <b>a chat on your website</b> that takes the
+          order and texts it to your phone. Both are for <b>pickup</b>, both take no commission, and both are in the
+          <span data-price>$199</span>.</p>
+        <p style="margin-top:12px">That catches exactly the person this page is about: the one who already knows your
+          name.</p>
+      </div>
+      <div class="card">
+        <h3>What we do not do</h3>
+        <p><b>We do not deliver, and we do not sell delivery.</b> Everything above about drivers and flat fees is
+          advice you can act on without us, and we would rather tell you than pretend it is ours to sell.</p>
+        <p style="margin-top:12px">If you want delivery on your own site, get a quote from DoorDash Drive or Uber
+          Direct. It takes one phone call and we will help you word it.</p>
+      </div>
+      <div class="card">
+        <h3>And keep the apps</h3>
+        <p>Do not switch them off. They are how somebody two towns over finds you for the first time. What you stop
+          paying a commission on is the regular, and that is the whole point.</p>
+      </div>
+    </section>
+
+    <section id="start">
+      <div class="final">
+        <h2>Stop paying to be found by your own customers.</h2>
+        <p><span data-price>$199</span> a month. We answer every Google review, ask every diner for one, write your
+          social posts, and put your own ordering link where the apps are. Cancel any month.</p>
+        <div class="row">
+          <a class="btn" data-cta href="#">Start for <span data-price>$199</span>/mo</a>
+          <a class="btn ghost" href="./start.html">Answer 10 questions first</a>
+        </div>
+      </div>
+    </section>
+
+    <p class="src">Rates and figures checked August 2026, from DoorDash's published merchant pricing and Drive
+      on-demand pages, published guidance on hired and non-owned auto cover for restaurants, and published courier
+      insurance cost surveys. All of it moves. Check your own before you decide anything.</p>
+  </main>
+
+  <footer class="wrap">
+    <p><b data-brand>ReplyPlate</b> &middot; <a href="./index.html">Home</a>
+      &middot; <a href="./details.html">Costs and questions</a>
+      &middot; <a href="./chat-demo.html">See the ordering chat</a>
+      &middot; <a href="./start.html">Get started</a></p>
+  </footer>
+
+<script>
+  const CONFIG = { brand: "ReplyPlate", price: "$199", stripe: "", email: "hello@reply-plate.com" };
+  (function () {
+    "use strict";
+    document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
+    document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = CONFIG.price; });
+    var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("I'd like to start"));
+    document.querySelectorAll("[data-cta]").forEach(function (a) {
+      if (a.getAttribute("href") === "#") a.href = startUrl;
+    });
+
+    /* ── The sum ─────────────────────────────────────────────────────────
+       Three ways to get one order to one door, priced side by side.
+
+       The figures are deliberately conservative in the apps' favour. The
+       commission is the middle tier, not the 30 percent one; the flat fee is the
+       published rate rather than the cheapest quote; and the driver's wage is a
+       modest one. If a restaurant still comes out ahead on these numbers, it
+       will come out further ahead on its real ones. A flattering sum that falls
+       apart in front of an owner is worse than no sum at all. */
+    var WAGE = 16, BURDEN = 1.15;      // hourly wage, plus payroll tax and comp
+    var MILES = 6, PER_MILE = 0.70;    // round trip, federal reimbursement rate
+    var CARD_PC = 0.029, CARD_FIX = 0.30;
+    var INSURANCE = 160;               // hired and non-owned auto, per month
+    var FLAT = 7.49;                   // flat fee per delivery
+
+    var el = function (id) { return document.getElementById(id); };
+    var money = function (n) {
+      return "$" + Math.round(n).toLocaleString("en-US");
+    };
+
+    function draw() {
+      var avg = +el("cAvg").value, orders = +el("cOrders").value;
+      var rate = +el("cRate").value / 100, perHr = +el("cPerHr").value;
+
+      var app = avg * orders * rate;
+
+      var labourEach = (WAGE * BURDEN) / perHr;
+      var mileageEach = MILES * PER_MILE;
+      var cardEach = avg * CARD_PC + CARD_FIX;
+      var own = (labourEach + mileageEach + cardEach) * orders + INSURANCE;
+
+      var flat = (FLAT + cardEach) * orders;
+
+      el("vAvg").textContent = "$" + avg;
+      el("vOrders").textContent = orders;
+      el("vRate").textContent = Math.round(rate * 100) + "%";
+      el("vPerHr").textContent = perHr;
+      el("oApp").textContent = money(app);
+      el("oOwn").textContent = money(own);
+      el("oFlat").textContent = money(flat);
+
+      var opts = [{ n: "The app", v: app }, { n: "Your own driver", v: own }, { n: "A flat fee", v: flat }];
+      opts.sort(function (a, b) { return a.v - b.v; });
+      var best = opts[0], next = opts[1];
+      el("oBest").textContent = best.n;
+
+      var saved = next.v - best.v;
+      var msg;
+      if (best.n === "A flat fee") {
+        msg = "<b>A flat fee is cheapest here, by " + money(saved) + " a month</b> against the next best. "
+          + "The order comes through your own site, the customer sees your name, and you pay for the driver only.";
+      } else if (best.n === "Your own driver") {
+        msg = "<b>Your own driver is cheapest here</b>, by " + money(saved) + " a month. That is unusual, and it is "
+          + "only true because you put " + perHr + " deliveries an hour in. Before you hire anyone, be honest about "
+          + "whether that number survives a wet Tuesday, and read the insurance warning above.";
+      } else {
+        msg = "<b>The app is cheapest here</b>, by " + money(saved) + " a month. At an average order of $" + avg
+          + " a flat fee costs more than the commission, so leave delivery where it is and win on pickup instead, "
+          + "which carries no commission at all.";
+      }
+      if (avg * rate < FLAT && best.n !== "The app") {
+        msg += " Worth noting: at this order size the commission is smaller than a flat delivery fee, so the answer "
+          + "flips as soon as your average order grows.";
+      }
+      el("verdict").innerHTML = msg;
+    }
+
+    ["cAvg", "cOrders", "cRate", "cPerHr"].forEach(function (id) {
+      var n = el(id);
+      if (n) n.addEventListener("input", draw);
+    });
+    draw();
+  })();
+</script>
+</body>
+</html>
