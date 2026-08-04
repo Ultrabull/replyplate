@@ -342,9 +342,11 @@
     if (ORDER.mode) lines.push(ORDER.mode);
     return lines.join("\n");
   }
-  /* Texting is the default and WhatsApp is the opt-in. Every US restaurant
-     already has a number that receives texts; far fewer run WhatsApp, and an
-     order that needs an app the diner has not installed is an order lost. */
+  /* Orders go by text. Every US restaurant already has a number that receives
+     them, far fewer run WhatsApp, and an order that needs an app the diner has
+     not installed is an order lost. Nothing in the console or on any page offers
+     WhatsApp any more; this branch survives only for a config hand-written with
+     method:"whatsapp", which no US client has needed. */
   function isWa() { return ORDER.method === "whatsapp"; }
 
   /* Turn whatever the owner typed into +<country><number>. The dangerous case

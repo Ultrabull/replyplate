@@ -128,14 +128,6 @@
     tel.autocomplete = "off";
     s.appendChild(tel);
 
-    var how = document.createElement("select");
-    [["sms", "Send as a text message"], ["whatsapp", "Send by WhatsApp"]].forEach(function (o) {
-      var opt = document.createElement("option");
-      opt.value = o[0]; opt.textContent = o[1];
-      how.appendChild(opt);
-    });
-    how.style.marginTop = "8px";
-    s.appendChild(how);
 
     var row = h("div", "row");
     var arm = h("button", "b", "Arm it");
@@ -176,7 +168,7 @@
       armed = true;
       CFG.order.demo = false;
       CFG.order.phone = realPhone;
-      CFG.order.method = how.value;
+      CFG.order.method = "sms";
       panel.classList.add("armed");
       arm.textContent = "Disarm";
       arm.className = "b r";
