@@ -263,6 +263,20 @@
             orders</label>
           <input id="chLoyReward" class="in" placeholder="…gets a free garlic bread" />
         </div>
+        <h4 style="margin-top:16px;font-size:14px">Tonight's offer <span style="font-weight:400;color:var(--muted);font-size:12.5px">(optional)</span></h4>
+        <p class="hint" style="margin-bottom:8px">Shows in the chat only on the days you tick, and takes itself down on
+          the stop date. Their problem is rarely Saturday. Leave the text blank to switch it off.</p>
+        <input id="chOffText" class="in" placeholder="Two for one on pizzas" />
+        <input id="chOffSub" class="in" placeholder="The small line underneath, e.g. Tuesday and Wednesday, 5pm to 9pm" />
+        <div class="row" id="chOffDays" style="gap:6px;flex-wrap:wrap"></div>
+        <div class="row">
+          <label class="stars">From <input id="chOffFrom" class="in" type="time" style="width:120px" /></label>
+          <label class="stars">To <input id="chOffTo" class="in" type="time" style="width:120px" /></label>
+          <label class="stars">Stops <input id="chOffUntil" class="in" type="date" style="width:160px" /></label>
+        </div>
+        <p class="hint" style="margin-top:6px">Always set a stop date. An offer nobody took down is how a restaurant
+          ends up advertising Christmas in March.</p>
+
         <div class="row">
           <input id="chCurrency" class="in" style="width:90px;margin-bottom:0" placeholder="$" value="$" />
           <button class="btn" id="chGo" type="button">Write the answers</button>

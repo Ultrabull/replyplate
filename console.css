@@ -205,3 +205,8 @@ select{margin-bottom:0;width:auto}
 .wl-bar{grid-column:1 / -1;height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}
 .wl-bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .2s}
 .wl-foot{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+
+/* Day toggles on the offer, in the Website chat tab. Pressed reads as gold so
+   an owner can see at a glance which nights the offer covers. */
+#chOffDays .btn.on{background:rgba(208,163,78,.18);border-color:var(--accent);color:var(--accent);font-weight:800}
+#chOffDays .btn{min-width:52px}

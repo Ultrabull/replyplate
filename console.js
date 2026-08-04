@@ -55,6 +55,8 @@
     chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
     chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chMethod: $("chMethod"), chCurrency: $("chCurrency"),
     chLoyEvery: $("chLoyEvery"), chLoyReward: $("chLoyReward"),
+    chOffText: $("chOffText"), chOffSub: $("chOffSub"), chOffDays: $("chOffDays"),
+    chOffFrom: $("chOffFrom"), chOffTo: $("chOffTo"), chOffUntil: $("chOffUntil"),
     rpPeriod: $("rpPeriod"), rpLoad: $("rpLoad"), rpText: $("rpText"), rpGo: $("rpGo"), rpOut: $("rpOut"),
     leadName: $("leadName"), leadAdd: $("leadAdd"), leadsList: $("leadsList"),
     apCheck: $("apCheck"), apApprove: $("apApprove"), apClear: $("apClear"), apPending: $("apPending"), apFeed: $("apFeed"),
@@ -724,6 +726,10 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
         cfg.loyalty = { enabled: true, every, reward };
       }
     }
+    /* Offers are not tied to ordering: a place with no menu online still wants
+       to tell people about Tuesday. */
+    const offer = offerFromForm();
+    if (offer) cfg.offers = [offer];
     return `<!-- ${client.name} chat helper. Paste both lines just before </body> -->\n` +
       `<script>window.RP_CHAT = ${JSON.stringify(cfg, null, 2)};<\/script>\n` +
       `<script src="https://reply-plate.com/chat-widget.js" defer><\/script>`;
@@ -1356,6 +1362,42 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.glOut.appendChild(code); dom.glOut.appendChild(b);
   }
 
+
+  /* ---------- tonight's offer -------------------------------------------
+     Seven day toggles, built rather than typed out, so the markup stays short
+     and the values cannot drift from what the widget expects (0 Sunday to 6). */
+  const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  function buildDayToggles() {
+    if (!dom.chOffDays || dom.chOffDays.childNodes.length) return;
+    DAYS.forEach((d, i) => {
+      const b = el("button", "btn ghost sm");
+      b.type = "button";
+      b.textContent = d;
+      b.dataset.day = i;
+      b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => {
+        const on = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", on ? "false" : "true");
+        b.classList.toggle("on", !on);
+      });
+      dom.chOffDays.appendChild(b);
+    });
+  }
+  function offerFromForm() {
+    const text = (dom.chOffText.value || "").trim();
+    if (!text) return null;
+    const days = [].slice.call(dom.chOffDays.querySelectorAll('[aria-pressed="true"]'))
+      .map((b) => +b.dataset.day);
+    const o = { text };
+    const sub = (dom.chOffSub.value || "").trim();
+    if (sub) o.sub = sub;
+    if (days.length && days.length < 7) o.days = days;   // all seven is the same as none
+    if (dom.chOffFrom.value) o.from = dom.chOffFrom.value;
+    if (dom.chOffTo.value) o.to = dom.chOffTo.value;
+    if (dom.chOffUntil.value) o.until = dom.chOffUntil.value;
+    return o;
+  }
+
   /* ---------- settings ---------- */
   function openSettings() { dom.apiKey.value = state.key || ""; dom.settingsModal.hidden = false; loadModels(false); }
   function closeSettings() { dom.settingsModal.hidden = true; }
@@ -1420,6 +1462,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.ocGo.addEventListener("click", doOutreach);
     dom.rpGo.addEventListener("click", doReport);
     dom.chGo.addEventListener("click", doChat);
+    buildDayToggles();
     dom.rpLoad.addEventListener("click", loadFromAutopilot);
     dom.leadAdd.addEventListener("click", addLead);
     dom.leadName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLead(); } });

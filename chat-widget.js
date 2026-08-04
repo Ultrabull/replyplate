@@ -124,6 +124,12 @@
     + '.rpc-menu{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 14px;background:#f8f5ef}'
     + '.rpc-sec{font:800 11px inherit;text-transform:uppercase;letter-spacing:.5px;color:#8a7b6e;margin:14px 0 7px}'
     + '.rpc-sec:first-child{margin-top:2px}'
+    + '.rpc-offer{background:#fff5e2;border-bottom:1px solid #e8d5ad;padding:10px 14px;font-size:13px;line-height:1.35;color:#6a4f14}'
+    + '.rpc-offer b{display:block;font-weight:800;color:#4d390b}'
+    + '.rpc-offer span{display:block;color:#8a7038;font-size:12px;margin-top:1px}'
+    + '.rpc-view .rpc-offer{border-bottom:1px solid #e8d5ad;border-top:none}'
+    + '.rpc-btn.hasoffer::after{content:"";position:absolute;top:6px;right:8px;width:9px;height:9px;border-radius:50%;background:#ffd979;box-shadow:0 0 0 2px rgba(0,0,0,.18)}'
+    + '.rpc-btn{position:relative}'
     + '.rpc-loy{background:#f3ece1;border:1px dashed #cbb79b;border-radius:9px;padding:8px 11px;margin-bottom:8px;font-size:12.5px;color:#6b5c48;line-height:1.4}'
     + '.rpc-loy.due{background:#eaf6ef;border-color:#7fbf9b;color:#1f6a45;font-weight:700;border-style:solid}'
     + '.rpc-item{background:#fff;border:1px solid #e6ddd1;border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px}'
@@ -186,11 +192,13 @@
         +   '<span>' + esc(ORDER.barNote || "Tap the menu, pay when you pick up") + '</span></span>'
         +   '<span class="ar" aria-hidden="true">›</span></button>'
         : '')
+    + '  <div class="rpc-offer" hidden></div>'
     + '  <div class="rpc-log" id="rpcLog"></div>'
     + '  <form class="rpc-form"><input class="rpc-in" id="rpcIn" placeholder="Type your question" autocomplete="off" /><button class="rpc-send" type="submit">Ask</button></form>'
     + '  <div class="rpc-foot">Answers written by ' + esc(C.name || "the restaurant") + '</div>'
     + '</div>'
     + '<div class="rpc-view" id="rpcOrderView">'
+    + '  <div class="rpc-offer" hidden></div>'
     + '  <div class="rpc-menu" id="rpcMenu"></div>'
     + '  <div class="rpc-basket">'
     + '    <div class="rpc-loy" id="rpcLoy" hidden></div>'
@@ -389,6 +397,73 @@
       : have + " of " + need + ". " + (left - 1 === 0 ? "Next one" : left - 1 + " more") + " and you get " + reward + ".";
   }
 
+
+  /* ── Tonight's offer ───────────────────────────────────────────────────
+     A restaurant's problem is rarely Saturday. It is Tuesday. So an offer that
+     shows itself only on the nights that need filling, and takes itself down
+     again, without the owner having to remember either.
+
+     Config, all fields but text optional:
+
+       offers: [{
+         text:  "Two for one on pizzas",
+         sub:   "Tuesday and Wednesday, 5pm to 9pm",
+         days:  [2, 3],            // 0 Sunday to 6 Saturday. Omit for every day
+         from:  "17:00", to: "21:00",
+         until: "2026-12-31"       // hard stop, see below
+       }]
+
+     THE until DATE IS THE IMPORTANT ONE. The way an offer system fails is never
+     the showing, it is the taking down. A Christmas deal still up in March makes
+     a restaurant look abandoned, and it is the owner's phone that rings about
+     it. So an offer past its date does not render at all, whatever else matches.
+
+     Times come off the diner's own device clock, which for somebody deciding
+     where to eat nearby is the restaurant's clock too. */
+  var OFFERS = [].concat(C.offers || []).filter(function (o) { return o && o.text; });
+
+  function mins(hhmm) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || ""));
+    return m ? (+m[1]) * 60 + (+m[2]) : null;
+  }
+  function offerOn(o, now) {
+    if (o.until) {
+      /* Parsed as a local date, not UTC, so an offer ending "today" survives
+         today wherever the diner is standing. */
+      var p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(o.until));
+      if (p) {
+        var end = new Date(+p[1], +p[2] - 1, +p[3], 23, 59, 59);
+        if (now > end) return false;
+      }
+    }
+    if (o.days && o.days.length && o.days.indexOf(now.getDay()) === -1) return false;
+    var t = now.getHours() * 60 + now.getMinutes();
+    var a = mins(o.from), b = mins(o.to);
+    if (a !== null && t < a) return false;
+    if (b !== null && t > b) return false;
+    return true;
+  }
+  /* First match wins. Predictable beats clever when an owner is trying to work
+     out why the wrong thing is on their website. */
+  function liveOffer() {
+    if (!OFFERS.length) return null;
+    var now = new Date();
+    for (var i = 0; i < OFFERS.length; i++) if (offerOn(OFFERS[i], now)) return OFFERS[i];
+    return null;
+  }
+  function paintOffer() {
+    var o = liveOffer();
+    [].slice.call(panel.querySelectorAll(".rpc-offer")).forEach(function (n) {
+      n.innerHTML = "";
+      n.hidden = !o;
+      if (!o) return;
+      var b = document.createElement("b"); b.textContent = o.text;
+      n.appendChild(b);
+      if (o.sub) { var s = document.createElement("span"); s.textContent = o.sub; n.appendChild(s); }
+    });
+    if (btn) btn.classList.toggle("hasoffer", !!o);
+  }
+
   function orderText() {
     var lines = ["Order from your website:", ""];
     basketList().forEach(function (b) { lines.push(b.qty + " x " + b.name); });
@@ -401,6 +476,10 @@
     if (LOY && loyDue()) {
       lines.push("", "*** " + (LOY.reward || "A free item") + " earned, order " + LOY.every + " of " + LOY.every + " ***");
     }
+    /* Say the offer was on screen, never that a discount was applied. Prices
+       here are only ever the ones the owner typed, so the till is still theirs. */
+    var off = liveOffer();
+    if (off) lines.push("", "Offer showing: " + off.text);
     return lines.join("\n");
   }
   /* Orders go by text. Every US restaurant already has a number that receives
@@ -489,6 +568,7 @@
   }
 
   function showOrder() {
+    paintOffer();
     buildMenu();
     chatView.classList.remove("on"); orderView.classList.add("on");
     backBtn.style.display = ""; title.textContent = ORDER.title || "Order for pickup";
@@ -522,6 +602,7 @@
 
   var opened = false;
   function open() {
+    paintOffer();
     panel.classList.add("open"); if (!MOUNT) btn.style.display = "none";
     lockPage();
     if (!opened) {
@@ -583,6 +664,7 @@
   if (document.readyState === "complete") reserveRoom();
   else window.addEventListener("load", reserveRoom);
   reserveRoom();
+  paintOffer();
 
   // Public hooks, so a page can drive the widget from its own buttons.
   window.RPChat = {

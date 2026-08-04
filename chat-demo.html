@@ -1061,6 +1061,9 @@ window.RP_CHAT = {
     note: "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
   },
   loyalty: { enabled: true, every: 5, reward: "a free garlic bread" },
+  /* No days set, so the demo always shows one. A real restaurant would tick
+     Tuesday and Wednesday and set a stop date. */
+  offers: [{ text: "Two for one on pizzas", sub: "Tuesday and Wednesday, 5pm to 9pm" }],
   menu: [
     { section: "Pizzas", items: [
       { name: "Margherita", price: 12.00 },
