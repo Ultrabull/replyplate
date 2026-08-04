@@ -40,6 +40,25 @@
   .card h3{font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
   .card p{color:var(--muted);font-size:15px}
   .emoji{font-size:22px}
+  /* App-style tile grid. The tile itself carries the message, so an owner who
+     never taps still gets all four. Tapping only adds the detail. */
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (min-width:700px){.tiles{grid-template-columns:repeat(4,1fr)}}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 14px 18px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;cursor:pointer;
+    font:inherit;color:var(--ink);min-height:132px;transition:border-color .15s,background .15s,transform .1s}
+  .tile:hover{border-color:var(--accent2)}
+  .tile:active{transform:scale(.98)}
+  .tile:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .tile .ico{font-size:30px;line-height:1;margin-bottom:10px}
+  .tile b{font-size:16px;font-weight:800}
+  .tile .sub{font-size:12.5px;color:var(--muted);line-height:1.35}
+  .tile[aria-selected="true"]{border-color:var(--accent);background:#251e14;box-shadow:0 12px 30px -14px rgba(0,0,0,.6)}
+  .tile[aria-selected="true"] b{color:var(--accent)}
+  .tilepanel{background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:20px 22px;margin-top:12px}
+  .tilepanel h3{font-size:17px;margin-bottom:8px}
+  .tilepanel p{color:var(--muted);font-size:15px}
+  .tilepanel p+p{margin-top:9px}
   .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
   .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;position:relative}
   .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:22px;width:34px;height:34px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
@@ -254,12 +273,18 @@
 
     <section>
       <h2 class="section-title">What changes</h2>
-      <div class="grid">
-        <div class="card"><h3><span class="emoji">⭐</span> The pile gets answered, and posted</h3><p>Every review gets a reply in the words you'd actually use, naming what the diner wrote about. The good ones we put up for you. Nothing to copy or paste.</p></div>
-        <div class="card"><h3><span class="emoji">🙋</span> Your happy diners stop staying quiet</h3><p>Right now only the annoyed ones bother finding your page. Your QR code asks everyone, never only the happy ones, so the quiet majority get a voice too.</p></div>
-        <div class="card"><h3><span class="emoji">📱</span> Eight posts a month, put up for you</h3><p>Your specials, your events, your room. Written for your restaurant and posted to your Facebook and Instagram, so the page doesn't go quiet for three weeks.</p></div>
-        <div class="card"><h3><span class="emoji">✋</span> Nothing rough goes out without you</h3><p>Low ratings, complaints, anything sensitive goes to your phone first, with the reply already written. One tap to approve, edit, or say leave it. There's no setting that turns this off.</p></div>
+      <p class="section-sub" style="margin-bottom:22px">Four jobs. Tap any one to see how it works.</p>
+      <div class="tiles" role="tablist" aria-label="What changes" id="tiles">
+        <button class="tile" role="tab" id="tile-0" aria-selected="true" aria-controls="tilepanel">
+          <span class="ico" aria-hidden="true">⭐</span><b>Replies</b><span class="sub">Every review answered</span></button>
+        <button class="tile" role="tab" id="tile-1" aria-selected="false" aria-controls="tilepanel">
+          <span class="ico" aria-hidden="true">🙋</span><b>Reviews</b><span class="sub">Every diner asked</span></button>
+        <button class="tile" role="tab" id="tile-2" aria-selected="false" aria-controls="tilepanel">
+          <span class="ico" aria-hidden="true">📱</span><b>Posts</b><span class="sub">8 a month, put up</span></button>
+        <button class="tile" role="tab" id="tile-3" aria-selected="false" aria-controls="tilepanel">
+          <span class="ico" aria-hidden="true">✋</span><b>Your OK</b><span class="sub">Nothing rough without it</span></button>
       </div>
+      <div class="tilepanel" id="tilepanel" role="tabpanel" aria-live="polite"></div>
     </section>
 
     <section>
@@ -400,88 +425,50 @@
       });
     })();
 
-  /* Savings calculator.
-
-     The rates below are the published US merchant rates, checked August 2026.
-     They matter because the obvious mistake here is to apply a DELIVERY rate to
-     a COLLECTION order. DoorDash delivery is 15 to 30 percent by plan, but its
-     pickup rate is 6 percent flat. Uber Eats delivery reaches 30 percent, and
-     pickup is 7 percent with validated in-store pricing, otherwise 10. Charging
-     a collection order at 25 percent overstates the saving by roughly four
-     times, which is exactly the sort of number a restaurant owner checks.
-
-     So the owner picks what the order actually replaces and the sums follow.
-     When the answer is that it does not cover the bill, it says so. */
+  /* The "what changes" tiles. Modelled on a phone app's home grid, because that
+     is a shape restaurant owners already know how to read. The tile carries its
+     message on its own, so nothing is hidden behind a tap: the panel only adds
+     detail for anyone who wants it. */
   (function () {
-    var HOWS = [
-      /* Collection first, deliberately. Loading on the 25% delivery rate shows an
-         owner a flattering number before they have touched a control, and this
-         extra takes collection orders, not delivery ones. */
-      { id: "pickup", label: "App collection", sub: "Ordered on an app, collected", rate: 0.07,
-        note: "Collection through an app costs far less than delivery. DoorDash charges 6% on pickup and Uber Eats 7%, or 10% if your app prices do not match your in-store prices. We have used 7%. It is a much smaller saving, and we would rather show you that than a flattering number." },
-      { id: "delivery", label: "A delivery app", sub: "Ordered for delivery", rate: 0.25,
-        note: "Delivery is where the apps take the most. Published US rates run from about 15% up to 30% depending on the plan you are on, so we have used 25% in the middle. Count an order here only if that diner would be happy to come and collect it, because this does not deliver, so most delivery orders stay on the app." },
-      { id: "direct", label: "Phone or walk-in", sub: "No app involved", rate: 0,
-        note: "No commission to save here, so the sum says so. What this changes is different: the phone stops ringing during service, the order arrives written down instead of shouted across a kitchen, and people tend to add a side when they can see the menu." }
+    var PANELS = [
+      { h: "Every Google review gets answered, and the good ones get posted",
+        p: ["Every new review gets a reply written in the words you'd actually use, naming the thing the diner actually wrote about. Not a template, because half of people say a form letter puts them off.",
+            "The straightforward good ones we put up on your Google profile ourselves. There is nothing for you to copy or paste. Prefer to see every one first? Say so and we will."] },
+      { h: "Your quiet happy diners stop staying quiet",
+        p: ["Right now only the annoyed ones bother finding your page, so it reads like a complaints book. The people who had a lovely night meant to leave a review and forgot in the car park.",
+            "We make you a QR code and you put it wherever suits: the receipt, the table, the takeout bag. Everyone sees the same code. Asking only the happy ones breaks Google's rules and the penalty lands on your listing, so we will not do it."] },
+      { h: "Eight posts a month, written and put up",
+        p: ["Your specials, your events, your room. Written for your restaurant, not pulled off a stock calendar, and posted to your Facebook and Instagram if you connect them.",
+            "You never share a password. You add us the way you would add a member of staff, and you can remove us whenever you like. Social is optional. Google reviews are the part that matters most."] },
+      { h: "Nothing rough goes out without you",
+        p: ["Low ratings, complaints, anything sensitive: it goes to your phone first, with a calm reply already written. You are never staring at a blank box at 11pm while angry.",
+            "One tap to approve it, edit it, or tell us to leave that one alone. There is no setting that turns this off. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us."] }
     ];
-    var state = { orders: 20, avg: 40, how: "pickup" };
-    var $c = function (id) { return document.getElementById(id); };
-    if (!$c("calc")) return;
-    function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+    var wrap = document.getElementById("tiles"), panel = document.getElementById("tilepanel");
+    if (!wrap || !panel) return;
+    var tabs = [].slice.call(wrap.querySelectorAll(".tile"));
 
-    function draw() {
-      var how = HOWS.filter(function (h) { return h.id === state.how; })[0];
-      var total = state.orders * state.avg, cut = total * how.rate;
-
-      $c("vOrders").textContent = state.orders;
-      $c("vAvg").textContent = "$" + state.avg;
-      $c("rateNote").textContent = how.note;
-      $c("rowTotal").textContent = state.orders + (state.orders === 1 ? " order" : " orders") +
-        " at " + money(state.avg) + " is worth";
-      $c("outTotal").textContent = money(total);
-
-      if (how.rate === 0) {
-        $c("rowCut").textContent = "No app is taking a cut of these";
-        $c("outCut").textContent = money(0);
-      } else {
-        $c("rowCut").textContent = "The app takes " + Math.round(how.rate * 100) + "% of that";
-        $c("outCut").textContent = "you lose " + money(cut);
-      }
-      $c("outKeep").textContent = "you keep " + money(total);
-
-      /* No pass or fail against a price. The review subscription is bought either
-         way, so comparing this extra's saving to it was the wrong sum, and the
-         extra is priced separately. Show the money and let the owner judge. */
-      var v = $c("outVerdict"), lbl = $c("outVerdictLbl");
-      if (cut <= 0) {
-        lbl.textContent = "Commission saved";
-        v.className = "";
-        v.textContent = "none, this one is about the calls you cannot get to";
-      } else {
-        lbl.textContent = "Commission you would keep";
-        v.className = "";
-        v.textContent = money(cut) + " a month";
-      }
-    }
-
-    $c("cOrders").addEventListener("input", function (e) { state.orders = +e.target.value; draw(); });
-    $c("cAvg").addEventListener("input", function (e) { state.avg = +e.target.value; draw(); });
-
-    var wrap = $c("cHow");
-    HOWS.forEach(function (h, i) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "seg"; b.setAttribute("role", "radio");
-      b.setAttribute("aria-checked", i === 0 ? "true" : "false");
-      b.innerHTML = "<b>" + h.label + "</b><span>" + h.sub + "</span>";
-      b.addEventListener("click", function () {
-        state.how = h.id;
-        Array.prototype.forEach.call(wrap.children, function (o) { o.setAttribute("aria-checked", "false"); });
-        b.setAttribute("aria-checked", "true");
-        draw();
+    function show(i, focus) {
+      tabs.forEach(function (t, j) {
+        t.setAttribute("aria-selected", j === i ? "true" : "false");
+        t.tabIndex = j === i ? 0 : -1;
       });
-      wrap.appendChild(b);
+      var d = PANELS[i];
+      panel.innerHTML = "<h3>" + d.h + "</h3>" + d.p.map(function (x) { return "<p>" + x + "</p>"; }).join("");
+      if (focus) tabs[i].focus();
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () { show(i); });
+      t.addEventListener("keydown", function (e) {
+        var k = e.key, n = null;
+        if (k === "ArrowRight" || k === "ArrowDown") n = (i + 1) % tabs.length;
+        else if (k === "ArrowLeft" || k === "ArrowUp") n = (i - 1 + tabs.length) % tabs.length;
+        else if (k === "Home") n = 0;
+        else if (k === "End") n = tabs.length - 1;
+        if (n !== null) { e.preventDefault(); show(n, true); }
+      });
     });
-    draw();
+    show(0);
   })();
   </script>
 
