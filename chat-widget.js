@@ -347,6 +347,21 @@
      order that needs an app the diner has not installed is an order lost. */
   function isWa() { return ORDER.method === "whatsapp"; }
 
+  /* Turn whatever the owner typed into +<country><number>. The dangerous case
+     is a US number typed without its +1: stripping "415-555-0199" to digits and
+     gluing a "+" on the front makes +4155550199, which is a Swiss number. So a
+     bare 10-digit number is treated as US, an 11-digit one starting 1 gets its
+     plus back, and anything already carrying a + is trusted as typed. */
+  function e164(raw) {
+    var str = String(raw || "").trim();
+    var d = str.replace(/[^0-9]/g, "");
+    if (!d) return "";
+    if (str.charAt(0) === "+") return "+" + d;
+    if (d.length === 10) return "+1" + d;
+    if (d.length === 11 && d.charAt(0) === "1") return "+" + d;
+    return "+" + d;
+  }
+
   /* Shows what lands on the owner's phone. In demo mode this replaces opening
      WhatsApp, because a demo restaurant has no real number to open. */
   function phonePreview(text) {
@@ -380,13 +395,13 @@
       return;
     }
 
-    var num = String(ORDER.phone || "").replace(/[^0-9]/g, "");
-    if (!num) return;
+    var full = e164(ORDER.phone);
+    if (!full) return;
     var enc = encodeURIComponent(text);
-    /* Both links need the digits only. A raw "+1 (555) 010-2288" leaves spaces
-       and brackets in the URI, which some phones silently refuse. */
-    var url = isWa() ? ("https://wa.me/" + num + "?text=" + enc)
-                     : ("sms:+" + num + "?&body=" + enc);
+    /* wa.me wants bare digits, sms: wants the + form. Neither tolerates the
+       spaces and brackets of a raw "+1 (555) 010-2288". */
+    var url = isWa() ? ("https://wa.me/" + full.slice(1) + "?text=" + enc)
+                     : ("sms:" + full + "?&body=" + enc);
     window.open(url, "_blank");
     showChat();
     /* Do not branch on what window.open returned. On a desktop an sms: link

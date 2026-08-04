@@ -611,6 +611,10 @@
         </g>
         <rect width="400" height="300" filter="url(#hGrain)" opacity=".55"/>
       </svg>
+      <img src="assets/hero.jpg" alt="" decoding="async" />
+      <!-- Later in the DOM paints on top, so a clip beats a photo beats the
+           drawing, exactly the order the README promises. -->
+      <video src="assets/hero.mp4" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
     </div>
     <div class="scrim"></div>
     <div class="inner">
@@ -671,6 +675,7 @@
     <!-- No viewBox here on purpose: the symbol carries its own box and its own
          slice rule, so it crops to whatever shape this band happens to be. -->
     <svg class="drawn" aria-hidden="true"><use href="#art-dough"/></svg>
+    <img src="assets/oven.jpg" alt="" loading="lazy" decoding="async" />
     <video src="assets/oven.mp4" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
     <div class="over">
       <div>
@@ -955,10 +960,17 @@
 
   /* A <video> with a missing file sometimes settles quietly rather than
      erroring, so check once the page has loaded and clear it either way. */
-  window.addEventListener("load", function () {
+  /* A video with preload="none" can still be deciding at the load event, so
+     sweep once at load and once again a moment later. The error listener above
+     catches anything that fails after both. */
+  function sweepVideos() {
     document.querySelectorAll("video").forEach(function (v) {
       if (v.networkState === 3 /* NETWORK_NO_SOURCE */ || (!v.videoWidth && v.readyState === 0)) v.remove();
     });
+  }
+  window.addEventListener("load", function () {
+    sweepVideos();
+    setTimeout(sweepVideos, 2500);
   });
 
   /* Tonight's line under the name, worked out from the real opening hours,

@@ -24,6 +24,7 @@ Exact names. Anything else is ignored.
 | `pepperoni.jpg` | Second dish card | 1000 x 800 |
 | `vegan.jpg` | Third dish card | 1000 x 800 |
 | `oven.mp4` | The wide moving band in the middle | 1600 x 900, under 10 seconds |
+| `oven.jpg` | Same band, if you have no clip | 1600 x 900 |
 | `room.jpg` | Big tile, top left of the gallery | 1400 x 1400 |
 | `gallery-1.jpg` to `gallery-5.jpg` | The five smaller gallery tiles | 900 x 900 |
 

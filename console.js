@@ -146,14 +146,21 @@
     if (!c) { toast("Pick a client first"); return false; }
     const body = ownerNote(c, review, stars, reply);
     if (how === "sms") {
-      const digits = String(c.ownerPhone || "").replace(/[^0-9]/g, "");
+      /* The owner's number the way a person types it: maybe "415-555-0199",
+         maybe "+1 (415) 555 0199". Stripping to digits and gluing "+" on the
+         front turns the first one into +4155550199, which is Switzerland. So:
+         a leading + is trusted, a bare 10-digit number is treated as US, and
+         an 11-digit one starting 1 gets its plus back. */
+      const str = String(c.ownerPhone || "").trim();
+      const digits = str.replace(/[^0-9]/g, "");
       if (digits.length < 10) {
         toast("Add the owner's mobile on the Clients tab first");
         return false;
       }
-      /* Digits only. A raw "+1 (415) 555 0199" leaves spaces and brackets in
-         the URI and some phones drop the message body without saying so. */
-      window.open("sms:+" + digits + "?&body=" + encodeURIComponent(body), "_blank");
+      const full = str.charAt(0) === "+" ? "+" + digits
+        : digits.length === 10 ? "+1" + digits
+        : "+" + digits;
+      window.open("sms:" + full + "?&body=" + encodeURIComponent(body), "_blank");
       toast("Opening your messages. Press send there.");
       return true;
     }
@@ -1184,7 +1191,8 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
   /* Proves the key and the model together, which is the only thing that matters.
      Two minutes here beats finding out mid-demo. */
   async function testModel() {
-    const model = dom.modelSel.value, key = dom.apiKey.value.trim() || state.key;
+    const model = dom.modelSel.value || state.model, key = dom.apiKey.value.trim() || state.key;
+    if (!model) { dom.modelMsg.textContent = "Pick a model first."; return; }
     if (!key) { dom.modelMsg.textContent = "Put your OpenRouter key in first."; return; }
     dom.modelMsg.textContent = "Writing a test reply with " + model + "…";
     try {
@@ -1256,7 +1264,9 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
   function closeSettings() { dom.settingsModal.hidden = true; }
   function saveSettings() {
     state.key = dom.apiKey.value.trim(); save(S.key, state.key);
-    state.model = dom.modelSel.value; save(S.model, state.model);
+    /* The model list loads async. Saving before it arrives must never write
+       an empty model over a working one. */
+    state.model = dom.modelSel.value || state.model; save(S.model, state.model);
     closeSettings(); toast("Settings saved");
   }
 
