@@ -1,0 +1,13 @@
+# Search engines are welcome on the pages meant for restaurant owners.
+#
+# The private pages (the operator console, the approval screen, the
+# questionnaire) are kept out of search by a noindex tag in each page itself,
+# NOT by being listed here. Listing them here would do the opposite of what it
+# looks like it does: robots.txt is public, so naming a page in it advertises
+# that the page exists, and a blocked crawler never reads the noindex tag it
+# was supposed to obey.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://reply-plate.com/sitemap.xml

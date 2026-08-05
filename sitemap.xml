@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The pages meant to be found.
+     Absent on purpose: the console, the approval screen, the questionnaire and
+     the welcome page, which are private; and chat-demo.html, which is a fake
+     restaurant. A real diner who found The Olive Table in search would try to
+     order dinner from it. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://reply-plate.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://reply-plate.com/details.html</loc><priority>0.8</priority></url>
+  <url><loc>https://reply-plate.com/commission.html</loc><priority>0.8</priority></url>
+  <url><loc>https://reply-plate.com/websites.html</loc><priority>0.8</priority></url>
+  <url><loc>https://reply-plate.com/how.html</loc><priority>0.6</priority></url>
+</urlset>
