@@ -48,16 +48,61 @@
         <p class="hint" id="qzMsg" style="margin-top:8px"></p>
       </div>
 
+      <!-- This form is the ten questions from start.html, in the same order, in the
+           same words, with the same numbers. The owner's email arrives numbered
+           1 to 10, so copying an answer across is a matter of finding the same
+           number here rather than working out which box a question maps onto.
+           Anything the owner was never asked is marked "not on the questionnaire". -->
       <div class="card form">
         <h3>Add / edit a client</h3>
+        <p class="hint">The same ten questions the owner answered, in the same order.</p>
+
+        <p class="qn">1. What is the place called, and where is it?</p>
         <input id="cName" class="in" placeholder="Restaurant name *" />
-        <input id="cCuisine" class="in" placeholder="Cuisine / style (e.g. cozy Italian trattoria)" />
-        <input id="cTone" class="in" placeholder="Voice & tone (e.g. warm, playful, a little cheeky)" />
-        <input id="cReview" class="in" placeholder="Google review link (https://g.page/r/...)" />
-        <input id="cCity" class="in" placeholder="City / area (optional)" />
-        <input id="cPhone" class="in" type="tel" placeholder="Owner's mobile, for approvals (+1 415 555 0199)" />
-        <input id="cEmail" class="in" type="email" placeholder="Owner's email, as a fallback" />
+        <input id="cCity" class="in" placeholder="Town or city" />
+
+        <p class="qn">2. Who are we dealing with?</p>
+        <input id="cOwner" class="in" placeholder="Your name (what you call the owner)" />
+        <input id="cPhone" class="in" type="tel" placeholder="Mobile, where approvals go (+1 415 555 0199)" />
+        <input id="cEmail" class="in" type="email" placeholder="Email" />
+
+        <p class="qn">3. What do you sell, in your own words?</p>
+        <textarea id="cCuisine" class="in" rows="3" placeholder="Wood-fired sourdough pizza. Family run since 2011. Everything comes out of one oven and we do not do delivery."></textarea>
+
+        <p class="qn">4. How should a reply sound?</p>
+        <textarea id="cTone" class="in" rows="2" placeholder="Warm and chatty. We always sign off with the chef's first name."></textarea>
+
+        <p class="qn">5. What must we never say? <b class="qwarn">Hard rules. These go to the AI as prohibitions.</b></p>
+        <textarea id="cNever" class="in" rows="4" placeholder="Never offer a free meal to fix a complaint.&#10;Never blame a supplier.&#10;Never use the word artisan."></textarea>
+
+        <p class="qn">6. Your Google listing</p>
+        <input id="cReview" class="in" placeholder="https://maps.app.goo.gl/... (a street address here will print on their QR cards)" />
+
+        <p class="qn">7. What do people ask you all day?</p>
+        <textarea id="cFaq" class="in" rows="5" placeholder="Are you open Mondays? (No, closed Mondays)&#10;Do you do vegan? (Yes, five mains)&#10;Is there parking? (Free on Mill Street after 6pm)"></textarea>
+
+        <p class="qn">8. Do you want pickup ordering on your site?</p>
+        <select id="cPickup" class="in">
+          <option value="">Not answered</option>
+          <option value="Yes">Yes</option>
+          <option value="Not for now">Not for now</option>
+          <option value="Tell me more first">Tell me more first</option>
+        </select>
+        <input id="cOrders" class="in" type="tel" placeholder="If yes, which phone should orders land on?" />
+        <!-- A textarea, not an input: question 8's chips join with a newline, and a
+             single-line input strips newlines rather than replacing them, which
+             fuses two tapped answers into one run-on word. -->
+        <textarea id="cDirect" class="in" rows="2" placeholder="What could you give someone who orders direct? (goes on the Google listing link)"></textarea>
+
+        <p class="qn">9. Your opening hours</p>
+        <textarea id="cHours" class="in" rows="4" placeholder="Mon closed&#10;Tue to Thu 5pm to 10pm&#10;Fri and Sat 12pm to 11pm&#10;Sun 12pm to 8pm"></textarea>
+
+        <p class="qn">10. Anything coming up, or anything sore? <b class="qwarn">Yours only. Never published.</b></p>
+        <textarea id="cNotes" class="in" rows="3" placeholder="Two for one on Tuesdays. Shut the first week of September. There is a one star from March they do not want dragged up."></textarea>
+
+        <p class="qn">Not on the questionnaire</p>
         <input id="cRev90" class="in" type="number" min="0" inputmode="numeric" placeholder="Reviews they got in the last 90 days (check their listing)" />
+
         <div class="row">
           <button class="btn" id="cSave" type="button">Save client</button>
           <button class="btn ghost" id="cClear" type="button">Clear</button>

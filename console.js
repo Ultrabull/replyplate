@@ -46,6 +46,13 @@
     gpCheck: $("gpCheck"), gpVerdict: $("gpVerdict"), gpPhotos: $("gpPhotos"),
     glSlug: $("glSlug"), glMake: $("glMake"), glOut: $("glOut"),
     cRev90: $("cRev90"),
+    /* The seven answers that used to have nowhere to live. Six of them were
+       being dropped into the shared chNotes box on the Website chat tab, which
+       is a plain textarea with no storage behind it: they vanished on reload,
+       and because that box is not per-client they could ship one restaurant's
+       hours on another restaurant's website. */
+    cOwner: $("cOwner"), cNever: $("cNever"), cFaq: $("cFaq"), cPickup: $("cPickup"),
+    cOrders: $("cOrders"), cDirect: $("cDirect"), cHours: $("cHours"), cNotes: $("cNotes"),
     wlNumber: $("wlNumber"), wlPost: $("wlPost"), wlHours: $("wlHours"), wlCap: $("wlCap"),
     wlClients: $("wlClients"), wlManual: $("wlManual"), wlAdd: $("wlAdd"), wlUndo: $("wlUndo"),
     ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
@@ -140,7 +147,11 @@
   function ownerNote(client, review, stars, reply) {
     var star = "★".repeat(Math.max(0, Math.min(5, +stars || 0)));
     var short = review.length > 240 ? review.slice(0, 237).trim() + "…" : review;
-    return "Hi, one to OK for " + (client.name || "you") + ".\n\n"
+    /* The owner gives their first name in question 2. Not using it meant asking
+       someone to approve a reply to a one star review without ever addressing
+       them. */
+    var hi = client.ownerName ? "Hi " + client.ownerName : "Hi";
+    return hi + ", one to OK for " + (client.name || "you") + ".\n\n"
       + star + " review:\n\"" + short + "\"\n\n"
       + "My reply:\n\"" + reply + "\"\n\n"
       + "Reply YES and I'll post it, or send me changes.";
@@ -188,6 +199,25 @@
     if (c.tone) s += `. Brand voice: ${c.tone}`;
     if (c.city) s += `. Located in ${c.city}`;
     return s;
+  }
+
+  /* The owner's red lines, and their name. These are kept out of clientContext
+     on purpose. A prohibition is not a description, and it must not arrive as
+     one more clause in a sentence about what the restaurant is like: it goes
+     into the system prompt as a rule, where the model treats it as binding. */
+  function ownerRules() {
+    const c = activeClient();
+    if (!c) return "";
+    const out = [];
+    if (c.neverSay) {
+      out.push(`Hard rules from the owner. Never break these, even if the brand voice suggests otherwise:\n${c.neverSay}`);
+    }
+    /* start.html offers "Sign off with my first name" as a tap-to-answer chip,
+       so the model was being told to sign with a name nobody had given it. It
+       would invent one, which is exactly the thing this product must not do. */
+    if (c.ownerName) out.push(`If a reply is signed off, the owner's name is ${c.ownerName}. Never use any other name.`);
+    else out.push(`Never sign a reply with a personal name, and never invent one.`);
+    return out.join("\n\n");
   }
   function requireClient(container) {
     if (!activeClient()) { setError(container, { message: "Add a client on the Clients tab first." }); return false; }
@@ -239,18 +269,27 @@
     dom.cName.value = c.name || ""; dom.cCuisine.value = c.cuisine || ""; dom.cTone.value = c.tone || "";
     dom.cReview.value = c.reviewLink || ""; dom.cCity.value = c.city || ""; dom.cRev90.value = c.rev90 || "";
     dom.cPhone.value = c.ownerPhone || ""; dom.cEmail.value = c.ownerEmail || "";
+    dom.cOwner.value = c.ownerName || ""; dom.cNever.value = c.neverSay || "";
+    dom.cFaq.value = c.faq || ""; dom.cPickup.value = c.pickup || "";
+    dom.cOrders.value = c.orderPhone || ""; dom.cDirect.value = c.directOffer || "";
+    dom.cHours.value = c.hours || ""; dom.cNotes.value = c.ownerNotes || "";
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function clearClientForm() {
     editingClientId = null;
     [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90,
-     dom.cPhone, dom.cEmail].forEach((i) => i.value = "");
+     dom.cPhone, dom.cEmail, dom.cOwner, dom.cNever, dom.cFaq, dom.cPickup,
+     dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes].forEach((i) => i.value = "");
   }
   function saveClient() {
     const name = dom.cName.value.trim();
     if (!name) { toast("Give the restaurant a name"); return; }
     const data = { name, cuisine: dom.cCuisine.value.trim(), tone: dom.cTone.value.trim(), reviewLink: dom.cReview.value.trim(), city: dom.cCity.value.trim(), rev90: dom.cRev90.value.trim(),
-      ownerPhone: dom.cPhone.value.trim(), ownerEmail: dom.cEmail.value.trim() };
+      ownerPhone: dom.cPhone.value.trim(), ownerEmail: dom.cEmail.value.trim(),
+      ownerName: dom.cOwner.value.trim(), neverSay: dom.cNever.value.trim(),
+      faq: dom.cFaq.value.trim(), pickup: dom.cPickup.value,
+      orderPhone: dom.cOrders.value.trim(), directOffer: dom.cDirect.value.trim(),
+      hours: dom.cHours.value.trim(), ownerNotes: dom.cNotes.value.trim() };
     if (editingClientId) {
       const c = state.clients.find((x) => x.id === editingClientId);
       if (c) Object.assign(c, data);
@@ -272,17 +311,65 @@
 
      It reads the block if it is there and falls back to reading the numbered
      answers if the owner deleted it, because owners delete things. */
+  /* The ten question headings exactly as start.html prints them above each
+     block of answers. Used only to tell a heading apart from an owner's own
+     numbered line further down an answer. */
+  const QZ_HEADINGS = [
+    "What is the place called, and where is it?",
+    "Who are we dealing with?",
+    "What do you sell, in your own words?",
+    "How should a reply sound?",
+    "What must we never say?",
+    "Your Google listing",
+    "What do people ask you all day?",
+    "Do you want pickup ordering on your site?",
+    "Your opening hours",
+    "Anything coming up, or anything sore?",
+  ];
+
+  const QZ_KEYS = ["Restaurant", "Where", "Your name", "Mobile", "Email", "What you sell",
+    "Voice", "More on the voice", "Never say", "Google listing", "Questions you get asked",
+    "Pickup ordering", "Orders go to", "For ordering direct", "Hours", "Anything else"];
+
   function parseQuestionnaire(raw) {
-    const text = String(raw || "");
-    const m = text.match(/RP1:(\{[\s\S]*?\})\s*(?:\n-|$)/);
+    /* Forwarded and replied-to mail arrives quoted, every line prefixed with
+       "> ". That prefix used to break both paths at once: the machine block no
+       longer matched, and every fallback key came back as "> Restaurant", which
+       matches nothing. The import reported success and filled in nothing. */
+    const text = String(raw || "").replace(/^[ \t]*>+[ \t]?/gm, "");
+
+    const m = text.match(/RP1:\s*(\{[\s\S]*?\})\s*(?:\n\s*-|$)/);
     if (m) { try { return JSON.parse(m[1]); } catch (e) { /* fall through */ } }
-    /* No block, so read the labelled lines the owner can see. */
+
+    /* No block, so read the labelled lines the owner can see. Answers here run
+       over several lines: opening hours are one line per day, and the never-say
+       list is one rule per line. Only the first line of each carries a "Name: "
+       prefix, so anything that is not itself a new known answer belongs to the
+       answer above it. Keeping only prefixed lines used to silently reduce the
+       hours to "Mon closed" and the red lines to whichever rule came first. */
+    const known = {};
+    QZ_KEYS.forEach((k) => { known[k.toLowerCase()] = k; });
     const out = {};
+    let current = null;
     text.split("\n").forEach((line) => {
       const p = line.indexOf(":");
-      if (p < 1) return;
-      const k = line.slice(0, p).trim(), v = line.slice(p + 1).trim();
-      if (k && v && k.length < 40) out[k] = out[k] ? out[k] + "\n" + v : v;
+      const head = p > 0 ? known[line.slice(0, p).trim().toLowerCase()] : null;
+      if (head) {
+        current = head;
+        const v = line.slice(p + 1).trim();
+        if (v) out[head] = out[head] ? out[head] + "\n" + v : v;
+        return;
+      }
+      const t = line.trim();
+      /* Blank lines, the rule above the machine block, and "(skipped)" all end
+         an answer. So does a question heading, but only a real one: matching
+         any "N. " line would swallow an owner who numbered their own opening
+         hours or listed dishes, and dropping their text is worse than keeping
+         a stray heading. The ten headings are known, so check against them. */
+      if (!t || /^-{3,}/.test(t) || t === "(skipped)") { current = null; return; }
+      const num = t.match(/^(\d{1,2})\.\s+(.+)$/);
+      if (num && QZ_HEADINGS.some((h) => h.toLowerCase() === num[2].trim().toLowerCase())) { current = null; return; }
+      if (current) out[current] = out[current] ? out[current] + "\n" + t : t;
     });
     return Object.keys(out).length ? out : null;
   }
@@ -290,39 +377,66 @@
   function applyQuestionnaire(raw) {
     const d = parseQuestionnaire(raw);
     if (!d) { dom.qzMsg.textContent = "Could not find any answers in that. Paste the whole email."; return; }
-    const put = (el, val) => { if (val && !el.value.trim()) el.value = val; };
-    put(dom.cName, d["Restaurant"]);
-    put(dom.cCity, d["Where"]);
-    put(dom.cCuisine, d["What you sell"]);
-    put(dom.cReview, d["Google listing"]);
-    put(dom.cPhone, d["Mobile"]);
-    put(dom.cEmail, d["Email"]);
-    /* Voice and the never-say list belong together: both are instructions about
-       how to write, and both go into every prompt through clientContext(). */
-    const voice = [d["Voice"], d["More on the voice"], d["Never say"] ? "Never: " + d["Never say"] : ""]
-      .filter(Boolean).join(". ");
-    put(dom.cTone, voice);
-    /* The chat answers and the hours are the raw material for the Website chat
-       tab, so drop them there rather than losing them. */
-    const notes = [
-      d["Hours"] ? "Hours:\n" + d["Hours"] : "",
-      d["Questions you get asked"] ? "They get asked about:\n" + d["Questions you get asked"] : "",
-      d["Anything else"] ? "Also:\n" + d["Anything else"] : "",
-      d["Pickup ordering"] ? "Pickup ordering: " + d["Pickup ordering"] : "",
-      d["Orders go to"] ? "Orders go to: " + d["Orders go to"] : "",
-      /* What they will give for a direct order. This is the line that goes on
-         the Google Maps ordering link, so it must not get lost in an inbox. */
-      d["For ordering direct"] ? "For ordering direct: " + d["For ordering direct"] : "",
-      d["Loyalty card"] ? "Loyalty card: " + d["Loyalty card"] : "",
-    ].filter(Boolean).join("\n\n");
-    if (notes && dom.chNotes && !dom.chNotes.value.trim()) dom.chNotes.value = notes;
-    if (d["Orders go to"] && dom.chOrderPhone && !dom.chOrderPhone.value.trim()) dom.chOrderPhone.value = d["Orders go to"];
-    if (d["Mobile"] && dom.chPhone && !dom.chPhone.value.trim()) dom.chPhone.value = d["Mobile"];
 
-    const n = Object.keys(d).length;
-    dom.qzMsg.textContent = "Read " + n + " answer" + (n === 1 ? "" : "s") +
-      ". Check the form below, then press Save client. The hours and the questions they get asked "
-      + "have gone to the Website chat tab.";
+    /* Every answer now goes to the box that asks the same question, because the
+       form below is the same ten questions in the same order. Nothing is
+       merged, so nothing has to be pulled apart again later.
+
+       Answers are only written into empty boxes: a paste must never silently
+       overwrite something already typed. What was skipped is counted and
+       reported, because the old message said "Read 16 answers" whether or not
+       a single one of them landed anywhere. */
+    let landed = 0, skipped = 0;
+    const put = (el, val) => {
+      if (!val || !el) return;
+      if (el.value.trim()) { skipped++; return; }
+      el.value = val; landed++;
+    };
+
+    put(dom.cName,    d["Restaurant"]);
+    put(dom.cCity,    d["Where"]);
+    put(dom.cOwner,   d["Your name"]);
+    put(dom.cPhone,   d["Mobile"]);
+    put(dom.cEmail,   d["Email"]);
+    put(dom.cCuisine, d["What you sell"]);
+    /* Voice only. The never-say list used to be glued on the end of this with a
+       "Never: " prefix, which handed the one safety rule in the questionnaire
+       to the model as a style hint, mid sentence, inside a description of the
+       restaurant. It has its own field and its own place in the prompt now. */
+    put(dom.cTone,    [d["Voice"], d["More on the voice"]].filter(Boolean).join(". "));
+    put(dom.cNever,   d["Never say"]);
+    put(dom.cReview,  d["Google listing"]);
+    put(dom.cFaq,     d["Questions you get asked"]);
+    put(dom.cPickup,  d["Pickup ordering"]);
+    put(dom.cOrders,  d["Orders go to"]);
+    put(dom.cDirect,  d["For ordering direct"]);
+    put(dom.cHours,   d["Hours"]);
+    put(dom.cNotes,   d["Anything else"]);
+
+    /* The owner was told their mobile is where approvals go. It used to be
+       copied into the Website chat tab as well, and that box is published in
+       the snippet pasted onto the restaurant's own website, so their personal
+       number went public without anyone deciding it should. Orders have their
+       own number now, and it is the only one that travels. */
+
+    const msg = [];
+    msg.push(landed + (landed === 1 ? " answer went in." : " answers went in."));
+    if (skipped) msg.push(skipped + (skipped === 1 ? " box already had something in it and was left alone."
+                                                   : " boxes already had something in them and were left alone."));
+    if (!landed && skipped === 0) {
+      msg.length = 0;
+      msg.push("Found the answers but could not read them. If you forwarded the email, "
+             + "paste just the RP1 block from the bottom instead.");
+    } else {
+      msg.push("Check it, then press Save client.");
+    }
+    /* A street address here prints on their table cards and bag stickers, and
+       question 6 explicitly invites one, so say so before 500 get printed. */
+    const link = dom.cReview.value.trim();
+    if (link && !/^https?:\/\//i.test(link)) {
+      msg.push("Heads up: the Google listing is not a link, so it will print as written on their review cards.");
+    }
+    dom.qzMsg.textContent = msg.join(" ");
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
@@ -351,8 +465,10 @@
     let logged = false;
     try {
       const sys = `You write review replies for restaurants. Rules: be warm, specific, and human; match the brand voice; keep each reply 2-4 sentences; thank by name only if the reviewer gave one; for negative reviews, apologize sincerely, take it offline (invite them to contact the restaurant), and never argue or make excuses; NEVER invent facts or confirm private details. Output exactly 3 distinct reply options, numbered 1-3, nothing else.`;
+      const rules = ownerRules();
+      const sysR = rules ? sys + "\n\n" + rules : sys;
       const prompt = `Write 3 reply options for this ${stars}-star review of ${clientContext()}.\n\nReview:\n"""${review}"""`;
-      renderResults(dom.rvOut, splitBlocks(await generate(prompt, sys)), () => {
+      renderResults(dom.rvOut, splitBlocks(await generate(prompt, sysR)), () => {
         /* Copying a second option from the same review is still one reply. */
         if (logged) return;
         logged = true;
@@ -408,8 +524,10 @@
     setLoading(dom.grOut); dom.grGo.disabled = true;
     try {
       const sys = `You write the wording a restaurant puts in front of EVERY diner to ask for a Google review. Warm, no guilt-trips, easy, and short enough to read while paying. Always include the review link exactly as given. Match the brand voice. CRITICAL: never screen for satisfaction first, never target only happy customers, never offer an incentive — Google prohibits selectively soliciting positive reviews and penalises the restaurant for it. Never write an SMS to diners: the restaurant has no consent from walk-ins and US law charges per message.`;
+      const rules = ownerRules();
+      const sysR = rules ? sys + "\n\n" + rules : sys;
       const prompt = `For ${clientContext()}, write these, clearly labelled: 1) a receipt footer line (one sentence, fits on a printed receipt), 2) a table card / QR card (a heading of 4 to 6 words plus one line underneath), 3) a takeout bag sticker line (under 12 words), 4) an email for diners whose address the restaurant already holds from bookings or online orders (subject + body). Use this review link: ${link}`;
-      renderResults(dom.grOut, splitBlocks(await generate(prompt, sys)));
+      renderResults(dom.grOut, splitBlocks(await generate(prompt, sysR)));
     } catch (e) { setError(dom.grOut, e); } finally { dom.grGo.disabled = false; }
   }
 
@@ -511,11 +629,15 @@
         "write in the restaurant's own voice, plain and specific, naming the actual dish or deal. " +
         "Never invent a price, a date or a dish that was not given to you. " +
         "Output exactly 3 options, numbered 1-3, nothing else.";
+      /* A Google post is published in the restaurant's name, so it carries the
+         owner's red lines like every other piece of public copy. */
+      var rules = ownerRules();
+      var sysR = rules ? sys + "\n\n" + rules : sys;
       var prompt = "For " + clientContext() + ", write a Google " + typeWord + " post about: " + topic +
         (cta ? ("\n\nThere will be a \"" + cta.replace(/_/g, " ").toLowerCase() + "\" button under it, so end in a way that leads into it, without naming the button.") : "") +
         (type === "OFFER" ? "\n\nThis is an Offer post, so Google will ask separately for start and end dates and an optional coupon code. Mention the days it runs in the words." : "") +
         (type === "EVENT" ? "\n\nThis is an Event post, so Google will ask separately for a title and start and end dates. Mention when it is in the words." : "");
-      var blocks = splitBlocks(await generate(prompt, sys));
+      var blocks = splitBlocks(await generate(prompt, sysR));
       renderResults(dom.gpOut, blocks);
       /* Run every option through the same checks the operator would, so a bad one
          cannot get pasted in by accident. */
@@ -568,8 +690,10 @@
     setLoading(dom.soOut); dom.soGo.disabled = true;
     try {
       const sys = `You are a social media writer for restaurants. Write scroll-stopping Instagram/Facebook captions: appetising, on-brand, 1-3 short lines, 1-2 tasteful emojis, and 3-6 relevant hashtags at the end. Each post distinct. Output ${n} posts, numbered.`;
+      const rules = ownerRules();
+      const sysR = rules ? sys + "\n\n" + rules : sys;
       const prompt = `Write ${n} social posts for ${clientContext()}.\nTopic: ${topic}`;
-      renderResults(dom.soOut, splitBlocks(await generate(prompt, sys)));
+      renderResults(dom.soOut, splitBlocks(await generate(prompt, sysR)));
     } catch (e) { setError(dom.soOut, e); } finally { dom.soGo.disabled = false; }
   }
 
@@ -650,6 +774,10 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       const prompt = `Channel: ${channel}\nRestaurant: ${name}\n${outreachBrief()}` +
         (review ? `\n\nOne of their actual reviews:\n"""${review}"""` : "\n\n(No review supplied, so leave sampleReply empty.)");
 
+      /* Deliberately plain sys. Outreach writes a cold pitch to a restaurant
+         that is not a client, while ownerRules() reads the currently selected
+         client, so carrying the rules here would put one restaurant's private
+         never-say list into an email aimed at a different restaurant. */
       const raw = await generate(prompt, sys);
       let t = String(raw).trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
       const a = t.indexOf("{"), z = t.lastIndexOf("}");
@@ -807,10 +935,30 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
     return cfg;
   }
 
+  /* What the website chat is allowed to know. Everything here is public by
+     definition: it ends up as answers on the restaurant's own site.
+
+     Question 10 is deliberately absent. That is where the owner writes what is
+     sore, and start.html's own example for it is a one star they do not want
+     dragged up. It used to go in with the rest, into the prompt that writes
+     their public FAQ, under a rule that says "ONLY use facts in the notes",
+     which invites the model to treat a grievance as a fact it may repeat. */
+  function chatNotes(c) {
+    if (!c) return dom.chNotes.value.trim();
+    const parts = [
+      c.hours ? "Hours:\n" + c.hours : "",
+      c.faq ? "They get asked about:\n" + c.faq : "",
+      c.pickup === "Yes" && c.orderPhone ? "Pickup orders go to " + c.orderPhone : "",
+      c.pickup === "Yes" && c.directOffer ? "For ordering direct: " + c.directOffer : "",
+      dom.chNotes.value.trim(),   /* anything typed straight into the tab */
+    ].filter(Boolean);
+    return parts.join("\n\n");
+  }
+
   async function doChat() {
     if (!requireClient(dom.chOut)) return;
-    const notes = dom.chNotes.value.trim();
-    if (!notes) { toast("Paste what the owner told you first"); return; }
+    const notes = chatNotes(activeClient());
+    if (!notes) { toast("Fill in their hours and their questions on the Clients tab first"); return; }
     setLoading(dom.chOut); dom.chGo.disabled = true;
     try {
       const sys = `You turn a restaurant owner's rough notes into answers for a chat helper on their website.
@@ -825,8 +973,10 @@ Rules:
 - Aim for 5 to 9 entries. Fewer good ones beats padding.
 
 Return ONLY minified JSON, no markdown: {"answers":[{"chip":"","q":["",""],"a":""}]}`;
+      const rules = ownerRules();
+      const sysR = rules ? sys + "\n\n" + rules : sys;
       const prompt = `Restaurant: ${clientContext()}\n\nThe owner's notes:\n"""${notes}"""`;
-      const raw = await generate(prompt, sys);
+      const raw = await generate(prompt, sysR);
       let t = String(raw).trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
       const a = t.indexOf("{"), z = t.lastIndexOf("}");
       if (a !== -1 && z !== -1) t = t.slice(a, z + 1);
@@ -1081,8 +1231,10 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
 Return ONLY minified JSON, no markdown, with exactly these keys:
 {"sentiment":"positive|neutral|negative","risk":"low|medium|high","reason":"<=12 word reason","reply":"the drafted reply"}
 Mark risk "high" for anything mentioning illness/food poisoning, legal threats, discrimination, injury, or staff conduct — these always need a human.`;
+    const rules = ownerRules();
+    const sysR = rules ? sys + "\n\n" + rules : sys;
     const prompt = `Review of ${clientContext()} — ${review.rating}★ from ${review.author} on ${review.source}:\n"""${review.text}"""`;
-    const raw = await generate(prompt, sys);
+    const raw = await generate(prompt, sysR);
     return parseTriage(raw);
   }
 

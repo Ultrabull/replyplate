@@ -30,6 +30,12 @@ a{color:var(--accent)}
 
 .in,.ta,select{width:100%;padding:12px 13px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:11px;font-size:16px;font-family:inherit;outline:none;margin-bottom:10px}
 .in:focus,.ta:focus{border-color:var(--accent)}
+/* The client form is laid out as the ten questions from start.html, so each
+   group needs a heading that reads like the question the owner answered. */
+.qn{font-size:13.5px;font-weight:700;color:var(--ink);margin:18px 0 8px;line-height:1.4}
+.form .qn:first-of-type{margin-top:4px}
+.qn .qwarn{display:block;font-weight:600;font-size:12.5px;color:var(--accent);margin-top:2px}
+textarea.in{min-height:auto;resize:vertical;line-height:1.45}
 .ta{resize:vertical;line-height:1.5}
 select{margin-bottom:0;width:auto}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
