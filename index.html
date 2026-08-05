@@ -288,6 +288,27 @@
   .pricing ul{list-style:none;text-align:left;margin:22px 0;display:flex;flex-direction:column;gap:10px}
   .pricing li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
   .pricing li::before{content:"✓";color:var(--ok);font-weight:800;flex:0 0 auto}
+  /* Where the money comes back. Deliberately not one flattering number: the
+     third line is smaller than an owner expects and says so, because the first
+     time a prospect checks a claim and finds it inflated, everything else on
+     the page becomes suspect too. */
+  .payback{max-width:640px;margin:28px auto 0;background:var(--card);border:1px solid var(--line);
+    border-radius:20px;padding:26px 24px}
+  .payback h3{font-size:19px;margin-bottom:6px}
+  .pb-lede{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  ol.pb{list-style:none;counter-reset:pb;display:grid;gap:18px;margin:0;padding:0}
+  ol.pb li{counter-increment:pb;position:relative;padding-left:34px}
+  ol.pb li::before{content:counter(pb);position:absolute;left:0;top:2px;width:24px;height:24px;
+    border-radius:50%;background:var(--line);color:var(--accent);font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;line-height:1}
+  ol.pb .v{display:block;font-size:20px;font-weight:800;color:var(--accent);letter-spacing:-.02em;line-height:1.2}
+  ol.pb .h{display:block;font-weight:700;font-size:15.5px;margin-top:2px}
+  ol.pb .d{display:block;color:var(--muted);font-size:14.5px;margin-top:6px;line-height:1.6}
+  .pb-note{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:20px;padding-top:16px;
+    border-top:1px solid var(--line)}
+  .pb-note a{color:var(--accent);font-weight:700}
+  @media (max-width:560px){.payback{padding:22px 18px}ol.pb li{padding-left:30px}}
+
   .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
   .faq details{position:relative}
   .faq summary{font-weight:700;cursor:pointer;font-size:16px;list-style:none;padding-right:30px}
@@ -476,6 +497,34 @@
         <p style="margin-top:14px;font-size:13px;color:var(--muted)">Want proof first? Send us your Google listing and we'll write replies to your last five reviews, free. <a data-book href="#" style="color:var(--accent);font-weight:700">Ask for yours</a></p>
       </div>
       <p class="cmp-note mid">No setup fee, no contract, no charge per location, and no upsell waiting for you later. <a href="./chat-demo.html" style="color:var(--accent)">See the chat and the ordering working on a demo restaurant →</a></p>
+
+      <div class="payback">
+        <h3>Where the <span data-price>$199</span> comes back, honestly</h3>
+        <p class="pb-lede">Everybody selling you something like this waves one flattering number at you. Here are all four places the money comes from, including the one that is smaller than you would hope.</p>
+        <ol class="pb">
+          <li>
+            <b class="v">$10 to $12</b>
+            <span class="h">A delivery order that becomes a pickup order</span>
+            <span class="d">Somebody about to tap DoorDash sees your own link first, and a free side for using it. On a $40 order the delivery commission you never paid is around a quarter of it. This is the big one, and the offer is what makes people switch.</span>
+          </li>
+          <li>
+            <b class="v">The whole margin</b>
+            <span class="h">An order that would not have happened at all</span>
+            <span class="d">The phone that rings at 7:40 on a Friday when every pair of hands is carrying plates. A caller who gets no answer does not sit there waiting for one. The chat answers, takes the order, and texts it to you. Nobody can put a number on how often that happens in your place, so we will not pretend to.</span>
+          </li>
+          <li>
+            <b class="v">About $2.80</b>
+            <span class="h">A pickup order moved off an app</span>
+            <span class="d">Smaller than everyone tells you. The apps take 6 to 7 percent on pickup, not the 25 to 30 they take on delivery. On a $40 order that is under three dollars, so you would need roughly seventy of them a month for this line alone to cover the fee. It will not, on its own, and anybody telling you otherwise is quoting you a delivery rate for a pickup order.</span>
+          </li>
+          <li>
+            <b class="v">The rest</b>
+            <span class="h">Every review answered, every diner asked, eight posts written</span>
+            <span class="d">Which is most of what you are actually buying. The ordering is the part that shows up as money. The reviews are the part that decides whether somebody walks in at all.</span>
+          </li>
+        </ol>
+        <p class="pb-note">Rates checked August 2026 from the apps' published merchant pricing. Estimates for comparison, not a quote, and your numbers will be your own. We are not going to hand you a payback figure with your name on it that we cannot stand behind. <a href="./commission.html">The whole sum, with sliders →</a></p>
+      </div>
     </section>
 
 
