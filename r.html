@@ -83,7 +83,18 @@
       if (cfg.website) links.insertAdjacentHTML("beforeend", '<a href="' + cfg.website + '" target="_blank" rel="noopener">Our website</a>');
       if (cfg.mapsUrl) links.insertAdjacentHTML("beforeend", '<a href="' + cfg.mapsUrl + '" target="_blank" rel="noopener">Find us</a>');
 
-      document.getElementById("rFoot").textContent = "Answers written by " + (cfg.name || "the restaurant") + ".";
+      /* Two readers land on this page. Diners, who want to order, and the odd
+         restaurant owner, who wants to know who made it. "Restaurant owner?"
+         lets a diner skip the second line without reading it, and stops an
+         owner dead. Set "hideCredit" in their JSON if a client would rather
+         the page carried nothing but their own name. */
+      var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+      document.getElementById("rFoot").innerHTML =
+        "Answers written by " + esc(cfg.name || "the restaurant") + "." +
+        (cfg.hideCredit ? "" :
+          '<br>Page by ReplyPlate. Restaurant owner? ' +
+          '<a href="websites.html" target="_blank" rel="noopener">See what we build &rarr;</a>');
 
       cfg.embed = "chat";
       window.RP_CHAT = cfg;
