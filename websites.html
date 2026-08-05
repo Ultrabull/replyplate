@@ -543,6 +543,8 @@
       person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
+<script src="config.js"></script>
+
 <script>
   /* ── EDIT THIS ONE BLOCK ──────────────────────────────────────────────────
      webPrice: what you charge to build a restaurant site, one time.
@@ -555,7 +557,12 @@
     price:    "$199",
     webPrice: "$1,200",
     email:    "hello@reply-plate.com",
-  };
+    };
+    /* config.js wins where it sets something. If it failed to load, or a field
+       in it is blank, the literal above still applies and the page works. */
+    if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
+      if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
+    });
   (function () {
     document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
     document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = CONFIG.price; });

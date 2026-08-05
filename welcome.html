@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>You're in. Here's what happens next | ReplyPlate</title>
+<meta name="robots" content="noindex" />
+<meta name="description" content="What happens after you subscribe to ReplyPlate." />
+<style>
+  :root{--ink:#1c1613;--muted:#6d6155;--bg:#faf7f1;--card:#fff;--line:#e6ddd1;
+    --accent:#b03d29;--good:#2f6f4f;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.55;
+    padding:26px 16px max(30px,env(safe-area-inset-bottom))}
+  .wrap{max-width:560px;margin:0 auto}
+
+  .tick{width:58px;height:58px;border-radius:50%;background:var(--good);display:grid;place-items:center;
+    margin:0 auto 16px}
+  .tick svg{width:30px;height:30px}
+  h1{font-size:27px;letter-spacing:-.5px;text-align:center;line-height:1.2}
+  .lede{text-align:center;color:var(--muted);font-size:15.5px;margin:8px auto 26px;max-width:44ch}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;
+    margin-bottom:14px}
+  .card h2{font-size:17px;margin-bottom:10px}
+
+  ol.steps{list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;position:relative;padding-left:38px;margin-bottom:15px}
+  ol.steps li:last-child{margin-bottom:0}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:26px;height:26px;
+    border-radius:50%;background:#f3ece1;border:1px solid var(--line);display:grid;place-items:center;
+    font-weight:800;font-size:13px;color:var(--accent)}
+  ol.steps b{display:block;font-size:15.5px}
+  ol.steps span{color:var(--muted);font-size:14.5px}
+
+  .btn{display:block;text-align:center;background:var(--accent);color:#fff;text-decoration:none;
+    font-weight:700;padding:15px 20px;border-radius:12px;min-height:50px;font-size:16px;margin-top:16px}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:600}
+
+  .note{font-size:14px;color:var(--muted);margin-top:10px}
+  .plain{font-size:14.5px;color:var(--muted)}
+  .plain b{color:var(--ink)}
+  .plain p+p{margin-top:9px}
+  .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:24px;line-height:1.7}
+  .foot a{color:var(--muted)}
+  @media (min-width:620px){ h1{font-size:31px} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="tick" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"
+           stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>
+    </div>
+
+    <h1>You're in. Thank you.</h1>
+    <p class="lede">Your card is set up and a receipt is on its way to your inbox from Stripe.
+      Nothing else is charged, ever.</p>
+
+    <div class="card">
+      <h2>What happens next</h2>
+      <ol class="steps">
+        <li><b>Tell us about your place</b>
+          <span>Ten questions, about five minutes. It is how we learn how you talk, what you sell,
+            and what we must never say. Do it now if you have a moment.</span></li>
+        <li><b>You add us to your Google profile</b>
+          <span>Two taps on your phone. You never share a password, and you can remove us in
+            two clicks whenever you like. We send you the exact steps.</span></li>
+        <li><b>We go live</b>
+          <span>Usually within two business days. The first thing you will notice is a text from us
+            with a reply waiting for your approval.</span></li>
+      </ol>
+      <a class="btn" href="./start.html">Tell us about your place &rarr;</a>
+      <p class="note">Already sent us your answers? Then you are done, and we are on it.
+        If now is a bad time, no problem either. We will email you the same link.</p>
+    </div>
+
+    <div class="card">
+      <h2>The things people ask on day one</h2>
+      <div class="plain">
+        <p><b>When am I charged again?</b> Same date next month. It is the same amount every
+          month, whatever happens. No setup fee, no charge per location, and no upsell later.</p>
+        <p><b>How do I stop it?</b> Any month, no notice, no phone call. Email us and it stops at
+          the end of the month you have paid for. Every reply we posted stays up, in your name.</p>
+        <p><b>Do you post replies without me?</b> Good reviews, yes, in your voice. Anything
+          negative comes to your phone first and waits for you to tap approve. That never changes.</p>
+        <p><b>Who do I talk to?</b> One person, and he answers his own email. Write any time:
+          <a data-email href="#">hello@example.com</a></p>
+      </div>
+    </div>
+
+    <div class="card" id="manage" hidden>
+      <h2>Your billing</h2>
+      <p class="plain">Change your card, read your receipts, or cancel. It is Stripe's own page,
+        so we never see your card number.</p>
+      <a class="btn ghost" data-portal href="#">Manage your billing &rarr;</a>
+    </div>
+
+    <p class="foot">
+      <b data-brand>ReplyPlate</b> &bull;
+      <a href="./index.html">Home</a> &bull;
+      <a href="./connect.html">Setting up</a> &bull;
+      <a href="./details.html">Costs and questions</a>
+    </p>
+  </div>
+
+<script src="config.js"></script>
+<script>
+/* The page a customer lands on after paying. Stripe sends them here with its own
+   session id on the URL, which we deliberately do nothing with: verifying it needs
+   a server and a secret key, and neither belongs in a page anyone can view source
+   on. This page is a receipt for the human, not a source of truth. The truth about
+   who has paid lives in the Stripe dashboard.
+
+   Because of that, the page never claims to know their name, their restaurant, or
+   what they bought. It says what happens next, and gets them into the questions. */
+(function () {
+  "use strict";
+  var CONFIG = {
+    brand: "ReplyPlate",
+    email: "hello@reply-plate.com",
+    /* Stripe → Settings → Billing → Customer portal → the login link it gives you.
+       Leave "" and the billing card stays hidden rather than showing a dead button. */
+    portal: "",
+  };
+  /* config.js wins where it sets something, same as every other page. */
+  if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
+    if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
+  });
+
+  document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
+  document.querySelectorAll("[data-email]").forEach(function (a) {
+    a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email;
+  });
+
+  if (CONFIG.portal) {
+    document.querySelectorAll("[data-portal]").forEach(function (a) { a.href = CONFIG.portal; });
+    document.getElementById("manage").hidden = false;
+  }
+
+  /* Some people answer the questions before paying and some after, and this page
+     cannot tell which. It could, with a flag in the browser, but the questionnaire
+     deliberately writes nothing to the browser at all and that rule is worth more
+     than the papercut. So the copy under the button covers both instead. */
+})();
+</script>
+</body>
+</html>

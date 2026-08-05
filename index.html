@@ -619,11 +619,17 @@
       person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
+  <script src="config.js"></script>
+
   <script>
     /* ── EDIT THIS ONE BLOCK to make it yours ───────────────────────────
        brand : your business name
        price : your monthly price (keep the $)
-       stripe: your Stripe Payment Link (dashboard.stripe.com → Payment Links)
+       stripe: your Stripe Payment Link for the monthly plan. Make it in the
+               Stripe dashboard under Payment Links, set it to send people back to
+               welcome.html when they have paid, then paste the link here. Leave it
+               "" and every Start button falls back to emailing you, which still
+               works, it is just slower. STRIPE.md walks through the whole thing.
        book  : your booking link (Calendly) OR leave "" to use email
        email : where prospects reach you
     ────────────────────────────────────────────────────────────────────── */
@@ -634,6 +640,11 @@
       book:   "",                     // e.g. https://calendly.com/you/15min
       email:  "hello@reply-plate.com",
     };
+    /* config.js wins where it sets something. If it failed to load, or a field
+       in it is blank, the literal above still applies and the page works. */
+    if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
+      if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
+    });
     (function(){
       document.title = CONFIG.brand + ": Google reviews answered and social posts written, for restaurants";
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });

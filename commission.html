@@ -214,8 +214,15 @@
       person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
+<script src="config.js"></script>
+
 <script>
   const CONFIG = { brand: "ReplyPlate", price: "$199", stripe: "", email: "hello@reply-plate.com" };
+  /* config.js wins where it sets something. If it failed to load, or a field in
+     it is blank, the literal above still applies and the page works. */
+  if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
+    if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
+  });
   (function () {
     "use strict";
     document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });

@@ -203,7 +203,7 @@
 <body>
   <header><div class="wrap nav">
     <div class="logo"><span class="dot"></span><span data-brand>ReplyPlate</span></div>
-    <a class="btn" data-cta href="#start">Start for <span data-price>$199</span>/mo</a>
+    <a class="btn" data-cta href="#">Start for <span data-price>$199</span>/mo</a>
   </div></header>
 
   <main class="wrap">
@@ -297,7 +297,7 @@
       <details><summary>Who's touching my Google profile, and can I take it back?</summary><p>You add us as a manager on your Google Business Profile. It takes about 30 seconds, you never share a password, and you can remove us in two clicks whenever you like. We can't change who owns the profile. We don't need your POS, your bookings or your bank, and we don't ask for them. <a href="./connect.html">Here are the exact steps</a>, if you want to see what's involved before you sign up.</p></details>
       <details><summary>What about Facebook reviews?</summary><p>Facebook retired star ratings and reviews, so no tool can reply to them. We focus reviews on Google, where they actually move the needle, and handle your Facebook and Instagram posts.</p></details>
       <details><summary>I'm already paying Toast, the delivery apps and a booking system. Why another subscription?</summary><p>Fair. You already pay all of those and none of them are doing this job. But if <span data-price>$199</span> is the difference between tight and fine this month, don't buy it. It'll still be <span data-price>$199</span> in the autumn, and <span data-price>$199</span> is our real price, not an introductory rate we plan to raise on you.</p></details>
-      <details><summary>How big is ReplyPlate?</summary><p>Small, and new. One person runs it, and today a good part of the work is done by hand rather than fully automated. That means a human genuinely reads your reviews. It also means there's no support queue, so you get the founder's email. As more of it automates we'll tell you which parts before it changes, and the rule that negative reviews wait for your OK won't change.</p></details>
+      <details><summary>How big is <span data-brand>ReplyPlate</span>?</summary><p>Small, and new. One person runs it, and today a good part of the work is done by hand rather than fully automated. That means a human genuinely reads your reviews. It also means there's no support queue, so you get the founder's email. As more of it automates we'll tell you which parts before it changes, and the rule that negative reviews wait for your OK won't change.</p></details>
       <details><summary>Do you only ask the diners who seemed happy?</summary><p>No, and we won't. Everyone sees the same QR code, and a printed code cannot tell whether someone had a good night. That is the point of doing it this way. Google prohibits filtering, and the FTC's rule on consumer reviews treats review suppression as deceptive, so cherry-picking your happy customers is the kind of shortcut that gets a profile wiped. You get real reviews or none.</p></details>
       <details><summary>What if I hate a reply?</summary><p>Edit it or kill it, one tap, and tell us why in a line. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us. Rejections are the fastest way for us to learn how you actually talk. If we keep getting it wrong, cancel.</p></details>
       <details><summary>Can I cancel?</summary><p>Any month. No contract, no notice period, no cancellation call. Email us and it stops at the end of the month, and we take ourselves off your Google profile the same day so you're not left wondering who still has access.</p></details>
@@ -337,6 +337,8 @@
       person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
+  <script src="config.js"></script>
+
   <script>
     const CONFIG = {
       brand: "ReplyPlate",
@@ -345,8 +347,15 @@
       book:   "",                     // e.g. https://calendly.com/you/15min
       email:  "hello@reply-plate.com",
     };
+    /* config.js wins where it sets something. If it failed to load, or a field
+       in it is blank, the literal above still applies and the page works. */
+    if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
+      if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
+    });
     (function(){
-      document.title = CONFIG.brand + ": Google reviews answered and social posts written, for restaurants";
+      /* This page has its own title in the <head>. Only swap the brand inside it,
+         or the costs page ends up wearing the homepage's title in the tab. */
+      document.title = "Costs and questions | " + CONFIG.brand;
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
       document.querySelectorAll("[data-price]").forEach(function(n){ n.textContent = CONFIG.price; });
       var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=I%27d%20like%20to%20start");
@@ -406,11 +415,11 @@
      questions at 11pm. Same rule as everywhere else, it only says what we wrote. */
   window.RP_CHAT = {
     accent: "#b8893a",
-    name: "ReplyPlate",
+    name: CONFIG.brand,
     subtitle: "Real answers, not a sales bot",
     email: CONFIG.email,
     buttonText: "Questions? Ask here",
-    greeting: "Ask me anything about ReplyPlate. This is the same chat helper we sell to restaurants, so you are looking at the product while you use it.",
+    greeting: "Ask me anything about " + CONFIG.brand + ". This is the same chat helper we sell to restaurants, so you are looking at the product while you use it.",
     answers: [
       { chip: "What it costs",
         q: ["how much does it cost","what is the price","pricing","how much","how much is it","how much per month","cost","what's the price",
