@@ -94,6 +94,13 @@
   .miss{color:#e0705a;font-size:13.5px;margin-top:12px;font-weight:600}
   footer{padding:26px 0 60px;text-align:center;color:var(--muted);font-size:13.5px;border-top:1px solid var(--line);margin-top:24px}
   .skip{text-align:center;color:var(--muted);font-size:13.5px;margin:8px 0 22px}
+  .fgrid{display:grid;grid-template-columns:1fr;gap:22px;text-align:left;max-width:760px;margin:0 auto 26px}
+  @media (min-width:640px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+  .fgrid b{display:block;color:var(--ink);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .fgrid a{display:block;color:var(--muted);text-decoration:none;padding:5px 0;font-size:14.5px}
+  .fgrid a:hover{color:var(--accent)}
+  .fnote{max-width:640px;margin:0 auto;font-size:13px;line-height:1.65;padding-top:20px;border-top:1px solid var(--line)}
+  .fnote a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -255,9 +262,30 @@
   </main>
 
   <footer class="wrap">
-    <p><b data-brand>ReplyPlate</b> &middot; <a href="./index.html">Home</a>
-      &middot; <a href="./details.html">Costs and questions</a>
-      &middot; <a href="./chat-demo.html">See the chat working</a></p>
+    <div class="fgrid">
+      <div>
+        <b>Start here</b>
+        <a href="./index.html">What it does</a>
+        <a href="./start.html">The ten questions</a>
+        <a href="./details.html">Costs and questions</a>
+        <a href="./commission.html">Why your regulars cost you</a>
+      </div>
+      <div>
+        <b>See it working</b>
+        <a href="./chat-demo.html">A demo restaurant</a>
+        <a href="./how.html">A review, answered</a>
+        <a href="./websites.html">Websites we build</a>
+      </div>
+      <div>
+        <b>For clients</b>
+        <a href="./connect.html">Setting up</a>
+        <a href="./qr-code.html">Make your code</a>
+        <a href="./till.html">Codes on receipts</a>
+      </div>
+    </div>
+    <p class="fnote"><b data-brand>ReplyPlate</b>. Google reviews answered, pickup orders taken, and people brought
+      back, for independent restaurants. <span data-price>$199</span> a month, no contract. Run from the US by one
+      person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
 <script>

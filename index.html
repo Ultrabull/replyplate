@@ -104,6 +104,30 @@
   .step h3{margin:8px 0}
   .step p{color:var(--muted);font-size:15px}
 
+  .hero .subprice{font-size:18px;margin-bottom:24px}
+  .hero .subprice b{color:var(--ink)}
+
+  /* Three ideas, not eight bullet points. An owner should be able to say what
+     this does after four seconds on the page, and a flat list of features never
+     let them. */
+  .vgrid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media (min-width:820px){.vgrid{grid-template-columns:repeat(3,1fr)}}
+  .val{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 22px;
+    display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s}
+  .val:hover{transform:translateY(-3px);border-color:var(--accent2)}
+  .val .ico{font-size:30px;line-height:1;margin-bottom:12px}
+  .val h3{font-size:20px;letter-spacing:-.2px;margin-bottom:4px}
+  .val .lead{color:var(--accent);font-weight:700;font-size:15px;margin-bottom:14px}
+  .val ul{list-style:none;display:grid;gap:12px;margin:0 0 16px;padding:0}
+  .val li{color:var(--muted);font-size:14.5px;line-height:1.55;position:relative;padding-left:20px}
+  .val li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;
+    background:var(--accent2)}
+  .val li b{color:var(--ink)}
+  .val .more{color:var(--accent);font-weight:700;font-size:14px;text-decoration:none;display:block;margin-top:6px}
+  .val .more:first-of-type{margin-top:auto}
+  .val .more:hover{text-decoration:underline}
+  @media (prefers-reduced-motion:reduce){.val{transition:none}.val:hover{transform:none}}
+
   .honest{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px}
   /* The honest list, tap to open. The claim itself is always on screen: only the
      reasoning behind it folds away. These lines are legally load-bearing, so
@@ -176,13 +200,6 @@
   .proof-note{text-align:center;color:var(--muted);font-size:12.5px;line-height:1.6;max-width:640px;margin:26px auto 0}
   /* The proof used to be its own 1.3-screen band. As three small tiles inside the
      hero it costs about 0.3 and it is read, because nobody scrolls past a hero. */
-  .hero-proof{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:620px;margin:22px auto 0}
-  .hero-proof .stat{padding:14px 9px}
-  .hero-proof .stat b{font-size:26px}
-  .hero-proof .stat b small{font-size:10.5px;margin-top:3px}
-  .hero-proof .stat span{font-size:12.5px;margin-top:8px;line-height:1.35}
-  .hero-proof + .proof-note{margin:14px auto 0}
-  @media (max-width:380px){.hero-proof .stat b{font-size:22px}.hero-proof .stat span{font-size:11.5px}}
   .addons{background:linear-gradient(180deg,rgba(208,163,78,.07),transparent);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
   .sums{max-width:560px;margin:22px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
   .sums h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:14px;text-align:center}
@@ -324,6 +341,13 @@
   .final .btn{background:var(--accent);color:#fff;padding:16px 34px}
   .final .btn:hover{background:#ddb45f}
   footer{padding:30px 0 50px;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+  .fgrid{display:grid;grid-template-columns:1fr;gap:22px;text-align:left;max-width:760px;margin:0 auto 26px}
+  @media (min-width:640px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+  .fgrid b{display:block;color:var(--ink);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .fgrid a{display:block;color:var(--muted);text-decoration:none;padding:5px 0;font-size:14.5px}
+  .fgrid a:hover{color:var(--accent)}
+  .fnote{max-width:640px;margin:0 auto;font-size:13px;line-height:1.65;padding-top:20px;border-top:1px solid var(--line)}
+  .fnote a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -341,36 +365,60 @@
 
   <main class="wrap">
     <section class="hero">
-      <h1>They searched your name. <span>The app still took a quarter of it.</span></h1>
-      <p class="sub">They tap <b>Order online</b> on your Google listing and every button there belongs to DoorDash or Grubhub. We put <b>your own link in that list</b>, plus a chat that answers questions and takes pickup orders, straight to your phone. No commission, both in the price.</p>
-      <p class="sub" style="margin-top:-10px">We also write the reply to every Google review and put the good ones up. Anything negative gets more care, not less: it lands on your phone with a reply already written, waiting for your OK. <b><span data-price>$199</span> a month</b>, flat, cancel any month.</p>
+      <h1>Take the order yourself. <span>Keep all of it.</span></h1>
+      <p class="sub">A chat on your site takes pickup orders straight to your phone. No app, no commission. We answer every Google review. And we give people a reason to come back.</p>
+      <p class="subprice"><b><span data-price>$199</span> a month.</b> Everything in. Cancel any month.</p>
       <div class="cta-row">
         <a class="btn" data-cta href="#start">Start for <span data-price>$199</span>/mo</a>
-        <a class="btn ghost" href="./commission.html">See what the apps cost you</a>
+        <a class="btn ghost" href="./start.html">Answer 10 questions instead</a>
       </div>
-      <div class="hero-proof">
-        <div class="stat"><b>$10<small>gone</small></b><span>what a 25% commission takes from a $40 order</span></div>
-        <div class="stat"><b>3<small>to 5%</small></b><span>what an independent restaurant nets, before that</span></div>
-        <div class="stat"><b>0<small>percent</small></b><span>what an order through your own link costs you</span></div>
-      </div>
-      <p class="proof-note">Commission is DoorDash's published middle rate, margin is the commonly cited range for independent restaurants. Estimates for comparison, not quotes. Keep the apps for strangers: this is about the regulars. <a href="./commission.html" style="color:var(--accent);font-weight:700">See the whole sum →</a></p>
-      <p class="trust" style="margin-top:14px"><a href="./how.html" style="color:var(--accent);font-weight:700">Watch a review come in and get answered →</a></p>
-      <p class="trust">No contract • Cancel any month • Usually live within two business days</p>
+      <p class="trust">No contract &bull; Usually live within two business days</p>
     </section>
 
-    <div class="getstrip" style="margin-top:0">
-      <div class="gs-lbl">All of this, in the one price</div>
-      <ul>
-        <li>A reply to <b>every</b> Google review, good ones posted by us</li>
-        <li>Your QR code, so <b>every</b> diner gets asked</li>
-        <li><b>8</b> social posts, written and put up</li>
-        <li>Your own ordering link on your Google listing, <b>above the apps</b></li>
-        <li>Offers and photos put on your Google listing</li>
-        <li>A chat on your site that answers your regular questions</li>
-        <li>Pickup orders texted straight to your phone, <b>no commission</b></li>
-        <li>One page on what your reviews are saying</li>
-      </ul>
-    </div>
+    <section class="three">
+      <h2 class="section-title">Three things, that is all</h2>
+      <p class="section-sub">Everything below is in the one price. Nothing is sold on top of it.</p>
+      <div class="vgrid">
+
+        <div class="val">
+          <span class="ico" aria-hidden="true">🍕</span>
+          <h3>1. Orders come to you</h3>
+          <p class="lead">Not to DoorDash. To your phone.</p>
+          <ul>
+            <li><b>Your own link on Google.</b> When somebody taps Order online on your listing, your name is in that list, marked as the one you would rather they used.</li>
+            <li><b>A chat on your website.</b> It answers questions you get asked all day, and takes pickup orders.</li>
+            <li><b>The order arrives as a text.</b> From the diner's real number. They pay when they pick up, so there is no card machine and no commission.</li>
+          </ul>
+          <a class="more" href="./chat-demo.html">Try it on a demo restaurant →</a>
+          <a class="more" href="./commission.html">Why the apps get your regulars →</a>
+        </div>
+
+        <div class="val">
+          <span class="ico" aria-hidden="true">⭐</span>
+          <h3>2. Reviews get answered</h3>
+          <p class="lead">Every one. In your words.</p>
+          <ul>
+            <li><b>We write the reply</b> and put the good ones up for you.</li>
+            <li><b>Anything negative gets more care, not less.</b> It reaches your phone with a calm reply already written, and waits. Nothing goes up until you say so.</li>
+            <li><b>Your QR code asks every diner</b>, not only the angry ones.</li>
+          </ul>
+          <a class="more" href="./how.html">Watch one get answered →</a>
+        </div>
+
+        <div class="val">
+          <span class="ico" aria-hidden="true">🔁</span>
+          <h3>3. People come back</h3>
+          <p class="lead">The second visit is where the money is.</p>
+          <ul>
+            <li><b>A loyalty card in the chat.</b> Order five times, the sixth garlic bread is free. You pick the number and the reward.</li>
+            <li><b>An offer that knows the day.</b> Two for one on Tuesday shows on Tuesday, and takes itself down after.</li>
+            <li><b>8 social posts a month</b>, plus offers and photos on your Google listing.</li>
+          </ul>
+          <a class="more" href="./chat-demo.html">See the card and the offer →</a>
+        </div>
+
+      </div>
+    </section>
 
     <section class="sample">
       <h2 class="section-title">Here's a reply. Judge the writing yourself.</h2>
@@ -538,8 +586,30 @@
   </main>
 
   <footer class="wrap">
-    <p><b data-brand>ReplyPlate</b>. Google reviews answered and social posts written, for independent restaurants. <span data-price>$199</span> a month, no contract. Run from the US by one person who answers his own email.</p>
-    <p style="margin-top:6px"><a href="./how.html" style="color:var(--accent)">Watch it work</a> · <a href="./connect.html" style="color:var(--accent)">Setup guide</a> · <a href="./qr-code.html" style="color:var(--accent)">Make your code</a> · <a href="./till.html" style="color:var(--accent)">Receipts guide</a> · <a href="./details.html" style="color:var(--accent)">Costs and questions</a> · <a href="./chat-demo.html" style="color:var(--accent)">Chat and ordering</a> · <a href="./commission.html" style="color:var(--accent)">What the apps cost</a> · <a href="./start.html" style="color:var(--accent)">Get started</a> &middot; <a href="./websites.html" style="color:var(--accent)">Websites we build</a> · <a data-email href="#">hello@example.com</a></p>
+    <div class="fgrid">
+      <div>
+        <b>Start here</b>
+        <a href="./index.html">What it does</a>
+        <a href="./start.html">The ten questions</a>
+        <a href="./details.html">Costs and questions</a>
+        <a href="./commission.html">Why your regulars cost you</a>
+      </div>
+      <div>
+        <b>See it working</b>
+        <a href="./chat-demo.html">A demo restaurant</a>
+        <a href="./how.html">A review, answered</a>
+        <a href="./websites.html">Websites we build</a>
+      </div>
+      <div>
+        <b>For clients</b>
+        <a href="./connect.html">Setting up</a>
+        <a href="./qr-code.html">Make your code</a>
+        <a href="./till.html">Codes on receipts</a>
+      </div>
+    </div>
+    <p class="fnote"><b data-brand>ReplyPlate</b>. Google reviews answered, pickup orders taken, and people brought
+      back, for independent restaurants. <span data-price>$199</span> a month, no contract. Run from the US by one
+      person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
   <script>
@@ -729,36 +799,6 @@
     io.observe(card);
 
     if (replay) replay.addEventListener("click", write);
-  })();
-
-  /* Stat numbers count up when they arrive. */
-  (function () {
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || !("IntersectionObserver" in window)) return;
-    var nums = [].slice.call(document.querySelectorAll(".hero-proof .stat b"));
-    if (!nums.length) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        io.unobserve(e.target);
-        var b = e.target;
-        /* Keep whatever sits around the number, so "$10" counts up as money and
-           not as a bare 10. And refuse to animate a zero: counting up to it
-           would land on 1 and stop there, which is how "0 percent" turned into
-           "1 percent" the first time this ran. */
-        var m = String(b.firstChild.nodeValue).match(/^(\D*)(\d+)(\D*)$/);
-        if (!m) return;
-        var pre = m[1], target = parseInt(m[2], 10), post = m[3];
-        if (!(target > 0)) return;
-        var n = 0, step = Math.max(40, Math.round(420 / target));
-        (function tick() {
-          n += 1;
-          b.firstChild.nodeValue = pre + n + post;
-          if (n < target) setTimeout(tick, step);
-        })();
-      });
-    }, { threshold: 0.6 });
-    nums.forEach(function (n) { io.observe(n); });
   })();
 
   tileGrid("steps", "steppanel", [
