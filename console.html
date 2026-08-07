@@ -93,6 +93,13 @@
              single-line input strips newlines rather than replacing them, which
              fuses two tapped answers into one run-on word. -->
         <textarea id="cDirect" class="in" rows="2" placeholder="What could you give someone who orders direct? (goes on the Google listing link)"></textarea>
+        <select id="cPrepayAsk" class="in">
+          <option value="">Pay before pickup: not answered</option>
+          <option value="No, they pay at the counter">No, they pay at the counter</option>
+          <option value="Yes, I have a payment link">Yes, I have a payment link</option>
+          <option value="Tell me more first">Tell me more first</option>
+        </select>
+        <input id="cPrepay" class="in" type="url" placeholder="Their payment link, if they said yes (https://...). Their money, never ours." />
 
         <p class="qn">9. Your opening hours</p>
         <textarea id="cHours" class="in" rows="4" placeholder="Mon closed&#10;Tue to Thu 5pm to 10pm&#10;Fri and Sat 12pm to 11pm&#10;Sun 12pm to 8pm"></textarea>
@@ -326,13 +333,9 @@
         <div class="row">
           <input id="chCurrency" class="in" style="width:90px;margin-bottom:0" placeholder="$" value="$" />
         </div>
-        <p class="qn">Paying before pickup <b class="qwarn">Optional. Their payment link, their money.</b></p>
-        <p class="hint" style="margin-bottom:8px">Leave this empty and diners pay at the counter, which is the
-          default and what the site promises. Paste the restaurant's own payment link here and the chat offers
-          a Pay now button after the order has already gone to their phone. Use a link that lets the customer
-          type the amount, and the money goes straight to the restaurant. It never comes near us.</p>
+        <p class="hint" style="margin-bottom:10px">Paying before pickup is question 8 on the Clients tab, because
+          it is the owner's decision rather than a setting. Leave it and diners pay at the counter.</p>
         <div class="row">
-          <input id="chPrepay" class="in" style="flex:1;min-width:200px;margin-bottom:0" placeholder="https://buy.stripe.com/... (leave empty for pay on arrival)" />
           <button class="btn" id="chGo" type="button">Write the answers</button>
         </div>
       </div>

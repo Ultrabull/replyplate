@@ -53,13 +53,14 @@
        hours on another restaurant's website. */
     cOwner: $("cOwner"), cNever: $("cNever"), cFaq: $("cFaq"), cPickup: $("cPickup"),
     cOrders: $("cOrders"), cDirect: $("cDirect"), cHours: $("cHours"), cNotes: $("cNotes"),
+    cPrepayAsk: $("cPrepayAsk"), cPrepay: $("cPrepay"),
     wlNumber: $("wlNumber"), wlPost: $("wlPost"), wlHours: $("wlHours"), wlCap: $("wlCap"),
     wlClients: $("wlClients"), wlManual: $("wlManual"), wlAdd: $("wlAdd"), wlUndo: $("wlUndo"),
     ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
     ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
     ocGo: $("ocGo"), ocOut: $("ocOut"),
-    chPrepay: $("chPrepay"), chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
+    chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
     chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chMethod: $("chMethod"), chCurrency: $("chCurrency"),
     chLoyEvery: $("chLoyEvery"), chLoyReward: $("chLoyReward"),
     chOffText: $("chOffText"), chOffSub: $("chOffSub"), chOffDays: $("chOffDays"),
@@ -273,13 +274,15 @@
     dom.cFaq.value = c.faq || ""; dom.cPickup.value = c.pickup || "";
     dom.cOrders.value = c.orderPhone || ""; dom.cDirect.value = c.directOffer || "";
     dom.cHours.value = c.hours || ""; dom.cNotes.value = c.ownerNotes || "";
+    dom.cPrepayAsk.value = c.prepayAsk || ""; dom.cPrepay.value = c.prepay || "";
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function clearClientForm() {
     editingClientId = null;
     [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90,
      dom.cPhone, dom.cEmail, dom.cOwner, dom.cNever, dom.cFaq, dom.cPickup,
-     dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes].forEach((i) => i.value = "");
+     dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes,
+     dom.cPrepayAsk, dom.cPrepay].forEach((i) => i.value = "");
   }
   function saveClient() {
     const name = dom.cName.value.trim();
@@ -289,7 +292,8 @@
       ownerName: dom.cOwner.value.trim(), neverSay: dom.cNever.value.trim(),
       faq: dom.cFaq.value.trim(), pickup: dom.cPickup.value,
       orderPhone: dom.cOrders.value.trim(), directOffer: dom.cDirect.value.trim(),
-      hours: dom.cHours.value.trim(), ownerNotes: dom.cNotes.value.trim() };
+      hours: dom.cHours.value.trim(), ownerNotes: dom.cNotes.value.trim(),
+      prepayAsk: dom.cPrepayAsk.value, prepay: dom.cPrepay.value.trim() };
     if (editingClientId) {
       const c = state.clients.find((x) => x.id === editingClientId);
       if (c) Object.assign(c, data);
@@ -329,7 +333,8 @@
 
   const QZ_KEYS = ["Restaurant", "Where", "Your name", "Mobile", "Email", "What you sell",
     "Voice", "More on the voice", "Never say", "Google listing", "Questions you get asked",
-    "Pickup ordering", "Orders go to", "For ordering direct", "Hours", "Anything else"];
+    "Pickup ordering", "Orders go to", "For ordering direct", "Pay before pickup", "Payment link",
+    "Hours", "Anything else"];
 
   function parseQuestionnaire(raw) {
     /* Forwarded and replied-to mail arrives quoted, every line prefixed with
@@ -410,6 +415,8 @@
     put(dom.cPickup,  d["Pickup ordering"]);
     put(dom.cOrders,  d["Orders go to"]);
     put(dom.cDirect,  d["For ordering direct"]);
+    put(dom.cPrepayAsk, d["Pay before pickup"]);
+    put(dom.cPrepay,  d["Payment link"]);
     put(dom.cHours,   d["Hours"]);
     put(dom.cNotes,   d["Anything else"]);
 
@@ -848,10 +855,15 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       /* The card only exists when the owner has set both halves of it. A
          threshold with no reward, or a reward with no threshold, is a promise
          nobody can keep. */
-      /* Only ever present when the owner typed one. An absent key means pay on
-         arrival, which is what every restaurant gets unless they ask otherwise. */
-      const prepay = (dom.chPrepay ? dom.chPrepay.value : "").trim();
-      if (/^https:\/\/\S+$/.test(prepay)) cfg.order.prepay = prepay;
+      /* Question 8 asks the owner whether they want this. Both halves must
+         agree before it reaches a diner: they have to have said yes AND given a
+         link. A link with the answer left blank is somebody's half-finished
+         thought, not a decision, and an absent key means paying at the counter,
+         which is what every restaurant gets unless they ask otherwise. */
+      const prepay = (client.prepay || "").trim();
+      if (/^yes/i.test(client.prepayAsk || "") && /^https:\/\/\S+$/.test(prepay)) {
+        cfg.order.prepay = prepay;
+      }
 
       const every = parseInt(dom.chLoyEvery.value, 10) || 0;
       const reward = dom.chLoyReward.value.trim();

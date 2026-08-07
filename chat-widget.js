@@ -394,7 +394,7 @@
     if (!LOY) return "";
     var have = loyGet(), need = +LOY.every, left = need - have;
     var reward = LOY.reward || "something on the house";
-    if (left <= 1) return "This one earns you " + reward + ". Mention it when you collect.";
+    if (left <= 1) return "This one earns you " + reward + ". Mention it when you pick up.";
     return have === 0
       ? "Order " + need + " times and get " + reward + "."
       : have + " of " + need + ". " + (left - 1 === 0 ? "Next one" : left - 1 + " more") + " and you get " + reward + ".";
@@ -575,7 +575,7 @@
 
   /* Paying before pickup, when the restaurant wants it.
 
-     Off unless the restaurant sets order.prepay, and paying on collection stays
+     Off unless the restaurant sets order.prepay, and paying at pickup stays
      the default everywhere else, because "no card machine to set up" is a real
      part of what this is. When it is on, the money goes straight to the
      restaurant through their own payment link. Nothing here ever touches it,
