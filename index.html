@@ -111,12 +111,30 @@
      this does after four seconds on the page, and a flat list of features never
      let them. */
   .vgrid{display:grid;grid-template-columns:1fr;gap:16px}
-  @media (min-width:820px){.vgrid{grid-template-columns:repeat(3,1fr)}}
+  @media (min-width:820px){
+    .vgrid{grid-template-columns:repeat(3,1fr)}
+    /* a group of two should not leave a hole where a third would be */
+    .vgrid:has(.val:nth-child(2):last-child){grid-template-columns:repeat(2,1fr)}
+  }
   .val{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 22px;
     display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s}
   .val:hover{transform:translateY(-3px);border-color:var(--accent2)}
   .val .ico{font-size:30px;line-height:1;margin-bottom:12px}
-  .val h3{font-size:20px;letter-spacing:-.2px;margin-bottom:4px}
+  .val h3{font-size:20px;letter-spacing:-.2px;margin-bottom:4px;display:flex;align-items:baseline;gap:10px}
+  /* The number is the point of this section: an owner counting what the price
+     buys. Small, quiet, and never bigger than the thing it is numbering. */
+  .val h3 i{flex:none;font-style:normal;font-size:12px;font-weight:800;letter-spacing:.04em;
+    color:var(--accent);background:rgba(176,61,41,.12);border-radius:999px;
+    width:24px;height:24px;display:grid;place-items:center;transform:translateY(-2px)}
+  .val p{color:var(--muted);font-size:14.5px;line-height:1.6;margin-bottom:14px}
+  .val p.lead{margin-bottom:10px}
+  .vgroup{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin:34px 0 12px}
+  .vgroup:first-of-type{margin-top:4px}
+  .vgrid + .vgroup{margin-top:38px}
+  .vfoot{margin-top:30px;padding:18px 20px;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;color:var(--muted);font-size:14.5px;line-height:1.6}
+  .vfoot b{color:var(--ink)}
   .val .lead{color:var(--accent);font-weight:700;font-size:15px;margin-bottom:14px}
   .val ul{list-style:none;display:grid;gap:12px;margin:0 0 16px;padding:0}
   .val li{color:var(--muted);font-size:14.5px;line-height:1.55;position:relative;padding-left:20px}
@@ -380,50 +398,76 @@
       <p class="trust">Usually live within two business days</p>
     </section>
 
+    <!-- Seven, numbered, because the question an owner is actually asking is
+         "what am I paying for" and the honest answer is a list they can count.
+         Three groups keep it from reading as a wall. -->
     <section class="three">
-      <h2 class="section-title">Three things, that is all</h2>
-      <p class="section-sub">Everything below is in the one price. Nothing is sold on top of it.</p>
+      <h2 class="section-title">Seven things, one price</h2>
+      <p class="section-sub">All of it is in the <span data-price>$199</span> a month. Nothing is sold on top of it.</p>
+
+      <p class="vgroup">Your name online</p>
       <div class="vgrid">
-
-        <div class="val">
-          <span class="ico" aria-hidden="true">🍕</span>
-          <h3>1. Orders come to you</h3>
-          <p class="lead">Two ways in. Both skip the apps.</p>
-          <ul>
-            <li><b>From Google Maps.</b> Somebody looks you up and taps <b>Order online</b>. Today that list is DoorDash, Grubhub and Uber Eats. We put your name in it too, marked as the one you would rather they used. Tapping it opens your menu.</li>
-            <li><b>From your website.</b> A chat button answers questions you get asked all day, and takes pickup orders.</li>
-            <li><b>No website? Two ways round it.</b> We build you an ordering page and host it free. You paste the link we give you into Google, and you are in that list. Or we build you a proper website, with your photos and your own address, and the chat and the ordering already on it. <a href="./websites.html">See what we build →</a></li>
-            <li><b>The order arrives as a text</b> from the diner's real number. They pay when they pick up, so no card machine, no chargebacks, no commission.</li>
-          </ul>
-          <a class="more" href="./chat-demo.html">Try it on a demo restaurant →</a>
-          <a class="more" href="./commission.html">Why the apps get your regulars →</a>
-        </div>
-
         <div class="val">
           <span class="ico" aria-hidden="true">⭐</span>
-          <h3>2. Reviews get answered</h3>
-          <p class="lead">Every one. In your words.</p>
-          <ul>
-            <li><b>We write the reply</b> and put the good ones up for you.</li>
-            <li><b>Anything negative gets more care, not less.</b> It reaches your phone with a calm reply already written, and waits. Nothing goes up until you say so.</li>
-            <li><b>Your QR code asks every diner</b>, not only the angry ones.</li>
-          </ul>
-          <a class="more" href="./how.html">Watch one get answered →</a>
+          <h3><i>1</i> Your reviews get answered</h3>
+          <p class="lead">Every one, in your words.</p>
+          <p>We write the reply and put the good ones up. Anything negative gets more care, not less: it reaches your phone with a calm reply already written, and waits. Nothing goes up until you say so.</p>
+          <a class="more" href="./how.html">Watch one get answered &rarr;</a>
         </div>
+        <div class="val">
+          <span class="ico" aria-hidden="true">🎟</span>
+          <h3><i>2</i> Every diner gets asked</h3>
+          <p class="lead">Not only the happy ones.</p>
+          <p>Your own code on table cards, takeaway bags and receipts, so the people who had a good night are as likely to say so as the one who did not. Asking only the happy ones is against Google's rules and they punish the restaurant for it.</p>
+          <a class="more" href="./qr-code.html">See the code and the cards &rarr;</a>
+        </div>
+        <div class="val">
+          <span class="ico" aria-hidden="true">📄</span>
+          <h3><i>3</i> A report once a month</h3>
+          <p class="lead">What a month of reviews actually said.</p>
+          <p>Written for somebody running a kitchen, not an analyst. What people keep praising, what keeps coming up, and the one thing worth fixing next month.</p>
+        </div>
+      </div>
 
+      <p class="vgroup">Orders, without the apps</p>
+      <div class="vgrid">
+        <div class="val">
+          <span class="ico" aria-hidden="true">🍕</span>
+          <h3><i>4</i> Orders come to your phone</h3>
+          <p class="lead">Two ways in. Both skip the apps.</p>
+          <p><b>From Google Maps.</b> Somebody taps <b>Order online</b> and that list is DoorDash, Grubhub and Uber Eats. We put your name in it too, marked as the one you would rather they used. <b>From your website</b>, through the chat. Either way the order arrives as a text from the diner's real number, and they pay when they pick up. No card machine, no chargebacks, no commission.</p>
+          <a class="more" href="./chat-demo.html">Try it on a demo restaurant &rarr;</a>
+          <a class="more" href="./commission.html">Why the apps get your regulars &rarr;</a>
+        </div>
+        <div class="val">
+          <span class="ico" aria-hidden="true">💬</span>
+          <h3><i>5</i> The questions get answered</h3>
+          <p class="lead">The ones you are asked all day.</p>
+          <p>Are you open Mondays, do you do vegan, is there parking, can I bring the dog. The chat only ever says what you told us to say, so it cannot invent a policy you do not have.</p>
+          <a class="more" href="./chat-demo.html">Ask it something &rarr;</a>
+        </div>
+      </div>
+
+      <p class="vgroup">Getting them back</p>
+      <div class="vgrid">
         <div class="val">
           <span class="ico" aria-hidden="true">🔁</span>
-          <h3>3. People come back</h3>
+          <h3><i>6</i> A reason to come back</h3>
           <p class="lead">The second visit is where the money is.</p>
-          <ul>
-            <li><b>A loyalty card in the chat.</b> Order five times, the sixth garlic bread is free. You pick the number and the reward.</li>
-            <li><b>An offer that knows the day.</b> Two for one on Tuesday shows on Tuesday, and takes itself down after.</li>
-            <li><b>8 social posts a month</b>, plus offers and photos on your Google listing.</li>
-          </ul>
-          <a class="more" href="./chat-demo.html">See the card and the offer →</a>
+          <p><b>A loyalty card in the chat.</b> Order five times, the sixth garlic bread is free. You pick the number and the reward. <b>And an offer that knows the day.</b> Two for one on Tuesday shows on Tuesday, and takes itself down after.</p>
+          <a class="more" href="./chat-demo.html">See the card and the offer &rarr;</a>
         </div>
-
+        <div class="val">
+          <span class="ico" aria-hidden="true">📣</span>
+          <h3><i>7</i> Your posts get written</h3>
+          <p class="lead">So the page is not three years old.</p>
+          <p>Eight social posts a month for Instagram and Facebook, plus offers and news on your Google listing, where people are already looking you up.</p>
+        </div>
       </div>
+
+      <p class="vfoot"><b>And if you need a website</b>, we build one with the chat and the ordering already in it,
+        <span data-webprice>$1,200</span> once, no monthly fee for the site itself. No website today? We host your
+        ordering page free, so the Google route works from day one. <a href="./websites.html">See what we build &rarr;</a></p>
     </section>
 
     <section class="sample">
