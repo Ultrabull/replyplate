@@ -1,127 +1,165 @@
 # Photos and video for the demo restaurant
 
-Drop files in this folder and they appear on `chat-demo.html` on their own.
-Nothing to edit, nothing to rebuild, no code to touch.
+Put a file in this folder with one of the names below and it takes over its
+slot on the next page load. Nothing else to change, no code to touch.
 
-Leave the folder empty and the page still looks finished, because every picture
-slot has a drawing behind it. The browser fails to find the file, the page
-quietly removes the empty tag, and the drawing shows through.
-
-That is the whole point. **No slot can ever render as a broken image icon in
-front of a prospect.**
+Every slot has a drawing behind it, so a missing file is never a hole in the
+page. That is why you can add them one at a time and see each one land.
 
 ---
 
-## The files it looks for
+## The whole list
 
-Exact names. Anything else is ignored.
+Eleven photographs and two short clips.
 
-| File | Where it lands | Size to aim for |
-|---|---|---|
-| `hero.jpg` | Behind the restaurant name, full screen | 2000 x 1400 |
-| `hero.mp4` | Same place, and it wins over `hero.jpg` | 1600 x 1000, under 10 seconds |
-| `margherita.jpg` | First dish card | 1000 x 800 |
-| `pepperoni.jpg` | Second dish card | 1000 x 800 |
-| `vegan.jpg` | Third dish card | 1000 x 800 |
-| `oven.mp4` | The wide moving band in the middle | 1600 x 900, under 10 seconds |
-| `oven.jpg` | Same band, if you have no clip | 1600 x 900 |
-| `gallery-1.jpg` | Big tile, top left. The oven, lit, with a pizza going in | 1400 x 1400 |
-| `gallery-2.jpg` | A slice lifted, cheese still attached | 900 x 900 |
-| `gallery-5.jpg` | The counter, bottles and glasses | 900 x 900 |
-| `gallery-3.jpg` | A table laid for two, from above | 900 x 900 |
-| `gallery-4.jpg` | Dough being stretched on the bench | 900 x 900 |
-| `room.jpg` | The wide strip across the bottom. The dining room, busy | 2100 x 700 |
+| File | Where it goes | Size | Shape |
+|---|---|---|---|
+| `hero.jpg` | Full screen, behind the restaurant name | 2400 x 1600 | landscape |
+| `hero.mp4` | Same place, and it beats `hero.jpg` | 1920 x 1080, 6 to 10 sec | landscape |
+| `margherita.jpg` | "On tonight", first card | 1200 x 960 | 5:4 |
+| `pepperoni.jpg` | "On tonight", second card | 1200 x 960 | 5:4 |
+| `vegan.jpg` | "On tonight", third card | 1200 x 960 | 5:4 |
+| `oven.jpg` | The wide band with the quote across it | 2400 x 800 | very wide |
+| `oven.mp4` | Same band, and it beats `oven.jpg` | 1920 x 640, 6 to 10 sec | very wide |
+| `gallery-1.jpg` | Gallery, big tile top left | 1400 x 1400 | square |
+| `gallery-2.jpg` | Gallery | 1000 x 1000 | square |
+| `gallery-3.jpg` | Gallery | 1000 x 1000 | square |
+| `gallery-4.jpg` | Gallery | 1000 x 1000 | square |
+| `gallery-5.jpg` | Gallery | 1000 x 1000 | square |
+| `room.jpg` | The wide strip across the bottom of the gallery | 2100 x 700 | very wide |
 
-Every tile has a drawing behind it, so a missing file is never a hole in the
-page. Drop a real photograph in under one of these names and it takes over its
-tile on the next load, with nothing else to change.
-
-The drawings are composed for the middle of the frame on purpose: the tiles are
-square on a phone, so only the centre of a wide image is ever seen. Crop real
-photographs the same way, with the subject centred, or a phone will cut the
-best part off.
-
-Keep every photo **under 400 KB** and every clip **under 4 MB**. A restaurant
-site that takes four seconds to load has already lost the person standing
-outside deciding.
+Keep every file under about 400KB, and the videos under about 3MB. The site has
+no server behind it, so a heavy file is felt straight away on a phone.
 
 ---
 
-## Making them with AI
+## Two rules that matter more than the prompt
 
-Any image tool will do. The thing that separates a good result from an obviously
-fake one is asking for a **real camera and real light**, not "professional food
-photography", which produces the plastic look everybody recognises.
+**Put the subject in the middle.** The gallery tiles are square on a phone, so
+only the centre of a wide photograph is ever seen. A beautiful shot with the
+pizza off to one side will show a wall.
 
-Paste these in as they are.
-
-**Hero**
-
-> A wood-fired pizza oven at night, orange fire visible inside the mouth,
-> dark brick around it, shot on a 35mm lens at f/2, warm light falling off
-> into shadow, slight grain, no people, no text
-
-**Margherita**
-
-> A margherita pizza on a dark steel counter, straight from a wood oven,
-> charred blistered crust, melted mozzarella, fresh basil, shot from directly
-> above on a 50mm lens, one warm light from the left, slight grain
-
-**Pepperoni**
-
-> A pepperoni pizza from above on a dark counter, the pepperoni cupped and
-> crisp at the edges, charred crust, one warm light from the left, 50mm,
-> slight grain
-
-**Vegan**
-
-> A vegan pizza from above, pale cashew cream base, ribbons of roasted
-> zucchini, green salsa verde drizzled over it, no cheese, dark counter,
-> warm light from the left, 50mm
-
-**Room**
-
-> The inside of a small family Italian restaurant at 8pm, warm pendant lights,
-> a few full tables, out of focus in the background, shot on a 35mm lens at
-> f/1.8, no faces recognisable, film grain
-
-**Gallery, five of them**
-
-> Close up of dough being stretched by hand on a floured wooden bench, flour
-> dust in the air, warm side light, 50mm, shallow depth of field
-
-Change the food to match whatever the real restaurant sells.
+**Keep them all in the same light.** One warm light source, dark surroundings,
+the same wooden table. Twelve pictures that agree with each other look
+expensive. Twelve good pictures that disagree look like a stock photo folder.
 
 ---
 
-## For a real restaurant, do not use AI
+## The prompts
 
-For a paying client these have to be **their** food. A picture of a pizza that
-is not theirs is the fastest way to lose the trust the rest of the site is
-trying to build, and a diner who orders the pizza in the photo and gets a
-different one leaves a one star review about it.
+Paste these into whatever image tool you use. The first paragraph of each is
+the shot. The line after it is the house style, and it should go on every one.
 
-The good news is a phone is enough. Three rules get 90% of the way:
+**The house style line, add to every prompt:**
 
-1. **Stand by a window in the daytime.** Never use the flash and never shoot
-   under the kitchen strip lights. Daylight from the side is what makes food
-   look like food.
-2. **Shoot from directly above for anything flat**, pizza and bowls, and from
-   about 30 degrees for anything with height.
-3. **Wipe the plate rim.** It is the single most common thing that makes a real
-   photo look amateur.
+> Shot on a 50mm lens at f/2, warm tungsten and firelight, deep shadows, dark
+> wood and blackened steel surroundings, moody and appetising, natural food
+> styling with real imperfections, no text, no watermark, no people's faces.
 
-Ten minutes on a quiet afternoon gets a whole gallery.
+### hero.jpg — full screen behind the name
+
+> A wood-fired brick pizza oven glowing orange in a dark restaurant, seen head
+> on from a few steps back. Flames visible inside the mouth of the oven. A long
+> wooden peel resting against the wall. Warm light pooling on the floor in front
+> of it, everything else falling into shadow. Room for text across the middle.
+
+### hero.mp4 — the same, moving
+
+> Slow steady push in towards the mouth of a glowing wood-fired pizza oven in a
+> dark restaurant. Flames flicker, embers drift. Camera barely moves. No cuts.
+> Six to ten seconds, loops cleanly.
+
+### margherita.jpg — first dish card
+
+> A margherita pizza straight out of a wood-fired oven on a dark wooden board,
+> shot from directly above. Blistered charred crust, molten mozzarella in
+> uneven pools, torn fresh basil, a thin thread of olive oil. Slightly off
+> centre. Steam still rising.
+
+### pepperoni.jpg — second dish card
+
+> A pepperoni pizza from above on a dark wooden board. The pepperoni has cupped
+> and crisped at the edges with oil pooling in each cup. Charred leopard
+> spotting on the crust. One slice already lifted away.
+
+### vegan.jpg — third dish card
+
+> A vegan pizza from above on a dark wooden board. Pale cashew cream base
+> instead of mozzarella, bright green salsa verde spooned over, roasted
+> vegetables, no cheese. It should look deliberately different from the other
+> two, not like a pizza with something missing.
+
+### oven.jpg — the wide band with the quote over it
+
+> Very wide letterbox shot of the inside of a wood-fired oven, embers glowing
+> on the floor of it, one pizza cooking near the flames. Dark at both ends of
+> the frame, bright in the middle, so white text can sit across it and stay
+> readable.
+
+### oven.mp4 — the same band, moving
+
+> Very wide letterbox shot inside a wood-fired oven. A pizza cooking beside the
+> flames, the crust puffing, embers glowing and shifting. Locked off camera, no
+> movement, no cuts. Six to ten seconds, loops cleanly. Dark at both ends,
+> bright in the middle.
+
+### gallery-1.jpg — big tile, top left
+
+> A baker sliding a raw pizza off a long wooden peel into a glowing wood-fired
+> oven. Hands and forearms only, no face. Sparks and flour in the air. Square
+> crop with the mouth of the oven dead centre.
+
+### gallery-2.jpg — the money shot
+
+> A single slice of margherita being lifted away from the whole pizza, cheese
+> stretching in long strands between the slice and the pie. Shot from the side,
+> slightly above. Square crop, the stretch of cheese right in the middle.
+
+### gallery-3.jpg — food and drinks together
+
+> A dark wooden table from directly above, laid for two. A bowl of green and
+> black olives, a basket of garlic bread torn open and steaming, two glasses of
+> red wine, a cold bottle of San Pellegrino beaded with condensation, a lit
+> candle between them. Square crop, everything gathered into the middle.
+
+### gallery-4.jpg — the craft
+
+> Hands stretching a round of sourdough pizza dough on a floured wooden bench,
+> from directly above. Flour scattered, one resting dough ball beside it. Hands
+> and forearms only, no face. Square crop.
+
+### gallery-5.jpg — the counter
+
+> The back bar of a small restaurant. Bottles on a lit wooden shelf, wine
+> glasses hanging upside down over the counter, warm light pooling on the
+> wooden bar top. Square crop, the shelf and the glasses centred.
+
+### room.jpg — the wide strip
+
+> Very wide letterbox shot of a small busy restaurant dining room on a Friday
+> night. Pendant lamps glowing over wooden tables, candles lit, glasses and
+> plates on the tables, people blurred and unrecognisable in the background.
+> Warm and full without being crowded.
 
 ---
 
-## Video, if you want it
+## When they are in
 
-Short and quiet. Ten seconds, no sound, looping. Three that always work:
+Open the demo on a phone and scroll the whole way down. Look for two things:
 
-- Dough going into the oven and the flame jumping
-- The peel turning a pizza inside the oven
-- A pizza being cut, straight down from above
+1. **Anything cut off.** If a pizza has lost half of itself in a square tile,
+   recrop that one with the subject further into the middle.
+2. **Anything that jars.** One photo shot in daylight among eleven shot in
+   firelight will stand out more than a missing photo would.
 
-The page mutes and loops automatically, and it never plays sound. A restaurant
-site that makes noise at somebody in bed at 11pm is a site they close.
+---
+
+## Should a paying client get AI photographs?
+
+No. For the demo it is fine, because The Olive Table is not a real place and
+the page says so at the top.
+
+For a restaurant that is paying you, take real photographs or ask them for
+theirs. An AI picture of food they do not serve, on a website with their name
+on it, is a promise they cannot keep when the plate lands on the table. A
+phone camera near a window at 11am beats a perfect picture of the wrong dinner.
