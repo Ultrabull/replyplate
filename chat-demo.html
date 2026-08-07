@@ -9,8 +9,17 @@
 <meta name="robots" content="noindex" />
 <style>
   :root{
+    /* Dark, for the rooms lit by the oven */
     --ink:#f4eee2; --muted:#a99a80; --bg:#14100d; --panel:#1c1712; --line:#332920;
     --gold:#c9a24d; --deep:#0f0c0a;
+
+    /* Paper, for the rooms away from it. The page used to run the same near
+       black from the hero to the footer, so nothing felt like a separate part
+       of the building and it read as one long corridor. Every drawing on this
+       page carries its own dark background, so on paper they sit as dark
+       image tiles, which is exactly how photographs sit on a light site. */
+    --paper:#faf6ef; --paper2:#f2ebe0; --inkd:#221a13; --mutedd:#6b5b48;
+    --lined:#e4d9c7; --goldd:#8f6320;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --serif:Georgia,"Times New Roman",serif;
   }
@@ -19,19 +28,58 @@
   a{color:inherit}
   .wrap{max-width:1000px;margin:0 auto;padding:0 22px}
 
+  /* One class flips a section onto paper, and everything inside follows,
+     because the type colours are read from variables rather than hardcoded. */
+  .light{background:var(--paper);color:var(--inkd);
+    --ink:var(--inkd); --muted:var(--mutedd); --line:var(--lined);
+    --gold:var(--goldd); --panel:#fff; --bg:var(--paper); --deep:var(--paper2)}
+  .light2{background:var(--paper2)}
+  /* The join between a paper section and a dark one wants a hairline, or the
+     two grounds meet with a hard mechanical edge. */
+  .light + .light{border-top:1px solid var(--lined)}
+
   /* honest marker, deliberately outside the restaurant design */
-  .demobar{background:var(--gold);color:#1a1204;font-size:13px;font-weight:700;text-align:center;padding:9px 16px;line-height:1.45}
-  .demobar a{text-decoration:underline}
+  /* Honest, and deliberately outside the restaurant's design, but it used to be
+     the brightest thing on the page: full width gold, bold, above the fold, so
+     the first thing a prospect read was that none of this is real. It says the
+     same thing in a register that does not cap the whole page at "staging". */
+  .demobar{background:var(--deep);color:var(--muted);font-size:11px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:10px 16px;
+    line-height:1.5;border-bottom:1px solid var(--line)}
+  .demobar a{color:var(--gold);text-decoration:none;border-bottom:1px solid currentColor}
 
   header{position:sticky;top:0;z-index:20;background:rgba(20,16,13,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
   .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:15px;padding-bottom:15px}
-  .brand{font-family:var(--serif);font-size:21px;letter-spacing:.14em;text-transform:uppercase}
+  .brand{font-family:var(--serif);font-size:21px;letter-spacing:.14em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:11px;text-decoration:none}
+  .brand .mono{width:30px;height:30px;flex:none;color:var(--gold)}
+  footer .brand{flex-direction:column;gap:12px}
+  footer .brand .mono{width:38px;height:38px}
   .nav ul{display:flex;gap:24px;list-style:none;font-size:14.5px;letter-spacing:.03em}
   .nav a{text-decoration:none;color:var(--muted)}
   .nav a:hover{color:var(--gold)}
-  @media (max-width:640px){.nav ul{display:none}}
+  /* An Order button in the header, always reachable, only on small screens
+     where the sticky bottom bar has not appeared yet. */
+  .nav .navorder{display:none;align-items:center;background:var(--gold);color:#1a1204;
+    text-decoration:none;font-size:12.5px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;padding:9px 15px;border-radius:2px;min-height:38px}
 
-  .hero{position:relative;text-align:center;padding:76px 0 84px;overflow:hidden}
+  /* The nav used to be switched off below 640px, which left a phone with a
+     wordmark and 300px of nothing, and a phone is where this gets demonstrated.
+     No hamburger and no JS: the header becomes two rows, and the links scroll
+     sideways with a fade at the edge so it is obvious there are more. */
+  @media (max-width:640px){
+    .nav{flex-wrap:wrap;row-gap:10px;padding-bottom:10px}
+    .brand{font-size:18px;letter-spacing:.1em}
+    .nav ul{order:3;flex:0 0 100%;gap:20px;overflow-x:auto;scrollbar-width:none;
+      -webkit-overflow-scrolling:touch;padding-bottom:2px;font-size:13.5px;
+      -webkit-mask-image:linear-gradient(90deg,#000 84%,transparent);
+      mask-image:linear-gradient(90deg,#000 84%,transparent)}
+    .nav ul::-webkit-scrollbar{display:none}
+    .nav ul li{flex:0 0 auto}
+    .nav .navorder{display:inline-flex}
+  }
+
   .hero::before{content:"";position:absolute;inset:0;
     background:radial-gradient(80% 60% at 50% 0%,rgba(201,162,77,.16),transparent 68%),
                radial-gradient(50% 40% at 12% 88%,rgba(150,60,30,.20),transparent 70%);}
@@ -82,7 +130,10 @@
   .hours{list-style:none}
   .hours li{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
   .hours li span:last-child{color:var(--muted)}
-  .hours li.shut span:last-child{color:#c07a5e}
+  .hours li.shut span:last-child{color:#a8502f}
+  /* #c07a5e was tuned against the old dark ground and only reached 3.15
+     against paper, which is under the readable line for small text. */
+  section:not(.light) .hours li.shut span:last-child{color:#c07a5e}
 
   footer{background:var(--deep);border-top:1px solid var(--line);padding:44px 0 110px;text-align:center;color:var(--muted);font-size:14px}
   footer .brand{display:block;margin-bottom:12px;color:var(--ink)}
@@ -131,39 +182,7 @@
   @media (min-width:560px){.segs{grid-template-columns:repeat(3,1fr)}}
   .addons .seg{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;
     font:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:48px}
-  .addons .seg:hover{border-color:var(--accent2)}
-  .addons .seg[aria-checked="true"]{border-color:var(--accent);background:rgba(208,163,78,.16);box-shadow:inset 0 0 0 1px var(--accent)}
-  .addons .seg[aria-checked="true"] b::before{content:"\2713 ";color:var(--accent);font-weight:800}
-  .addons .seg b{display:block;font-size:14.5px}
-  .addons .seg span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
-  .addons .seghint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.55}
-  .addons .sumtot b.short{color:#e0705a}
-  .addons .slip{max-width:640px;margin:26px auto 0;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px}
-  .addons .slip h4{font-size:17px;margin-bottom:8px}
-  .addons .slip-intro{color:var(--muted);font-size:14.5px;margin-bottom:16px}
-  .addons .slip ul{list-style:none;display:grid;gap:14px}
-  .addons .slip li{position:relative;padding-left:26px;font-size:14.5px;color:var(--muted);line-height:1.6}
-  .addons .slip li::before{content:"→";position:absolute;left:0;top:0;color:var(--accent);font-weight:800}
-  .addons .slip li b{color:var(--ink);display:block;margin-bottom:2px}
-  .addons .slip-limit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);line-height:1.6}
-  .addons .slip-limit b{color:var(--ink)}
-  .addons .estimate{font-size:12.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.55}
-  .addons .ctl{margin-bottom:18px}
-  .addons .ctl label{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;color:var(--muted);margin-bottom:9px}
-  .addons .ctl label b{color:var(--accent);font-weight:800;font-size:16px;white-space:nowrap}
-  .addons .ctl input[type=range]{width:100%;height:34px;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer;display:block}
-  .addons .ctl input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:var(--line)}
-  .addons .ctl input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:var(--line)}
-  .addons .ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;
-    background:var(--accent);border:3px solid var(--bg);margin-top:-11px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  .addons .ctl input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--accent);
-    border:3px solid var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  .addons .ctl input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:999px}
-  .addons .segs{display:grid;grid-template-columns:1fr;gap:8px}
-  @media (min-width:560px){.segs{grid-template-columns:repeat(3,1fr)}}
-  .addons .seg{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 12px;
-    font:inherit;font-size:14px;text-align:left;cursor:pointer;min-height:48px}
-  .addons .seg:hover{border-color:var(--accent2)}
+  .addons .seg:hover{border-color:var(--gold)}
   .addons .seg[aria-checked="true"]{border-color:var(--accent);background:rgba(208,163,78,.16);box-shadow:inset 0 0 0 1px var(--accent)}
   .addons .seg[aria-checked="true"] b::before{content:"\2713 ";color:var(--accent);font-weight:800}
   .addons .seg b{display:block;font-size:14.5px}
@@ -586,6 +605,18 @@
       <rect width="600" height="300" filter="url(#fGrain)" opacity=".5"/>
     </symbol>
 
+    <symbol id="mono" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".55"/>
+      <path d="M12 30c6-11 16-16 24-16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <g fill="currentColor">
+        <ellipse cx="16.5" cy="26.5" rx="4.2" ry="2.5" transform="rotate(-38 16.5 26.5)"/>
+        <ellipse cx="23" cy="21.5" rx="4.2" ry="2.5" transform="rotate(-26 23 21.5)"/>
+        <ellipse cx="30" cy="18" rx="4.2" ry="2.5" transform="rotate(-14 30 18)"/>
+        <ellipse cx="19" cy="32" rx="3.6" ry="2.2" transform="rotate(28 19 32)"/>
+        <ellipse cx="26.5" cy="27" rx="3.6" ry="2.2" transform="rotate(20 26.5 27)"/>
+      </g>
+      <circle cx="35.5" cy="15" r="2.6" fill="currentColor"/>
+    </symbol>
     <!-- ── The oven, lit ────────────────────────────────────────────────────
          The gallery used to repeat the dining room twice under two different
          captions, and repeat the three menu pizzas underneath the menu itself.
@@ -772,18 +803,19 @@
   </svg>
 
   <div class="demobar">
-    A made-up restaurant, built to show the chat helper in place. Tap <b>Order food or ask us</b>, bottom right: it takes pickup orders and answers questions.
+    A demonstration site &middot; The Olive Table is not a real restaurant &middot;
     <a href="./index.html">Back to ReplyPlate</a>
   </div>
 
   <header><div class="wrap nav">
-    <div class="brand">The Olive Table</div>
+    <a class="brand" href="#top"><svg class="mono" aria-hidden="true"><use href="#mono"/></svg>The Olive Table</a>
     <ul>
       <li><a href="#menu">Menu</a></li>
       <li><a href="#hours">Hours</a></li>
       <li><a href="#find">Find us</a></li>
       <li><a href="#" data-rp-order style="color:var(--gold)">Order</a></li>
     </ul>
+    <a class="navorder" href="#" data-rp-order>Order</a>
   </div></header>
 
   <div class="hero">
@@ -861,7 +893,7 @@
     <div class="scrollcue" aria-hidden="true">Scroll</div>
   </div>
 
-  <section>
+  <section class="light">
     <div class="wrap">
       <div class="rule"></div>
       <h2 class="stitle" style="margin-top:22px">On tonight</h2>
@@ -916,7 +948,7 @@
     </div>
   </div>
 
-  <section>
+  <section class="light light2">
     <div class="wrap">
       <div class="rule"></div>
       <h2 class="stitle" style="margin-top:22px">The room, and the food in it</h2>
@@ -988,7 +1020,7 @@
     </div>
   </section>
 
-  <section id="hours">
+  <section id="hours" class="light">
     <div class="wrap two">
       <div>
         <h3>Where we came from</h3>
@@ -1075,7 +1107,7 @@
 
   <footer>
     <div class="wrap">
-      <span class="brand">The Olive Table</span>
+      <span class="brand"><svg class="mono" aria-hidden="true"><use href="#mono"/></svg>The Olive Table</span>
       214 Mill Street · (555) 010-2288
       <details class="about">
         <summary>What am I actually looking at?</summary>
