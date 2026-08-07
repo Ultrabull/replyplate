@@ -296,6 +296,50 @@
     .dish:hover .shot > .drawn,.dish:hover .shot > img{transform:none}
   }
 </style>
+<script>
+/* Media that will not load must not leave a broken icon on the page. The
+   drawing behind it is the fallback, so the img or video simply goes.
+
+   This lives in <head> on purpose. It used to sit at the bottom of the body,
+   which worked for the gallery, because those images are loading="lazy" and
+   fail long after the script has run. The hero image is eager: it failed
+   before the listener existed, and a broken-image icon sat in the top left
+   corner of the first thing anyone sees.
+
+   Two belts. The listener catches anything that fails from now on, and the
+   sweep catches anything that already failed before this ran. "error" does
+   not bubble, hence the capture phase. */
+(function () {
+  function isOurs(n) {
+    return n && n.parentNode &&
+      (n.closest(".shot") || n.closest(".band") || n.closest(".hero .bg"));
+  }
+  document.addEventListener("error", function (e) {
+    var n = e.target;
+    if (!n || !n.tagName) return;
+    var t = n.tagName.toLowerCase();
+    if (t === "source") n = n.parentNode;
+    else if (t !== "img" && t !== "video") return;
+    if (isOurs(n)) n.remove();
+  }, true);
+
+  function sweep() {
+    document.querySelectorAll(".shot img,.band img,.hero .bg img").forEach(function (n) {
+      if (n.complete && n.naturalWidth === 0 && isOurs(n)) n.remove();
+    });
+    /* A video with no readable source never fires "error" on the element in
+       every browser, so judge it on whether it ever got any dimensions. */
+    document.querySelectorAll(".shot video,.band video,.hero .bg video").forEach(function (n) {
+      if (n.readyState === 0 && !n.videoWidth && isOurs(n)) {
+        n.addEventListener("loadeddata", function () { n.dataset.ok = "1"; }, { once: true });
+        setTimeout(function () { if (!n.dataset.ok && isOurs(n)) n.remove(); }, 2500);
+      }
+    });
+  }
+  document.addEventListener("DOMContentLoaded", sweep);
+  window.addEventListener("load", sweep);
+})();
+</script>
 </head>
 <body>
   <!-- ── Drawn food, so the page is never empty and never 404s ──────────────
@@ -1129,42 +1173,14 @@
 </script>
 
 
+
 <script>
-/* ── Media, and what happens when there is none ──────────────────────────
-   Each picture slot ships with a drawing underneath and a real <img> or
-   <video> on top. The file usually is not there yet, so the browser fires an
-   error on it. We take the tag out and the drawing shows. Put the photo in
-   assets/ and it simply appears, with nothing to change here.
-
-   Capture is on because a <video> reports its failure on the inner <source>,
-   which does not bubble. */
+/* Restored after a bad edit. Moving the media guard into <head> took this
+   block out with it, and it carries three separate jobs that have nothing to
+   do with media: the opening-hours line, the sticky order bar, and the scroll
+   reveal. Losing the last of those left .rv at opacity 0 with nothing to turn
+   it on, so the three dish cards and all six gallery tiles rendered blank. */
 (function () {
-  document.addEventListener("error", function (e) {
-    var n = e.target;
-    if (!n || !n.tagName) return;
-    var t = n.tagName.toLowerCase();
-    if (t === "source") n = n.parentNode;
-    else if (t !== "img" && t !== "video") return;
-    if (n && n.parentNode && (n.closest(".shot") || n.closest(".band") || n.closest(".hero .bg"))) {
-      n.remove();
-    }
-  }, true);
-
-  /* A <video> with a missing file sometimes settles quietly rather than
-     erroring, so check once the page has loaded and clear it either way. */
-  /* A video with preload="none" can still be deciding at the load event, so
-     sweep once at load and once again a moment later. The error listener above
-     catches anything that fails after both. */
-  function sweepVideos() {
-    document.querySelectorAll("video").forEach(function (v) {
-      if (v.networkState === 3 /* NETWORK_NO_SOURCE */ || (!v.videoWidth && v.readyState === 0)) v.remove();
-    });
-  }
-  window.addEventListener("load", function () {
-    sweepVideos();
-    setTimeout(sweepVideos, 2500);
-  });
-
   /* Tonight's line under the name, worked out from the real opening hours,
      so the demo is never claiming to be open on a Monday. */
   var HOURS = { 0: [12, 20], 2: [17, 22], 3: [17, 22], 4: [17, 22], 5: [12, 23], 6: [12, 23] };
@@ -1202,6 +1218,13 @@
   } else {
     targets.forEach(function (n) { n.classList.add("in"); });
   }
+  /* Last resort. If the observer never fires for any reason, nothing on this
+     page should stay invisible: content must not depend on decoration. */
+  window.addEventListener("load", function () {
+    setTimeout(function () {
+      document.querySelectorAll(".rv").forEach(function (n) { n.classList.add("in"); });
+    }, 1200);
+  });
 })();
 </script>
 
