@@ -232,20 +232,24 @@
           <label class="s" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
             Would you like people to be able to pay before they pick up?</label>
           <p class="why" style="margin-bottom:11px">Normally they pay at your counter, and most places leave it that
-            way. If you would rather have the money before you start cooking, we can put a Pay now button on the
-            order. It uses <b>your own payment link</b>, so the money goes straight to you and we never touch it.
-            <b>It costs you something.</b> Your card provider takes roughly 3%, so about $1.20 on a $40 order, and a
-            customer can dispute a card payment in a way they cannot dispute cash at the counter. What it buys you is
-            no more food cooked for somebody who never turns up.</p>
+            way. When you would rather have the money before you start cooking, you reply to their order text with
+            your own payment link. Nothing switches on and nothing is automatic:
+            <b>you decide order by order</b>, which is the point. A twelve dollar pizza does not need it. A party
+            order for twenty might.
+            <b>It costs you something each time you use it.</b> Your card provider takes roughly 3%, so about $1.20
+            on a $40 order, and a card payment can be disputed in a way cash at the counter cannot. What it buys you
+            is no more food cooked for somebody who never turns up. The money goes straight to you either way, into
+            your own account. It never comes near us.</p>
           <div class="opts three">
             <label class="opt"><input type="radio" name="Pay before pickup" value="No, they pay at the counter" />
               <span><b>No</b><span>Pay at the counter</span></span></label>
             <label class="opt"><input type="radio" name="Pay before pickup" value="Yes, I have a payment link" />
-              <span><b>Yes</b><span>I have a payment link</span></span></label>
+              <span><b>Sometimes</b><span>I will text a link</span></span></label>
             <label class="opt"><input type="radio" name="Pay before pickup" value="Tell me more first" />
               <span><b>Not sure</b><span>Explain it to me</span></span></label>
           </div>
-          <div style="margin-top:10px"><label class="s" for="q8d">If yes, paste your payment link</label>
+          <div style="margin-top:10px"><label class="s" for="q8d">If you have a payment link already, paste it here
+            and we will show you how to keep it a thumb-tap away on your phone</label>
             <input type="url" id="q8d" name="Payment link" placeholder="https://buy.stripe.com/..." /></div>
         </div>
       </div>

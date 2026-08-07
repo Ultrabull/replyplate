@@ -99,7 +99,11 @@
           <option value="Yes, I have a payment link">Yes, I have a payment link</option>
           <option value="Tell me more first">Tell me more first</option>
         </select>
-        <input id="cPrepay" class="in" type="url" placeholder="Their payment link, if they said yes (https://...). Their money, never ours." />
+        <input id="cPrepay" class="in" type="url" placeholder="Their payment link, if they have one (https://...)" />
+        <p class="hint" style="margin:-2px 0 12px;font-size:13px">Kept here for you, never sent to the chat. When they
+          want an order prepaid they text this link back themselves, so they judge it order by order. Show them
+          Settings, General, Keyboard, Text Replacement on their phone: link as the phrase, something like
+          <b>payme</b> as the shortcut. Then it is a thumb-tap inside any reply.</p>
 
         <p class="qn">9. Your opening hours</p>
         <textarea id="cHours" class="in" rows="4" placeholder="Mon closed&#10;Tue to Thu 5pm to 10pm&#10;Fri and Sat 12pm to 11pm&#10;Sun 12pm to 8pm"></textarea>
@@ -333,8 +337,9 @@
         <div class="row">
           <input id="chCurrency" class="in" style="width:90px;margin-bottom:0" placeholder="$" value="$" />
         </div>
-        <p class="hint" style="margin-bottom:10px">Paying before pickup is question 8 on the Clients tab, because
-          it is the owner's decision rather than a setting. Leave it and diners pay at the counter.</p>
+        <p class="hint" style="margin-bottom:10px">Diners pay at the counter. If a restaurant wants an order paid up
+          front they text their own payment link back, which is question 8 on the Clients tab. Nothing about paying
+          is ever built into the chat.</p>
         <div class="row">
           <button class="btn" id="chGo" type="button">Write the answers</button>
         </div>

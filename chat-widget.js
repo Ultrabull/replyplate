@@ -129,10 +129,6 @@
     + '.rpc-offer span{display:block;color:#8a7038;font-size:12px;margin-top:1px}'
     + '.rpc-view .rpc-offer{border-bottom:1px solid #e8d5ad;border-top:none}'
     + '.rpc-btn.hasoffer::after{content:"";position:absolute;top:6px;right:8px;width:9px;height:9px;border-radius:50%;background:#ffd979;box-shadow:0 0 0 2px rgba(0,0,0,.18)}'
-    + '.rpc-pay{background:#f2f7f3;border:1px solid #cfe3d6;border-radius:12px;padding:12px 13px;margin:2px 0 8px}'
-    + '.rpc-pay p{margin:0 0 9px;font-size:13px;line-height:1.45;color:#41564a}'
-    + '.rpc-paybtn{display:block;text-align:center;background:#2f6f4f;color:#fff;text-decoration:none;font-weight:700;font-size:14.5px;padding:12px 14px;border-radius:9px;min-height:46px;line-height:22px}'
-    + '.rpc-pay small{display:block;margin-top:8px;font-size:11.5px;color:#6b8375;line-height:1.4}'
     + '.rpc-loy{background:#f3ece1;border:1px dashed #cbb79b;border-radius:9px;padding:8px 11px;margin-bottom:8px;font-size:12.5px;color:#6b5c48;line-height:1.4}'
     + '.rpc-loy.due{background:#eaf6ef;border-color:#7fbf9b;color:#1f6a45;font-weight:700;border-style:solid}'
     + '.rpc-item{background:#fff;border:1px solid #e6ddd1;border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px}'
@@ -529,7 +525,6 @@
   function sendOrder() {
     var app = isWa() ? "WhatsApp" : "your messages";
     var text = orderText();
-    var sum = total();
 
     if (ORDER.demo) {
       showChat();
@@ -537,7 +532,6 @@
         " on your phone with the message below already typed, and you press send.", "bot");
       phonePreview(text);
       bubble("It arrives on the restaurant's own phone number, like a text from any other customer. Nothing is paid here, and your number is what tells them the order is real.", "bot");
-      payNow(total());
       clearBasket();
       return;   /* demo: deliberately does not count towards the card */
     }
@@ -559,7 +553,6 @@
       (C.name || "we") + " will confirm shortly.\n\nIf nothing opened, here it is to copy and send to " +
       (ORDER.phone || "us") + " yourself.", "bot");
     phonePreview(text);
-    payNow(sum);
     /* Count it only once the order has really been handed to the phone. A demo
        order, or one that never left the panel, must never earn a stamp. */
     if (LOY) {
@@ -571,39 +564,6 @@
       }
     }
     clearBasket();
-  }
-
-  /* Paying before pickup, when the restaurant wants it.
-
-     Off unless the restaurant sets order.prepay, and paying at pickup stays
-     the default everywhere else, because "no card machine to set up" is a real
-     part of what this is. When it is on, the money goes straight to the
-     restaurant through their own payment link. Nothing here ever touches it,
-     which is the difference between offering a convenience and being in the
-     business of holding other people's money.
-
-     It is an offer, never a gate. The order has already gone to the phone by
-     the time this appears, so a diner who ignores it still gets their food and
-     pays at the counter exactly as before. */
-  function payNow(sum) {
-    if (!ORDER || !ORDER.prepay || !sum) return;
-    var wrap = document.createElement("div");
-    wrap.className = "rpc-pay";
-    var p = document.createElement("p");
-    p.textContent = "If you would rather pay now, you can. Otherwise pay when you pick up, "
-      + "the order has already gone through either way.";
-    var a = document.createElement("a");
-    a.className = "rpc-paybtn";
-    a.href = ORDER.prepay;
-    a.target = "_blank"; a.rel = "noopener";
-    a.textContent = "Pay " + money(sum) + " now";
-    var small = document.createElement("small");
-    /* Say who is being paid. A payment page that appears without warning, in a
-       name the diner does not recognise, is how a card gets disputed. */
-    small.textContent = "Paid straight to " + (C.name || "the restaurant")
-      + ". Check the amount on their page before you pay.";
-    wrap.appendChild(p); wrap.appendChild(a); wrap.appendChild(small);
-    log.appendChild(wrap); log.scrollTop = log.scrollHeight;
   }
 
   function showOrder() {

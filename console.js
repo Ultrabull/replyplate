@@ -855,15 +855,12 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       /* The card only exists when the owner has set both halves of it. A
          threshold with no reward, or a reward with no threshold, is a promise
          nobody can keep. */
-      /* Question 8 asks the owner whether they want this. Both halves must
-         agree before it reaches a diner: they have to have said yes AND given a
-         link. A link with the answer left blank is somebody's half-finished
-         thought, not a decision, and an absent key means paying at the counter,
-         which is what every restaurant gets unless they ask otherwise. */
-      const prepay = (client.prepay || "").trim();
-      if (/^yes/i.test(client.prepayAsk || "") && /^https:\/\/\S+$/.test(prepay)) {
-        cfg.order.prepay = prepay;
-      }
+      /* Question 8 asks whether they want paying before pickup, and their
+         answer and link are kept on the client record. Deliberately NOT sent
+         to the widget: the owner texts their link back when an order is worth
+         prepaying, which is a judgement about that order rather than a setting.
+         A $14 pizza does not need a card fee and a chargeback risk. A $200
+         party order might. The owner is the one who can tell. */
 
       const every = parseInt(dom.chLoyEvery.value, 10) || 0;
       const reward = dom.chLoyReward.value.trim();
