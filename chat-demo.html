@@ -302,6 +302,13 @@
   .orderbar b{font-family:var(--serif);font-size:16px;flex:1;min-width:0}
   .orderbar .btn{padding:12px 20px;font-size:13px;white-space:nowrap}
   @media (max-width:760px){.orderbar{display:flex}footer{padding-bottom:150px}}
+  /* The chat button and this bar both live in the bottom right corner. The
+     collision only became visible once the widget's fixed positioning was
+     fixed: before that the button sat at the foot of the document and covered
+     nothing, anywhere. Lift the button clear whenever the bar is showing.
+     body.barup is set by the same observer that shows the bar. */
+  body.barup .rpc-btn{bottom:calc(78px + env(safe-area-inset-bottom))}
+  body.barup .rpc-panel{height:min(560px,calc(100dvh - 120px))}
 
   .rv{opacity:0;transform:translateY(16px);
     transition:opacity .6s cubic-bezier(.22,.8,.3,1),transform .6s cubic-bezier(.22,.8,.3,1)}
@@ -1235,6 +1242,10 @@
     new IntersectionObserver(function (es) {
       es.forEach(function (e) {
         bar.classList.toggle("on", !e.isIntersecting);
+        /* Same flag on the body, so the chat button can move out of the way.
+           The widget is a stranger to this page and must not be reached into,
+           so the page moves it with its own CSS instead. */
+        document.body.classList.toggle("barup", !e.isIntersecting);
         bar.setAttribute("aria-hidden", e.isIntersecting ? "true" : "false");
       });
     }, { threshold: 0.12 }).observe(hero);
