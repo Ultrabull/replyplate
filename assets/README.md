@@ -25,8 +25,21 @@ Exact names. Anything else is ignored.
 | `vegan.jpg` | Third dish card | 1000 x 800 |
 | `oven.mp4` | The wide moving band in the middle | 1600 x 900, under 10 seconds |
 | `oven.jpg` | Same band, if you have no clip | 1600 x 900 |
-| `room.jpg` | Big tile, top left of the gallery | 1400 x 1400 |
-| `gallery-1.jpg` to `gallery-5.jpg` | The five smaller gallery tiles | 900 x 900 |
+| `gallery-1.jpg` | Big tile, top left. The oven, lit, with a pizza going in | 1400 x 1400 |
+| `gallery-2.jpg` | A slice lifted, cheese still attached | 900 x 900 |
+| `gallery-5.jpg` | The counter, bottles and glasses | 900 x 900 |
+| `gallery-3.jpg` | A table laid for two, from above | 900 x 900 |
+| `gallery-4.jpg` | Dough being stretched on the bench | 900 x 900 |
+| `room.jpg` | The wide strip across the bottom. The dining room, busy | 2100 x 700 |
+
+Every tile has a drawing behind it, so a missing file is never a hole in the
+page. Drop a real photograph in under one of these names and it takes over its
+tile on the next load, with nothing else to change.
+
+The drawings are composed for the middle of the frame on purpose: the tiles are
+square on a phone, so only the centre of a wide image is ever seen. Crop real
+photographs the same way, with the subject centred, or a phone will cut the
+best part off.
 
 Keep every photo **under 400 KB** and every clip **under 4 MB**. A restaurant
 site that takes four seconds to load has already lost the person standing
