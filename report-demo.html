@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>A month of reviews, read for you | ReplyPlate</title>
+<meta name="description" content="A real example of the monthly report: fourteen reviews going in, and one page an owner can read in two minutes coming out." />
+<style>
+  :root{
+    --ink:#1c1613; --muted:#6d6155; --bg:#faf7f1; --card:#fff; --line:#e6ddd1;
+    --soft:#f4eee4; --accent:#b03d29; --gold:#b8893a; --good:#2f6f4f;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6}
+  a{color:var(--accent)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px}
+
+  header{border-bottom:1px solid var(--line);background:var(--card)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0}
+  .brand{font-weight:800;letter-spacing:-.2px;text-decoration:none;color:var(--ink)}
+  .nav a.back{font-size:14.5px;text-decoration:none}
+
+  .hero{padding:44px 0 30px;text-align:center}
+  .kicker{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;
+    letter-spacing:-.5px;margin:10px 0 12px}
+  .sub{color:var(--muted);font-size:16.5px;max-width:60ch;margin:0 auto}
+
+  section{padding:26px 0}
+  .stitle{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:12px}
+
+  /* what goes in */
+  .feed{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 16px;
+    max-height:330px;overflow-y:auto}
+  .rev{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .rev:last-child{border-bottom:0}
+  .rev .st{flex:none;width:64px;color:var(--gold);font-size:13px;letter-spacing:1px}
+  .rev .who{font-weight:700;display:block;font-size:13px;color:var(--muted)}
+  .feednote{font-size:13.5px;color:var(--muted);margin-top:10px;text-align:center}
+
+  .arrow{text-align:center;color:var(--muted);font-size:13px;padding:6px 0 2px;
+    letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .arrow span{display:block;font-size:22px;color:var(--gold);line-height:1.4}
+
+  /* the report, styled the same as the console renders it */
+  .report{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .rp-head{border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:18px}
+  .rp-head h3{font-size:22px;margin:0}
+  .rp-period{color:var(--muted);font-size:14px;margin-top:2px}
+  .rp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:20px}
+  .rp-stat{background:var(--soft);border-radius:11px;padding:12px;text-align:center}
+  .rp-stat b{display:block;font-size:22px;line-height:1.2}
+  .rp-stat span{font-size:11.5px;color:var(--muted)}
+  .rp-headline{font-size:16px;line-height:1.6;margin-bottom:22px}
+  .rp-sec{margin-bottom:20px}
+  .rp-sec h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:9px}
+  .rp-sec ul,.rp-sec ol{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .rp-sec ol{list-style:decimal;margin-left:18px}
+  .rp-sec li{font-size:15px;line-height:1.5}
+  .rp-sec li em{display:block;color:var(--muted);font-size:13.5px;margin-top:2px;font-style:normal}
+  .rp-n{background:var(--soft);color:var(--accent);font-weight:800;font-size:12px;padding:1px 7px;border-radius:999px}
+  .rp-pat{color:var(--muted);font-size:13px}
+  .rp-actions{background:var(--soft);border-radius:12px;padding:16px 18px}
+  .rp-actions h4{color:var(--accent)}
+  .rp-foot{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+
+  /* the honest notes */
+  .notes{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:760px){.notes{grid-template-columns:repeat(3,1fr)}}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .note b{display:block;margin-bottom:5px;font-size:15px}
+  .note p{color:var(--muted);font-size:14px;line-height:1.55}
+
+  .cta{text-align:center;padding:34px 0 46px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
+    padding:15px 26px;border-radius:10px;min-height:50px;line-height:20px;font-size:16px}
+  .cta p{color:var(--muted);font-size:14px;margin-top:12px}
+  footer{border-top:1px solid var(--line);background:var(--card);padding:22px 0;text-align:center;
+    color:var(--muted);font-size:13.5px}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap nav">
+  <a class="brand" href="./index.html">ReplyPlate</a>
+  <a class="back" href="./index.html">&larr; Back</a>
+</div></header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">The monthly report</div>
+    <h1>A month of reviews, read for you</h1>
+    <p class="sub">Nobody running a kitchen has time to read forty reviews and work out what they add up to.
+      This is a real example: what goes in, and the one page that comes out.</p>
+  </div>
+
+  <!-- What goes in. These are the reviews the report below is built from, so the
+       counts in it can be checked against them by anybody who wants to. -->
+  <section>
+    <p class="stitle">What goes in: one month at The Olive Table</p>
+    <div class="feed">
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Marcus T.</span>Best margherita I have had outside Naples. Crust blistered and light. Marco came over to check on us.</span></div>
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Priya S.</span>Third time this month. The sourdough base is the difference. Always warm in here.</span></div>
+      <div class="rev"><span class="st">★★★★</span><span><span class="who">Dan R.</span>Great pizza, cosy room. Got very loud when it filled up around eight on Friday.</span></div>
+      <div class="rev"><span class="st">★★★</span><span><span class="who">Helen W.</span>Pizza was lovely but we waited thirty five minutes on a quiet Tuesday. Slow kitchen.</span></div>
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Aisha M.</span>The vegan special is genuinely good, not an afterthought. The cashew base actually works.</span></div>
+      <div class="rev"><span class="st">★★</span><span><span class="who">Jordan K.</span>Waited over forty minutes on a Friday and the order came out wrong. Staff apologised at least.</span></div>
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Tom B.</span>Marco remembered our anniversary from last year. Small place, big heart.</span></div>
+      <div class="rev"><span class="st">★★★★</span><span><span class="who">Sara L.</span>Pepperoni was excellent. Only gripe is there is nowhere to park before six.</span></div>
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Nina P.</span>The garlic bread is dangerous. We ordered three.</span></div>
+      <div class="rev"><span class="st">★</span><span><span class="who">Anon</span>Waited fifty minutes on a Saturday and the food arrived cold. Nobody apologised.</span></div>
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Greg H.</span>Takeaway was ready when they said it would be. The margherita travels well.</span></div>
+      <div class="rev"><span class="st">★★★★</span><span><span class="who">Ruby C.</span>Lovely vegan option. Room is small so book ahead at weekends.</span></div>
+      <div class="rev"><span class="st">★★★★★</span><span><span class="who">Ollie D.</span>Marco is the reason we keep coming back. The pizza is great too.</span></div>
+      <div class="rev"><span class="st">★★★</span><span><span class="who">Kate F.</span>Food good, wait long on a Friday night. Forty minutes for two pizzas.</span></div>
+    </div>
+    <p class="feednote">Fourteen reviews. Scroll the box to read them all, then check every number below against them.</p>
+  </section>
+
+  <div class="arrow"><span>&darr;</span>What comes out</div>
+
+  <section>
+    <div class="report">
+      <div class="rp-head">
+        <h3>The Olive Table</h3>
+        <div class="rp-period">July 2026</div>
+      </div>
+
+      <div class="rp-stats">
+        <div class="rp-stat"><b>14</b><span>reviews</span></div>
+        <div class="rp-stat"><b>4.0★</b><span>average</span></div>
+        <div class="rp-stat"><b>10</b><span>4 and 5 star</span></div>
+        <div class="rp-stat"><b>4</b><span>3 star or below</span></div>
+      </div>
+
+      <p class="rp-headline">Fourteen reviews this month, averaging four stars, and ten of them were four or five.
+        The one thing holding you back is the wait. Four people mentioned it, and three of those four were on a
+        Friday or a Saturday night. Everything else people wrote about was good.</p>
+
+      <div class="rp-sec">
+        <h4>What people loved</h4>
+        <ul>
+          <li><b>Marco, by name</b> <span class="rp-n">3&times;</span><em>"Marco is the reason we keep coming back."</em></li>
+          <li><b>The sourdough base and the crust</b> <span class="rp-n">2&times;</span><em>"The sourdough base is the difference."</em></li>
+          <li><b>The vegan special</b> <span class="rp-n">2&times;</span><em>"Genuinely good, not an afterthought."</em></li>
+          <li><b>The room feels warm</b> <span class="rp-n">2&times;</span><em>"Small place, big heart."</em></li>
+        </ul>
+      </div>
+
+      <div class="rp-sec">
+        <h4>What came up as a problem</h4>
+        <ul>
+          <li><b>Waiting for food</b> <span class="rp-n">4&times;</span>
+            <span class="rp-pat">three of the four were Friday or Saturday evening</span>
+            <em>"Waited fifty minutes on a Saturday and the food arrived cold."</em></li>
+          <li><b>Noise when the room fills</b> <span class="rp-n">1&times;</span>
+            <span class="rp-pat">around eight on a Friday</span></li>
+          <li><b>Parking before six</b> <span class="rp-n">1&times;</span></li>
+          <li><b>An order came out wrong</b> <span class="rp-n">1&times;</span>
+            <span class="rp-pat">same night as a forty minute wait</span></li>
+        </ul>
+      </div>
+
+      <div class="rp-sec">
+        <h4>Your team, mentioned by name</h4>
+        <ul>
+          <li><b>Marco</b> <span class="rp-n">3&times;</span><em>Named in three separate five star reviews, twice for remembering people.</em></li>
+        </ul>
+      </div>
+
+      <div class="rp-sec">
+        <h4>Dishes people talked about</h4>
+        <ul>
+          <li><b>Margherita</b> <span class="rp-n">2&times;</span> <span class="rp-pat">positive</span></li>
+          <li><b>Vegan special</b> <span class="rp-n">2&times;</span> <span class="rp-pat">positive</span></li>
+          <li><b>Pepperoni</b> <span class="rp-n">1&times;</span> <span class="rp-pat">positive</span></li>
+          <li><b>Garlic bread</b> <span class="rp-n">1&times;</span> <span class="rp-pat">positive</span></li>
+        </ul>
+      </div>
+
+      <div class="rp-sec rp-actions">
+        <h4>Worth a look this month</h4>
+        <ol>
+          <li>Count how many pizzas come out of the oven between seven and nine on a Friday. Three of the four
+            complaints were at that hour, and none of them were about the food itself.</li>
+          <li>Put the parking on your website and in the chat, so people know before they set off rather than
+            after. It came up once and it is the smallest thing on this list.</li>
+          <li>Tell Marco. He was named in three separate five star reviews and he probably does not know.</li>
+        </ol>
+      </div>
+
+      <p class="rp-foot">Based on 14 reviews in this period. Counts are exact. The themes are read from what people
+        wrote, and nothing here is guessed.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="stitle">Three rules this report follows</p>
+    <div class="notes">
+      <div class="note">
+        <b>Every number is countable</b>
+        <p>The reviews it was built from are in the box above. If it says four people mentioned waiting, you can
+          find those four. Nothing is rounded up to sound more useful.</p>
+      </div>
+      <div class="note">
+        <b>Patterns, not just topics</b>
+        <p>"People mentioned waiting" is not worth reading. "Three of the four were Friday or Saturday evening"
+          tells an owner where to stand next week.</p>
+      </div>
+      <div class="note">
+        <b>No promises about your rating</b>
+        <p>It will never tell you a score is about to go up. Nobody can know that, and any tool that says
+          otherwise is guessing at your expense.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <a class="btn" href="./index.html#start">Start for $199 a month</a>
+    <p>The report is part of the price. So is everything else.
+      <a href="./how.html">See a review get answered &rarr;</a></p>
+  </div>
+
+</div>
+
+<footer><div class="wrap">
+  <b>ReplyPlate</b> &bull; <a href="./index.html">Home</a> &bull;
+  <a href="./details.html">Costs and questions</a> &bull;
+  <a href="./chat-demo.html">A demo restaurant</a>
+  <br>The Olive Table is a made-up restaurant. The reviews above were written for this page.
+</div></footer>
+
+</body>
+</html>
