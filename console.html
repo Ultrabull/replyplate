@@ -325,6 +325,14 @@
 
         <div class="row">
           <input id="chCurrency" class="in" style="width:90px;margin-bottom:0" placeholder="$" value="$" />
+        </div>
+        <p class="qn">Paying before pickup <b class="qwarn">Optional. Their payment link, their money.</b></p>
+        <p class="hint" style="margin-bottom:8px">Leave this empty and diners pay at the counter, which is the
+          default and what the site promises. Paste the restaurant's own payment link here and the chat offers
+          a Pay now button after the order has already gone to their phone. Use a link that lets the customer
+          type the amount, and the money goes straight to the restaurant. It never comes near us.</p>
+        <div class="row">
+          <input id="chPrepay" class="in" style="flex:1;min-width:200px;margin-bottom:0" placeholder="https://buy.stripe.com/... (leave empty for pay on arrival)" />
           <button class="btn" id="chGo" type="button">Write the answers</button>
         </div>
       </div>

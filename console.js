@@ -59,7 +59,7 @@
     ocCount: $("ocCount"), ocUnanswered: $("ocUnanswered"), ocLastReply: $("ocLastReply"),
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
     ocGo: $("ocGo"), ocOut: $("ocOut"),
-    chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
+    chPrepay: $("chPrepay"), chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
     chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chMethod: $("chMethod"), chCurrency: $("chCurrency"),
     chLoyEvery: $("chLoyEvery"), chLoyReward: $("chLoyReward"),
     chOffText: $("chOffText"), chOffSub: $("chOffSub"), chOffDays: $("chOffDays"),
@@ -848,6 +848,11 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       /* The card only exists when the owner has set both halves of it. A
          threshold with no reward, or a reward with no threshold, is a promise
          nobody can keep. */
+      /* Only ever present when the owner typed one. An absent key means pay on
+         arrival, which is what every restaurant gets unless they ask otherwise. */
+      const prepay = (dom.chPrepay ? dom.chPrepay.value : "").trim();
+      if (/^https:\/\/\S+$/.test(prepay)) cfg.order.prepay = prepay;
+
       const every = parseInt(dom.chLoyEvery.value, 10) || 0;
       const reward = dom.chLoyReward.value.trim();
       if (every > 1 && reward) {
