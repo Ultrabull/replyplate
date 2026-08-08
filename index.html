@@ -164,6 +164,9 @@
   .vfoot{margin-top:30px;padding:18px 20px;background:var(--card);border:1px solid var(--line);
     border-radius:16px;color:var(--muted);font-size:14.5px;line-height:1.6}
   .vfoot b{color:var(--ink)}
+  /* Vertical padding on an inline link grows the thumb target without pushing
+     the lines of the paragraph apart, which inline-block would. */
+  .vfoot a{padding:5px 0}
   .val .lead{color:var(--accent);font-weight:700;font-size:15px;margin-bottom:14px}
   .val ul{list-style:none;display:grid;gap:12px;margin:0 0 16px;padding:0}
   .val li{color:var(--muted);font-size:14.5px;line-height:1.55;position:relative;padding-left:20px}

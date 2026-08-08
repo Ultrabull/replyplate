@@ -522,19 +522,27 @@
     basket = {}; refreshBasket();
     var m = panel.querySelector("#rpcMenu"); m.innerHTML = ""; buildMenu();
   }
-  function sendOrder() {
-    var app = isWa() ? "WhatsApp" : "your messages";
-    var text = orderText();
+  /* Handing a link to the phone's own app. An anchor that gets clicked is the
+     reliable way to do it from inside a tap: window.open with _blank leaves a
+     stray blank tab sitting behind Messages on iOS Safari, and on a desktop it
+     hands back a perfectly truthy window for a link nothing can handle. */
+  function openLink(url) {
+    var a = document.createElement("a");
+    a.href = url;
+    a.rel = "noopener";
+    /* WhatsApp is a web address, so it needs its own tab or the restaurant's
+       page is the thing that disappears. sms: is not: giving it a target is
+       what leaves a blank tab sitting behind Messages on iOS. */
+    if (url.indexOf("http") === 0) a.target = "_blank";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { if (a.parentNode) a.parentNode.removeChild(a); }, 0);
+  }
 
-    if (ORDER.demo) {
-      showChat();
-      bubble("That is as far as the demo goes. On a real restaurant's site, this opens " + app +
-        " on your phone with the message below already typed, and you press send.", "bot");
-      phonePreview(text);
-      bubble("It arrives on the restaurant's own phone number, like a text from any other customer. Nothing is paid here, and your number is what tells them the order is real.", "bot");
-      clearBasket();
-      return;   /* demo: deliberately does not count towards the card */
-    }
+  function sendOrder() {
+    var app = isWa() ? "WhatsApp" : "Messages";
+    var text = orderText();
 
     var full = e164(ORDER.phone);
     if (!full) return;
@@ -543,18 +551,36 @@
        spaces and brackets of a raw "+1 (555) 010-2288". */
     var url = isWa() ? ("https://wa.me/" + full.slice(1) + "?text=" + enc)
                      : ("sms:" + full + "?&body=" + enc);
-    window.open(url, "_blank");
+    openLink(url);
     showChat();
-    /* Do not branch on what window.open returned. On a desktop an sms: link
-       hands back a perfectly truthy blank tab, so "ready to send" would print
-       to somebody who saw nothing happen. Say it plainly and always show the
-       order, which is right on every device and needs no browser sniffing. */
+
+    /* The demo opens the phone for real, same line of code as a paying
+       client's site. It used to stop short and show a drawing of a text
+       message instead, which asks a restaurant owner to take our word for the
+       one part of the product they most need to believe. The demo number is an
+       unassigned 555 one, so a message sent to it goes nowhere, and the bubble
+       below says so before anybody presses send. */
+    if (ORDER.demo) {
+      bubble(app + " should have opened on your phone with the order already typed. On a computer " +
+        "nothing opens, which is normal.", "bot");
+      phonePreview(text);
+      bubble("Do not press send: " + (ORDER.phone || "that number") + " is made up for this demo. On your own " +
+        "restaurant it is your number, and the order arrives like a text from any other customer, with theirs " +
+        "attached. Nothing is paid here.", "bot");
+      clearBasket();
+      return;   /* a demo order must never earn a stamp on a real card */
+    }
+
+    /* Do not branch on whether the link opened. On a desktop an sms: link
+       silently does nothing, so "ready to send" would print to somebody who saw
+       nothing happen. Say it plainly and always show the order, which is right
+       on every device and needs no browser sniffing. */
     bubble("Your order is ready to send in " + app + ". Press send there and " +
       (C.name || "we") + " will confirm shortly.\n\nIf nothing opened, here it is to copy and send to " +
       (ORDER.phone || "us") + " yourself.", "bot");
     phonePreview(text);
-    /* Count it only once the order has really been handed to the phone. A demo
-       order, or one that never left the panel, must never earn a stamp. */
+    /* Count it only once the order has really been handed to the phone. An
+       order that never left the panel must never earn a stamp. */
     if (LOY) {
       var was = loyGet();
       loySet(was + 1 >= +LOY.every ? 0 : was + 1);
