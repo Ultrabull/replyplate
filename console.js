@@ -899,7 +899,7 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       /* The card only exists when the owner has set both halves of it. A
          threshold with no reward, or a reward with no threshold, is a promise
          nobody can keep. */
-      /* Question 8 asks whether they want paying before pickup, and their
+      /* Question 7 asks whether they want paying before pickup, and their
          answer and link are kept on the client record. Deliberately NOT sent
          to the widget: the owner texts their link back when an order is worth
          prepaying, which is a judgement about that order rather than a setting.

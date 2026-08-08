@@ -1,86 +1,65 @@
-# ReplyPlate — Restaurant reputation & social kit
+# ReplyPlate
 
-A ready-to-run, done-for-you service kit for restaurants: answer every Google
-review, invite all diners to review, and post to social — powered by your
-OpenRouter key. 100% client-side, hosted free on GitHub Pages.
+A done-for-you service for US restaurants: every Google review answered in the
+owner's voice, every diner asked, pickup orders taken by text, posts written,
+one monthly report. $199 a month. Run by one person.
 
-Reviews are Google-only by design: Meta retired Page reviews/ratings, so no tool
-can reply to them. Facebook & Instagram are handled as posts and comments.
-See `BACKEND-PLAN.md` for the always-on version.
+Everything is plain HTML/CSS/JS, no build step, hosted on GitHub Pages.
+**Pushing to `main` publishes the site at [reply-plate.com](https://reply-plate.com).**
 
-Two pages:
-- **`index.html`** — the **landing page** you send to restaurant owners (public).
-- **`console.html`** — your private **operator console** (deliver the service + find clients).
+Reviews mean Google reviews only, by design: Facebook retired page reviews, so
+no tool can reply to them. Facebook and Instagram are handled as posts.
 
-Live once deployed:
-- Landing: `https://ultrabull.github.io/replyplate/`
-- Console: `https://ultrabull.github.io/replyplate/console.html`
+## The one file to edit
 
-## Set it up (5 minutes)
+**`config.js`** holds the brand, the email, every price and every Stripe link.
+Each page carries a fallback copy of its own settings, so a page still works if
+config.js fails to load, but config.js wins wherever it sets a value. Change a
+price there and the whole site changes.
 
-### 1. Make the landing page yours
-Open `index.html`, find the **`CONFIG` block** near the bottom, and edit:
-```js
-const CONFIG = {
-  brand: "ReplyPlate",     // your business name
-  price: "$199",           // your monthly price
-  stripe: "",              // your Stripe Payment Link (see below)
-  book:   "",              // your Calendly link (optional)
-  email:  "hello@example.com", // where prospects reach you
-};
-```
+`STRIPE.md` walks through making the payment links.
 
-### 2. Get paid — Stripe Payment Link (no code)
-1. Create a free account at [stripe.com](https://stripe.com).
-2. Dashboard → **Payment Links** → **New** → recurring, set your monthly price.
-3. Copy the link (looks like `https://buy.stripe.com/xxxx`) into `CONFIG.stripe`.
-That's it — the "Start now" buttons now take customers straight to checkout.
-(Until you add it, buttons fall back to emailing you.)
+## The pages
 
-### 3. Add your API key (console)
-Open `console.html` → the Settings (⚙) opens automatically → paste your
-**OpenRouter key** ([openrouter.ai/keys](https://openrouter.ai/keys)) and pick a
-model. **Claude 3.5 Sonnet** writes the best replies; free models are fine for testing.
+**Public, for restaurant owners:**
 
-## Deliver the service (console)
-1. **Clients** — add each restaurant (name, cuisine, voice, Google review link).
-2. **Autopilot** — the always-on engine (see below).
-3. **Reply to reviews** — paste a review → 3 safe, on-brand replies → copy.
-4. **Get reviews** — generate SMS/email/table-card asking **every** diner to review.
-   (Never only the happy ones — Google prohibits it and penalises the restaurant.)
-5. **Social posts** — enter a special/dish → a batch of captions + hashtags.
-6. **Find clients** — write a personalised pitch and track your pipeline.
+| Page | What it does |
+|---|---|
+| `index.html` | The landing page |
+| `details.html` | Costs and the long FAQ, including what costs extra |
+| `how.html` | A review getting answered, step by step |
+| `maps-demo.html` | Their Google listing, before and after, on a drawn phone |
+| `chat-demo.html` | The Olive Table, a made-up restaurant with the chat and ordering live |
+| `report-demo.html` | The monthly report, built from fourteen reviews |
+| `social-demo.html` | A month of posts from one owner text |
+| `commission.html` | What the delivery apps cost, on a $40 order |
+| `websites.html` | The $1,200 website build |
+| `qr-code.html` / `till.html` | Their review code, for tables and receipts |
+| `start.html` | The ten questions a new client answers |
+| `connect.html` | How a client adds us to their Google profile |
+| `welcome.html` | Where Stripe sends them after paying |
 
-## Autopilot (prototype)
-The "give us the handle, we handle everything" experience. Press **Check for
-new reviews** and Autopilot will, for each incoming review:
-- **draft a safe, on-brand reply** and **classify** it (sentiment + risk) — real AI;
-- **auto-post** positive, low-risk reviews (4–5★); and
-- **hold** anything negative, low-rated, or risky for the owner.
+**Private, for the operator:** `hq.html` (every link in one place, save it to
+your phone), `console.html` (the console: clients, replies, posts, reports),
+`approve.html` (what an owner sees when a reply needs their OK), `r.html`
+(the hosted ordering page for restaurants with no website).
 
-The owner opens **`approve.html`** (a clean mobile screen) and taps **Approve &
-post / Edit / Skip** — that's their entire job. Everything else is invisible.
+The private pages hold no secrets: the console keeps its data in the browser
+it runs in, and no key is ever in this repo. `robots.txt` deliberately does
+not name them.
 
-What's real vs. stubbed today:
-- **Real:** the AI drafting + triage (your OpenRouter key) and the full
-  approve/auto-post decision + owner workflow.
-- **Stubbed (demo mode):** the review *source* (a sample feed) and the *posting*
-  step. These sit behind a `Connectors` object in `console.js` (`fetchNewReviews`
-  / `postReply`) — the single place the **Google Business Profile** and **Meta
-  Graph** APIs slot in. Going fully live also needs a small backend to poll on a
-  schedule and shared storage so the owner's approvals sync across devices
-  (today the console and `approve.html` share the browser's localStorage).
+## The guides
 
-## Get your first clients
-1. Open Google Maps, search "restaurants near me".
-2. Note ones with few reviews or no replies — they need this most.
-3. Add them under **Find clients**, generate a pitch, reach out.
-4. Aim for your first 3 free trials → convert to paid.
+- `STRIPE.md` — payments: the $199 subscription, the $1,200 website, the $750 photo shoot
+- `INSTALL-TEST.md` — testing the chat widget on a real Wix site
+- `NO-CODE.md` — what to offer when a restaurant's website cannot take code
+- `OFFBOARDING.md` — what happens when a client leaves
+- `BACKEND-PLAN.md` — the plan for making the service run without hand-work
+- `assets/README.md` — every picture on the demo restaurant, and the prompt that made it
 
-## Honest notes
-- **Payments** use Stripe Payment Links (safe, no backend). For automatic
-  onboarding/cancellations you'd later want a small backend — ask Claude to build it.
-- **Lead lists** are built by hand from Google Maps (no scraping). A Google
-  Places API integration can be added later.
-- Everything (keys, clients, leads) is stored **only in your browser**.
-- The work is real but not fully hands-off — you still approve output and do outreach.
+## Rules the copy follows
+
+They are in `CLAUDE.md`, and they exist for legal and policy reasons: never
+ask only happy diners for reviews, never promise a rating will improve, never
+claim the service is fully automatic, keep cost comparisons conservative and
+marked as estimates.
