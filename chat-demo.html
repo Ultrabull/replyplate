@@ -1312,12 +1312,12 @@
    browser blocks that anyway, and a page that makes a noise at a stranger is a
    page they close.
 
-   There is no audio file here. The sound is generated: three detuned sine
-   waves, a slow wobble on one of them, and some heavily filtered noise for
-   room. That keeps the page weightless and means nothing is fetched. If a real
-   recording ever lands at assets/room.mp3 it takes over, the same way a real
-   photograph takes over a drawing, and the generated version is what you get
-   until then.
+   assets/room.mp3 is a real recording and it is what plays. Behind it sits a
+   generated fallback: three detuned sine waves, a slow wobble on one of them,
+   and some heavily filtered noise for room. That is what you get if the file
+   is missing or the browser will not decode it, the same way a drawing shows
+   when a photograph is missing. Nothing is fetched until the button is
+   pressed, so the page still costs nothing to open.
 
    Every start and stop is a fade. Sound that snaps on is startling even when
    it was asked for. */

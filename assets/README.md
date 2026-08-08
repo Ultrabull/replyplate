@@ -62,17 +62,16 @@ centred. Either is fine. It is not worth redoing ten good pictures over.
 | 12 | `gallery-5.jpg` | Gallery | 1000 x 1000 | square |
 | 13 | `room.jpg` | The wide strip under the gallery | 2100 x 700 | very wide |
 
-**Ten of these are already in.** Everything except the three below is done and
-live. Nothing on that list needs touching again.
+**All thirteen are in, and so is the music.** Nothing on this list is
+outstanding. The prompts below are kept for when you redo one, or when you want
+the same look for a real client.
 
-**Still to come, in the order they are worth doing:**
-
-1. `room.jpg` — the wide strip under the gallery. This is the only picture slot
-   still showing a drawing, and it sits right underneath five real photographs,
-   so it is the one that stands out. Do this one next.
-2. `hero.mp4` — the oven, moving, behind the restaurant name. A nice-to-have.
-   The still photo already there does the job.
-3. `oven.mp4` — same again for the quote band. Last.
+**What was done to the two clips.** Both arrived as ten second push-ins, which
+start wide and end close. Played on repeat that snaps back to the wide shot
+every ten seconds, and the eye catches it every time. The last second and a bit
+of each is now faded over its own beginning, so the clip returns to the start
+without a jump. They came out at 8.8 seconds, 2.0MB and 1.6MB, with the sound
+stripped out because both play silently anyway.
 
 ---
 
@@ -231,12 +230,21 @@ no recognisable faces. Very wide panoramic, 3:1.
 
 ## 14. `room.mp3` — the room sound
 
-Optional, and the only one that is not a picture. The demo has a speaker button
-in its header, off until somebody taps it. Until this file exists it plays a
-sound generated in code. Drop this in and it takes over.
+**This one is in.** The speaker button in the demo header plays it. It is 28
+seconds, 438KB, and it repeats without a seam. The generated sound is still
+there behind it, for any browser that will not play the file.
 
-**Keep it 60 to 90 seconds, under 3MB, and make sure it loops.** It plays on a
-quiet website, so nobody should ever be able to tell where it restarts.
+**What was done to the file you sent.** Google's music tool hands back an mp4,
+which is a video file with the music inside it. The video was 2MB of the 2.8MB
+and nobody would ever have seen it, so the music was lifted out on its own.
+Then the loop was made: the clip was 30.8 seconds and ended on a quieter note
+than it started, so it would have bumped every time it went round. It is now
+cut to a whole number of bars and the last second and a half is faded over the
+first, which is the trick section 14 describes below. Nothing was re-recorded.
+
+**If you ever replace it, keep it 60 to 90 seconds, under 3MB, and make sure it
+loops.** It plays on a quiet website, so nobody should ever be able to tell
+where it restarts.
 
 ```
 Warm, sparse instrumental for an empty Italian restaurant in the late
