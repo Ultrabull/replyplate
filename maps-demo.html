@@ -295,7 +295,7 @@
   </section>
 
   <div class="cta-row">
-    <a class="btn" href="./index.html#start">Start for <span data-price>$199</span> a month</a>
+    <a class="btn" data-cta href="./index.html#start">Start for <span data-price>$199</span> a month</a>
     <p>All of this is the one price.
       <a href="./chat-demo.html">See the ordering page a diner lands on &rarr;</a></p>
   </div>
@@ -316,6 +316,11 @@
   "use strict";
   var p = (window.RP_CONFIG && window.RP_CONFIG.price) || "$199";
   document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = p; });
+  /* A Start button that names the price goes straight to the checkout once a
+     payment link exists. Until then it goes to the pricing section, which
+     explains itself before asking for anything. */
+  var stripe = (window.RP_CONFIG && window.RP_CONFIG.stripe) || "";
+  if (stripe) document.querySelectorAll("[data-cta]").forEach(function (a) { a.href = stripe; });
 
   /* The apps, as a diner meets them. Named in plain text on purpose: these are
      other people's trademarks and drawing their logos here would be borrowing

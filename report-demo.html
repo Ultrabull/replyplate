@@ -221,7 +221,7 @@
   </section>
 
   <div class="cta">
-    <a class="btn" href="./index.html#start">Start for $199 a month</a>
+    <a class="btn" data-cta href="./index.html#start">Start for <span data-price>$199</span> a month</a>
     <p>The report is part of the price. So is everything else.
       <a href="./how.html">See a review get answered &rarr;</a></p>
   </div>
@@ -236,5 +236,17 @@
   <br>The Olive Table is a made-up restaurant. The reviews above were written for this page.
 </div></footer>
 
+<!-- This page names the price and carries a Start button. Both used to be
+     typed into the markup and read from nowhere, so a price change or a
+     payment link in config.js reached every page except this one. -->
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+  var C = window.RP_CONFIG || {};
+  if (C.price) document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = C.price; });
+  if (C.stripe) document.querySelectorAll("[data-cta]").forEach(function (a) { a.href = C.stripe; });
+})();
+</script>
 </body>
 </html>

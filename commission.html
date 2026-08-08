@@ -230,7 +230,8 @@
     document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = CONFIG.price; });
     var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("I'd like to start"));
     document.querySelectorAll("[data-cta]").forEach(function (a) {
-      if (a.getAttribute("href") === "#") a.href = startUrl;
+      var h = a.getAttribute("href");
+      if (h === "#" || (CONFIG.stripe && h === "#start")) a.href = startUrl;
     });
 
   })();

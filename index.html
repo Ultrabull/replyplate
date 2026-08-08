@@ -787,7 +787,15 @@
       document.querySelectorAll("[data-webprice]").forEach(function(n){ n.textContent = CONFIG.webPrice; });
       document.querySelectorAll("[data-photoprice]").forEach(function(n){ n.textContent = CONFIG.photoPrice; });
       var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=I%27d%20like%20to%20start");
-      document.querySelectorAll("[data-cta]").forEach(function(a){ if(a.getAttribute("href")==="#") a.href = startUrl; });
+      /* With a payment link configured, every Start button goes straight to
+         the checkout. Without one, the buttons up top keep scrolling to the
+         pricing section, which explains itself before falling back to email.
+         The old rule only rewrote href="#", so the two buttons above the fold
+         kept pointing at the anchor even after the link was pasted in. */
+      document.querySelectorAll("[data-cta]").forEach(function(a){
+        var h = a.getAttribute("href");
+        if (h === "#" || (CONFIG.stripe && h === "#start")) a.href = startUrl;
+      });
       var bookUrl = CONFIG.book || ("mailto:" + CONFIG.email + "?subject=Free%20setup%20call");
       document.querySelectorAll("[data-book]").forEach(function(a){ a.href = bookUrl; });
       document.querySelectorAll("[data-email]").forEach(function(a){ a.href = "mailto:"+CONFIG.email; a.textContent = CONFIG.email; });
