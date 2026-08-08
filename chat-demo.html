@@ -60,6 +60,20 @@
   .nav a:hover{color:var(--gold)}
   /* An Order button in the header, always reachable, only on small screens
      where the sticky bottom bar has not appeared yet. */
+  .snd{background:none;border:1px solid var(--line);color:var(--muted);width:38px;height:38px;
+    border-radius:999px;display:grid;place-items:center;cursor:pointer;flex:none;
+    transition:color .2s ease,border-color .2s ease}
+  .snd svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;
+    stroke-linecap:round;stroke-linejoin:round}
+  .snd .spk{fill:currentColor;stroke:none}
+  .snd .waves{opacity:0;transition:opacity .25s ease}
+  .snd .cross{opacity:1;transition:opacity .25s ease}
+  .snd[aria-pressed="true"]{color:var(--gold);border-color:var(--gold)}
+  .snd[aria-pressed="true"] .waves{opacity:1}
+  .snd[aria-pressed="true"] .cross{opacity:0}
+  .snd:hover{color:var(--ink)}
+  @media (max-width:640px){.snd{width:34px;height:34px}.snd svg{width:17px;height:17px}}
+
   .nav .navorder{display:none;align-items:center;background:var(--gold);color:#1a1204;
     text-decoration:none;font-size:12.5px;font-weight:700;letter-spacing:.08em;
     text-transform:uppercase;padding:9px 15px;border-radius:2px;min-height:38px}
@@ -69,8 +83,13 @@
      No hamburger and no JS: the header becomes two rows, and the links scroll
      sideways with a fade at the edge so it is obvious there are more. */
   @media (max-width:640px){
-    .nav{flex-wrap:wrap;row-gap:10px;padding-bottom:10px}
-    .brand{font-size:18px;letter-spacing:.1em}
+    /* The wordmark, the Order button and the sound toggle have to share one
+       row at 390px or the toggle drops onto a line of its own and the header
+       looks like it broke. The wordmark gives up the space. */
+    .nav{flex-wrap:wrap;row-gap:10px;padding-bottom:10px;gap:10px}
+    .brand{font-size:16.5px;letter-spacing:.05em;gap:8px}
+    .brand .mono{width:26px;height:26px}
+    .nav .navorder{padding:8px 12px;font-size:12px;letter-spacing:.05em}
     .nav ul{order:3;flex:0 0 100%;gap:20px;overflow-x:auto;scrollbar-width:none;
       -webkit-overflow-scrolling:touch;padding-bottom:2px;font-size:13.5px;
       -webkit-mask-image:linear-gradient(90deg,#000 84%,transparent);
@@ -823,6 +842,18 @@
       <li><a href="#" data-rp-order style="color:var(--gold)">Order</a></li>
     </ul>
     <a class="navorder" href="#" data-rp-order>Order</a>
+    <!-- Sound is off until somebody asks for it, and it stays off on every
+         later visit unless they asked. There is no version of this that starts
+         on its own: browsers block it, and a page that makes noise at a
+         stranger is a page they close. -->
+    <button class="snd" id="sndBtn" type="button" aria-pressed="false"
+      aria-label="Play room sound" title="Room sound">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path class="spk" d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z"/>
+        <g class="waves"><path d="M15.4 9.2a4 4 0 0 1 0 5.6"/><path d="M17.9 6.8a7.5 7.5 0 0 1 0 10.4"/></g>
+        <path class="cross" d="M15.6 9.6l5 4.8M20.6 9.6l-5 4.8"/>
+      </svg>
+    </button>
   </div></header>
 
   <div class="hero">
@@ -1267,6 +1298,178 @@
     setTimeout(function () {
       document.querySelectorAll(".rv").forEach(function (n) { n.classList.add("in"); });
     }, 1200);
+  });
+})();
+</script>
+
+<script>
+/* Room sound. Off until somebody asks, and it never starts on its own: every
+   browser blocks that anyway, and a page that makes a noise at a stranger is a
+   page they close.
+
+   There is no audio file here. The sound is generated: three detuned sine
+   waves, a slow wobble on one of them, and some heavily filtered noise for
+   room. That keeps the page weightless and means nothing is fetched. If a real
+   recording ever lands at assets/room.mp3 it takes over, the same way a real
+   photograph takes over a drawing, and the generated version is what you get
+   until then.
+
+   Every start and stop is a fade. Sound that snaps on is startling even when
+   it was asked for. */
+(function () {
+  "use strict";
+  var btn = document.getElementById("sndBtn");
+  if (!btn) return;
+  var KEY = "rpdemo.sound";
+  var ctx = null, master = null, nodes = [], file = null, on = false;
+
+  function build() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    /* A warm, low chord. Quiet enough to sit under a room rather than fill it. */
+    var warm = ctx.createBiquadFilter();
+    warm.type = "lowpass"; warm.frequency.value = 620; warm.Q.value = 0.6;
+    warm.connect(master);
+
+    [110, 164.81, 220].forEach(function (f, i) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.value = f + (i - 1) * 0.35;   /* a hair apart, so it breathes */
+      g.gain.value = [0.06, 0.035, 0.022][i];
+      o.connect(g); g.connect(warm); o.start();
+      nodes.push(o, g);
+    });
+
+    /* One slow wobble, well under a hertz, so it never sounds like a machine. */
+    var lfo = ctx.createOscillator(), lfoGain = ctx.createGain();
+    lfo.frequency.value = 0.07; lfoGain.gain.value = 90;
+    lfo.connect(lfoGain); lfoGain.connect(warm.frequency); lfo.start();
+    nodes.push(lfo, lfoGain);
+
+    /* Filtered noise, very low, for the sound of a room having people in it. */
+    var len = ctx.sampleRate * 2;
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var d = buf.getChannelData(0), last = 0;
+    for (var i = 0; i < len; i++) {
+      var white = Math.random() * 2 - 1;
+      last = (last + 0.02 * white) / 1.02;   /* brown-ish, softer than white */
+      d[i] = last * 3.2;
+    }
+    var noise = ctx.createBufferSource();
+    noise.buffer = buf; noise.loop = true;
+    var nf = ctx.createBiquadFilter();
+    nf.type = "lowpass"; nf.frequency.value = 380;
+    var ng = ctx.createGain(); ng.gain.value = 0.05;
+    noise.connect(nf); nf.connect(ng); ng.connect(master);
+    noise.start();
+    nodes.push(noise, nf, ng);
+    return true;
+  }
+
+  function fade(to, secs) {
+    if (!ctx) return;
+    var t = ctx.currentTime;
+    master.gain.cancelScheduledValues(t);
+    master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(to, t + secs);
+  }
+
+  /* A real recording wins if the owner ever adds one, but only if it really
+     plays. The first version committed to the file the moment it existed and
+     returned, so with no assets/room.mp3 the fallback was never reached and
+     tapping the button did nothing at all. Nothing is decided here until the
+     file has either started or failed. */
+  var fileDead = false;
+
+  function startGen() {
+    if (!ctx && !build()) return;
+    if (ctx.state === "suspended") ctx.resume();
+    fade(0.5, 2.2);
+  }
+
+  function fadeFile() {
+    if (!file) return;
+    var v = 0, id = setInterval(function () {
+      if (!file || file.paused) return clearInterval(id);
+      v = Math.min(0.35, v + 0.02); file.volume = v;
+      if (v >= 0.35) clearInterval(id);
+    }, 60);
+  }
+
+  function start() {
+    if (fileDead) return startGen();
+    if (!file) {
+      file = document.createElement("audio");
+      file.src = "assets/room.mp3";
+      file.loop = true; file.volume = 0; file.preload = "auto";
+      file.addEventListener("error", function () {
+        fileDead = true; file = null;
+        if (on) startGen();
+      }, { once: true });
+    }
+    var p = file.play();
+    if (p && p.then) {
+      p.then(fadeFile).catch(function () {
+        fileDead = true; file = null;
+        if (on) startGen();
+      });
+    } else {
+      /* No promise from play(), so judge it on whether anything ever loaded. */
+      setTimeout(function () {
+        if (file && file.readyState === 0) { fileDead = true; file = null; if (on) startGen(); }
+        else fadeFile();
+      }, 500);
+    }
+  }
+
+  function stop() {
+    if (file && !file.paused) {
+      var v = file.volume, id = setInterval(function () {
+        v -= 0.03;
+        if (v <= 0 || !file) { clearInterval(id); if (file) { file.pause(); file.volume = 0; } }
+        else file.volume = v;
+      }, 50);
+    }
+    if (ctx) fade(0, 0.9);
+  }
+
+  function set(next, remember) {
+    on = next;
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.setAttribute("aria-label", on ? "Turn room sound off" : "Play room sound");
+    if (on) start(); else stop();
+    if (remember) { try { localStorage.setItem(KEY, on ? "1" : "0"); } catch (e) {} }
+  }
+
+  btn.addEventListener("click", function () { set(!on, true); });
+
+  /* Somebody who turned it on last time gets it back, but only once they touch
+     the page. Restoring a saved yes is still not permission to make a noise at
+     a browser that has not been interacted with, and browsers agree. */
+  var wanted = false;
+  try { wanted = localStorage.getItem(KEY) === "1"; } catch (e) {}
+  if (wanted) {
+    btn.setAttribute("aria-pressed", "true");
+    btn.setAttribute("aria-label", "Turn room sound off");
+    on = true;
+    var wake = function () {
+      document.removeEventListener("pointerdown", wake);
+      document.removeEventListener("keydown", wake);
+      if (on) start();
+    };
+    document.addEventListener("pointerdown", wake, { once: true });
+    document.addEventListener("keydown", wake, { once: true });
+  }
+
+  /* Leaving the tab should not leave sound playing in it. */
+  document.addEventListener("visibilitychange", function () {
+    if (!on) return;
+    if (document.hidden) stop(); else start();
   });
 })();
 </script>
