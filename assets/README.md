@@ -1,6 +1,6 @@
 # The Olive Table: every picture, and the prompt that makes it
 
-One file. Thirteen jobs. Each prompt below is finished and ready to paste as
+One file. Thirteen pictures and one piece of music. Each prompt below is finished and ready to paste as
 it is, with the house style already inside it, so nothing has to be assembled.
 
 Drop a finished file into this folder under the exact name given and it takes
@@ -207,6 +207,44 @@ the background. Full and warm without feeling crowded. Shot on a 50mm lens at
 f/2, warm tungsten light, deep shadows, photorealistic. No text, no watermark,
 no recognisable faces. Very wide panoramic, 3:1.
 ```
+
+---
+
+## 14. `room.mp3` — the room sound
+
+Optional, and the only one that is not a picture. The demo has a speaker button
+in its header, off until somebody taps it. Until this file exists it plays a
+sound generated in code. Drop this in and it takes over.
+
+**Keep it 60 to 90 seconds, under 3MB, and make sure it loops.** It plays on a
+quiet website, so nobody should ever be able to tell where it restarts.
+
+```
+Warm, sparse instrumental for an empty Italian restaurant in the late
+afternoon, an hour before service. Nylon string guitar played very softly,
+brushed upright bass, a little room reverb, no drums and no beat. Slow, warm
+and unhurried. It should sit under a conversation rather than lead one.
+Nothing dramatic, no build, no melody a person would hum. Loopable, seamless,
+90 seconds. No vocals, no lyrics, no percussion, no sudden dynamic changes.
+Instrumental only.
+```
+
+**Three things this prompt does on purpose:**
+
+- **No vocals.** Words compete with the words on the page. Somebody trying to
+  read a menu while a voice sings at them will turn it off.
+- **No beat.** A drum makes a person aware of time passing. That is the last
+  thing a page you want them to linger on should do.
+- **No melody worth humming.** Ambience that is too good stops being ambience.
+  If they notice the tune, they have stopped reading.
+
+### Getting it to loop
+
+Most AI music tools do not loop cleanly. Generate about 90 seconds, then pick a
+stretch that starts and ends on the same quiet texture. If the join still
+clicks, cross-fade the last two seconds over the first two in any free audio
+editor. Play it round three times before you upload it, because a seam you can
+hear is worse than no music at all.
 
 ---
 
