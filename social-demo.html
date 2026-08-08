@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>A month of posts, written for you | ReplyPlate</title>
+<meta name="description" content="Eight social posts and a Google listing post, written from one line the owner sent, and checked against the rules Google rejects on." />
+<style>
+  :root{
+    --ink:#1c1613; --muted:#6d6155; --bg:#faf7f1; --card:#fff; --line:#e6ddd1;
+    --soft:#f4eee4; --accent:#b03d29; --gold:#b8893a; --good:#2f6f4f; --bad:#a8341f;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6}
+  a{color:var(--accent)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px}
+
+  header{border-bottom:1px solid var(--line);background:var(--card)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0}
+  .brand{font-weight:800;letter-spacing:-.2px;text-decoration:none;color:var(--ink)}
+  .nav a.back{font-size:14.5px;text-decoration:none}
+
+  .hero{padding:44px 0 30px;text-align:center}
+  .kicker{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;
+    letter-spacing:-.5px;margin:10px 0 12px}
+  .sub{color:var(--muted);font-size:16.5px;max-width:60ch;margin:0 auto}
+
+  section{padding:26px 0}
+  .stitle{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:12px}
+
+  .said{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);
+    border-radius:14px;padding:18px 20px}
+  .said p{font-size:16px;line-height:1.6}
+  .said .who{display:block;font-size:12.5px;color:var(--muted);margin-top:9px}
+
+  .arrow{text-align:center;color:var(--muted);font-size:13px;padding:10px 0 4px;
+    letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .arrow span{display:block;font-size:22px;color:var(--gold);line-height:1.4}
+
+  .posts{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:760px){.posts{grid-template-columns:repeat(2,1fr)}}
+  .post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+    display:flex;flex-direction:column;gap:8px}
+  .post .body{font-size:15.5px;line-height:1.55;white-space:pre-line}
+  .post .tags{font-size:13.5px;color:var(--gold);line-height:1.5}
+  .post .n{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .more{font-size:14px;color:var(--muted);margin-top:12px;text-align:center}
+
+  /* the Google post, and the checker on it */
+  .gp{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:12px}
+  .gp .lbl{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:9px}
+  .gp .txt{font-size:16px;line-height:1.6}
+  .gp .cta{display:inline-block;margin-top:12px;border:1px solid var(--line);border-radius:999px;
+    padding:7px 16px;font-size:13.5px;color:var(--accent);font-weight:700}
+  .verdict{border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.55}
+  .verdict.ok{background:#eef5f0;border:1px solid #cfe3d6;color:#2b5c43}
+  .verdict.bad{background:#fbeeea;border:1px solid #eecfc6;color:#7d2a17}
+  .verdict b{display:block;margin-bottom:7px;font-size:15px}
+  .verdict ul{margin:0;padding-left:18px}
+  .verdict li{margin-bottom:5px}
+  .verdict code{background:rgba(0,0,0,.06);padding:1px 6px;border-radius:5px;font-size:13px}
+  .badpost{background:#fff;border:1px dashed #dcbcb2;border-radius:12px;padding:14px 16px;
+    font-size:15.5px;line-height:1.55;color:var(--muted);margin-bottom:10px}
+
+  .notes{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:760px){.notes{grid-template-columns:repeat(3,1fr)}}
+  .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .note b{display:block;margin-bottom:5px;font-size:15px}
+  .note p{color:var(--muted);font-size:14px;line-height:1.55}
+
+  .cta-row{text-align:center;padding:34px 0 46px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
+    padding:15px 26px;border-radius:10px;min-height:50px;line-height:20px;font-size:16px}
+  .cta-row p{color:var(--muted);font-size:14px;margin-top:12px}
+  footer{border-top:1px solid var(--line);background:var(--card);padding:22px 0;text-align:center;
+    color:var(--muted);font-size:13.5px}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header><div class="wrap nav">
+  <a class="brand" href="./index.html">ReplyPlate</a>
+  <a class="back" href="./index.html">&larr; Back</a>
+</div></header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Social posts</div>
+    <h1>A month of posts, written for you</h1>
+    <p class="sub">One line from the owner goes in. Eight captions and a post for the Google listing come out,
+      checked before anything goes near a page with their name on it.</p>
+  </div>
+
+  <section>
+    <p class="stitle">What goes in</p>
+    <div class="said">
+      <p>"Two for one on pizzas Tuesday and Wednesday through August. The vegan special is
+        doing well. Friday nights are full again."</p>
+      <span class="who">Marco, The Olive Table, texted on a Sunday afternoon</span>
+    </div>
+  </section>
+
+  <div class="arrow"><span>&darr;</span>What comes out</div>
+
+  <section>
+    <p class="stitle">Eight for Instagram and Facebook. Here are four.</p>
+    <div class="posts">
+      <div class="post">
+        <span class="n">Post 1</span>
+        <span class="body">Sourdough, ninety seconds, straight out of the fire. 🔥
+Two for one Tuesday and Wednesday, all month.</span>
+        <span class="tags">#woodfiredpizza #portlandeats #pdxfood #twoforone</span>
+      </div>
+      <div class="post">
+        <span class="n">Post 2</span>
+        <span class="body">Cashew base, salsa verde, roasted veg. 🌿
+The vegan one is not an afterthought and people have noticed.</span>
+        <span class="tags">#veganpizza #pdxvegan #portlandfood #plantbased</span>
+      </div>
+      <div class="post">
+        <span class="n">Post 3</span>
+        <span class="body">Marco has been feeding this oven since 2011.
+He still checks every pizza that comes out of it.</span>
+        <span class="tags">#familyrun #woodfired #portlandpizza #millstreet</span>
+      </div>
+      <div class="post">
+        <span class="n">Post 4</span>
+        <span class="body">Friday, eight o'clock, every table taken. 🍕
+Come early or give us a ring first.</span>
+        <span class="tags">#fridaynight #pdxdining #woodfiredpizza #portlandeats</span>
+      </div>
+    </div>
+    <p class="more">Four more written the same way. All eight arrive together, and nothing goes up
+      until the owner has read them.</p>
+  </section>
+
+  <section>
+    <p class="stitle">And one for the Google listing</p>
+    <div class="gp">
+      <div class="lbl">Offer post &middot; The Olive Table</div>
+      <p class="txt" id="goodPost">Two for one on wood-fired pizzas, Tuesday and Wednesday, 5pm to 9pm, all through
+        August. Same sourdough bases, same oven, just two of them. Dine in or pick up.</p>
+      <span class="cta">Order online</span>
+    </div>
+    <div class="verdict ok">
+      <b>Nothing here that Google rejects on</b>
+      Under the length where Google cuts the preview, the offer is in the first sentence, the days are
+      in the words, and there is no phone number, no link and no superlative.
+    </div>
+  </section>
+
+  <section>
+    <p class="stitle">The part that matters: it gets checked first</p>
+    <p class="sub" style="margin:0 0 14px;text-align:left">Google rejects posts, quietly, and an owner rarely
+      finds out why. Every post is run against the rules before it is handed over. This is what a bad one
+      looks like.</p>
+    <div class="badpost" id="badPost">BEST PIZZA IN PORTLAND!! Call us on (503) 555 0142 to book your table!!
+      Visit www.theolivetable.com for the full menu!!</div>
+    <div class="verdict bad">
+      <b>Do not post this yet</b>
+      <ul>
+        <li>There is a phone number in the body. Google rejects posts for this. Use the Call now button
+          instead. <code>(503) 555 0142</code></li>
+        <li>Repeated punctuation. Google lists extra characters as a reason to reject.</li>
+        <li>There is a link in the body. Put it on the button instead, where it is clickable.</li>
+        <li>A superlative claim. Keep it to what the restaurant can stand behind.</li>
+        <li>No date or day in the text. Offers need start and end dates in Google's form, and saying
+          it in the words too helps.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <p class="stitle">Three rules the posts follow</p>
+    <div class="notes">
+      <div class="note">
+        <b>Only what the owner said</b>
+        <p>Every post above comes from one text message. Nothing invents a dish, a price or a date that
+          Marco did not mention.</p>
+      </div>
+      <div class="note">
+        <b>Their red lines are obeyed</b>
+        <p>The Olive Table asked us never to use the word artisan. Read the eight posts and the Google
+          one. It is not there, and it will not be next month either.</p>
+      </div>
+      <div class="note">
+        <b>Nothing posts itself</b>
+        <p>They arrive together and the owner reads them. It is their name on the page, so it is their
+          call, every time.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-row">
+    <a class="btn" href="./index.html#start">Start for $199 a month</a>
+    <p>The posts are part of the price. So is everything else.
+      <a href="./report-demo.html">See the monthly report &rarr;</a></p>
+  </div>
+
+</div>
+
+<footer><div class="wrap">
+  <b>ReplyPlate</b> &bull; <a href="./index.html">Home</a> &bull;
+  <a href="./details.html">Costs and questions</a> &bull;
+  <a href="./chat-demo.html">A demo restaurant</a>
+  <br>The Olive Table is a made-up restaurant. The posts above were written for this page.
+</div></footer>
+
+</body>
+</html>
