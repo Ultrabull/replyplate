@@ -317,3 +317,9 @@ with their name on it, is a promise that breaks the moment the plate lands on
 the table, and it is their reputation that pays for it, not yours. A phone
 camera near a window at eleven in the morning beats a perfect picture of the
 wrong dinner.
+
+If their own pictures are the weak part, that is the paid shoot. You book a
+photographer in their town, brief them on the six shots the Photos tab in the
+console lists, and hand over the edited set. The price is in `config.js` as
+`photoPrice`. Get the photographer's quote before you quote the restaurant,
+because that number is what you are marking up and it moves a lot by city.

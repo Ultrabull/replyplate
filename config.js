@@ -6,7 +6,7 @@
    pasting a Stripe link into one page and leaving the other three quietly
    emailing people instead of charging them.
 
-   STRIPE.md explains, step by step, how to make the two links below.
+   STRIPE.md explains, step by step, how to make the payment links below.
    ═══════════════════════════════════════════════════════════════════════════ */
 window.RP_CONFIG = {
 
@@ -15,8 +15,9 @@ window.RP_CONFIG = {
 
   /* Prices shown on the site. Keep the $ and the comma, these are printed as
      written. Change one here and every page that mentions it changes with it. */
-  price:    "$199",     // the monthly subscription
-  webPrice: "$1,200",   // building a website, charged once
+  price:      "$199",     // the monthly subscription
+  webPrice:   "$1,200",   // building a website, charged once
+  photoPrice: "$750",     // a professional photo shoot, charged once
 
   /* ── Stripe ───────────────────────────────────────────────────────────────
      Paste the Payment Link for the monthly plan here and every "Start for
@@ -32,6 +33,11 @@ window.RP_CONFIG = {
      off a page. Keep the link here so it is with everything else, and send it
      to a client once you have both agreed a price.                          */
   stripeWebsite: "",      // e.g. "https://buy.stripe.com/dR6cN4def456"
+
+  /* The one-off photo shoot. Same idea as the website: you book a photographer
+     in their town first, so what it costs you is known before you quote. Send
+     this link once you have both agreed the number.                         */
+  stripePhotos: "",       // e.g. "https://buy.stripe.com/00g5kGghi789"
 
   /* Stripe's own billing page, where a customer changes their card, reads
      receipts, or cancels without emailing you. Stripe → Settings → Billing →

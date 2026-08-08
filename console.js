@@ -576,6 +576,10 @@
   var GP_LIMIT = 1500;           // summary hard limit
   var GP_SWEET = 300;            // past this, the reader stops
 
+  /* Read from config.js when it is there, so the console never quotes a price
+     the website has stopped charging. The literal is the fallback. */
+  var PHOTO_PRICE = (window.RP_CONFIG && window.RP_CONFIG.photoPrice) || "$750";
+
   var PHOTO_JOBS = [
     { id: "exterior", label: "The front of the building", why: "So somebody walking up recognises it. This is the one most listings are missing." },
     { id: "interior", label: "The room, with people in it", why: "An empty dining room reads as a dead restaurant. Shoot it during service." },
@@ -711,6 +715,22 @@
     var bar = el("div", "gp-progress");
     bar.textContent = done + " of " + PHOTO_JOBS.length + " done for " + c.name;
     dom.gpPhotos.appendChild(bar);
+
+    /* This list is the only place the gap is visible. A restaurant missing
+       half of it will be short of pictures every month, for the posts and for
+       the listing, and no amount of writing fixes that. So the offer belongs
+       here, next to the evidence, rather than in a price list nobody opens.
+
+       Only once they are properly short. Nagging over one missing shot is how
+       an operator learns to ignore the line. */
+    if (PHOTO_JOBS.length - done >= 3) {
+      var sell = el("div", "gp-offer");
+      sell.innerHTML = "<b>" + (PHOTO_JOBS.length - done) + " still missing.</b> " +
+        "Worth offering the shoot: you book a photographer in their town, brief them on the " +
+        "list above, and hand over the edited set. " + escapeHtml(PHOTO_PRICE) + " once. " +
+        "<em>Get the photographer's price first. It is what you are marking up.</em>";
+      dom.gpPhotos.appendChild(sell);
+    }
   }
 
   async function doSocial() {

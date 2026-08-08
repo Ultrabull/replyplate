@@ -300,6 +300,7 @@
       <details><summary>How big is <span data-brand>ReplyPlate</span>?</summary><p>Small, and new. One person runs it, and today a good part of the work is done by hand rather than fully automated. That means a human genuinely reads your reviews. It also means there's no support queue, so you get the founder's email. As more of it automates we'll tell you which parts before it changes, and the rule that negative reviews wait for your OK won't change.</p></details>
       <details><summary>Do you only ask the diners who seemed happy?</summary><p>No, and we won't. Everyone sees the same QR code, and a printed code cannot tell whether someone had a good night. That is the point of doing it this way. Google prohibits filtering, and the FTC's rule on consumer reviews treats review suppression as deceptive, so cherry-picking your happy customers is the kind of shortcut that gets a profile wiped. You get real reviews or none.</p></details>
       <details><summary>What if I hate a reply?</summary><p>Edit it or kill it, one tap, and tell us why in a line. Anything already posted can be edited or deleted from your Google profile at any time, by you or by us. Rejections are the fastest way for us to learn how you actually talk. If we keep getting it wrong, cancel.</p></details>
+      <details><summary>What costs extra, on top of the <span data-price>$199</span>?</summary><p>Two things, and only if you ask for them. A website, <span data-webprice>$1,200</span> once, if you have no site or the one you have is beyond saving. And photographs, <span data-photoprice>$750</span> once, if the pictures of your food are the weak part. For the photos we book a photographer in your town, brief them on the six shots a Google listing and a month of posts actually need, and hand you the edited set to keep and use anywhere, including on a site we did not build. Neither is needed by most restaurants. Your own phone photos taken near a window at eleven in the morning beat stock every time, and nothing in the <span data-price>$199</span> stops working if you never buy either.</p></details>
       <details><summary>Can I cancel?</summary><p>Any month. No contract, no notice period, no cancellation call. Email us and it stops at the end of the month, and we take ourselves off your Google profile the same day so you're not left wondering who still has access.</p></details>
       <details><summary>If I cancel, what happens to everything you did?</summary><p>You keep it. Every reply we posted stays up, in your name, and we never take them down. Your review code and any cards you printed keep working forever, because the code points at Google rather than at us. The chat on your website keeps running. If you were using our hosted link, we point it at your Google listing so nothing printed on a bag or a table goes dead. The only thing that stops is us: we come off your Google profile the same day, and your Facebook and Instagram access if you gave it.</p></details>
     </section>
@@ -343,6 +344,8 @@
     const CONFIG = {
       brand: "ReplyPlate",
       price: "$199",
+      webPrice: "$1,200",
+      photoPrice: "$750",
       stripe: "",                     // e.g. https://buy.stripe.com/xxxxxxxx
       book:   "",                     // e.g. https://calendly.com/you/15min
       email:  "hello@reply-plate.com",
@@ -358,6 +361,8 @@
       document.title = "Costs and questions | " + CONFIG.brand;
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
       document.querySelectorAll("[data-price]").forEach(function(n){ n.textContent = CONFIG.price; });
+      document.querySelectorAll("[data-webprice]").forEach(function(n){ n.textContent = CONFIG.webPrice; });
+      document.querySelectorAll("[data-photoprice]").forEach(function(n){ n.textContent = CONFIG.photoPrice; });
       var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=I%27d%20like%20to%20start");
       document.querySelectorAll("[data-cta]").forEach(function(a){ if(a.getAttribute("href")==="#") a.href = startUrl; });
       var bookUrl = CONFIG.book || ("mailto:" + CONFIG.email + "?subject=Free%20setup%20call");

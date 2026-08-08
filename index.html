@@ -534,7 +534,7 @@
           <span class="ico" aria-hidden="true">🔁</span>
           <h3><i>6</i> A reason to come back</h3>
           <p class="lead">The second visit is where the money is.</p>
-          <p><b>A loyalty card in the chat.</b> Order five times, the sixth garlic bread is free. <b>And an offer that knows the day.</b> Two for one on Tuesday shows on Tuesday, and takes itself down after. <b>Both are yours to set, and we ask you for them in the questions.</b> The number, the reward, the offer, the days and the date it stops. We never invent one for you, and you can change any of it in a message.</p>
+          <p><b>A loyalty card in the chat.</b> Order five times, the sixth garlic bread is free. <b>And an offer that knows the day.</b> Two for one on Tuesday shows on Tuesday, and takes itself down after. <b>Both are yours to set, and the questions ask you for them:</b> the number, the reward, the offer, the days and the date it stops. We never invent one for you.</p>
           <a class="more" href="./chat-demo.html">See the card and the offer &rarr;</a>
         </div>
         <div class="val">
@@ -549,6 +549,11 @@
       <p class="vfoot"><b>And if you need a website</b>, we build one with the chat and the ordering already in it,
         <span data-webprice>$1,200</span> once, no monthly fee for the site itself. No website today? We host your
         ordering page free, so the Google route works from day one. <a href="./websites.html">See what we build &rarr;</a></p>
+
+      <p class="vfoot"><b>If your photos are the weak part</b>, we book a photographer in your town, brief them on the
+        six pictures a listing and a month of posts need, and hand you the edited set to keep and use anywhere,
+        <span data-photoprice>$750</span> once. Not needed by everyone: if your own pictures are good, use those and
+        keep the money.</p>
     </section>
 
     <section class="sample">
@@ -763,6 +768,11 @@
     const CONFIG = {
       brand: "ReplyPlate",
       price: "$199",
+      /* Both of these are printed on this page. They used to be typed into the
+         markup and read from nowhere, so changing config.js moved the number on
+         websites.html and left this one saying something else. */
+      webPrice: "$1,200",
+      photoPrice: "$750",
       stripe: "",                     // e.g. https://buy.stripe.com/xxxxxxxx
       book:   "",                     // e.g. https://calendly.com/you/15min
       email:  "hello@reply-plate.com",
@@ -776,6 +786,8 @@
       document.title = CONFIG.brand + ": Google reviews answered and social posts written, for restaurants";
       document.querySelectorAll("[data-brand]").forEach(function(n){ n.textContent = CONFIG.brand; });
       document.querySelectorAll("[data-price]").forEach(function(n){ n.textContent = CONFIG.price; });
+      document.querySelectorAll("[data-webprice]").forEach(function(n){ n.textContent = CONFIG.webPrice; });
+      document.querySelectorAll("[data-photoprice]").forEach(function(n){ n.textContent = CONFIG.photoPrice; });
       var startUrl = CONFIG.stripe || ("mailto:" + CONFIG.email + "?subject=I%27d%20like%20to%20start");
       document.querySelectorAll("[data-cta]").forEach(function(a){ if(a.getAttribute("href")==="#") a.href = startUrl; });
       var bookUrl = CONFIG.book || ("mailto:" + CONFIG.email + "?subject=Free%20setup%20call");

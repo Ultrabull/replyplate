@@ -137,6 +137,26 @@ agreed a price.
 
 ---
 
+## Step 6: the photo shoot link
+
+Same again, one time, at `$750`.
+
+```js
+stripePhotos: "https://buy.stripe.com/00g5kGghi789",
+```
+
+Also not wired to a button. **Ring the photographer before you send this one.**
+The price on the site is what the restaurant pays you. What you keep is that
+minus the photographer, and a half day in San Francisco is not a half day in
+Tulsa. If a local shooter wants $600, either charge more than $750 or say no to
+that one. Quoting first and finding out after is how a $750 job pays you $80.
+
+One-off payments are the same fee as a subscription card payment, without the
+extra 0.5% that recurring billing adds. So $750 costs you about $22, and you
+keep roughly $728 before the photographer.
+
+---
+
 ## What Stripe takes
 
 On each $199 payment, in the US:

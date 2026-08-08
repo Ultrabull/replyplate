@@ -1551,5 +1551,17 @@ window.RP_CHAT = {
      With no ?test in the address this file adds nothing at all. -->
 <script src="./demo-test.js" defer></script>
 <script src="./chat-widget.js" defer></script>
+
+<!-- This page names the subscription price once, in the ordering section. It
+     used to be typed into the markup and read from nowhere, so a price change
+     in config.js moved the number on every other page and left this one
+     quoting the old one to a prospect. -->
+<script src="config.js"></script>
+<script>
+  (function () {
+    var p = (window.RP_CONFIG && window.RP_CONFIG.price) || "$199";
+    document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = p; });
+  })();
+</script>
 </body>
 </html>

@@ -361,6 +361,7 @@
       person who answers his own email: <a data-email href="#">hello@example.com</a></p>
   </footer>
 
+<script src="config.js"></script>
 <script>
   /* ── EDIT THIS ONE BLOCK ────────────────────────────────────────────────
      email : where the answers should arrive
@@ -369,11 +370,18 @@
   const CONFIG = {
     brand: "ReplyPlate",
     email: "hello@reply-plate.com",
+    price: "$199",
     book:  "",
   };
+  /* config.js wins where it sets something. Without this the footer kept
+     saying $199 after the price had been changed everywhere else. */
+  if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
+    if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
+  });
   (function () {
     "use strict";
     document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
+    document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = CONFIG.price; });
     document.querySelectorAll("[data-email]").forEach(function (a) {
       a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email;
     });

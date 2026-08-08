@@ -473,7 +473,7 @@
         <div class="f"><span class="ico" aria-hidden="true">🕐</span><b>Hours that match Google</b>
           <p>Your site and your Google listing say the same thing. Nobody drives over on a Monday to find the door locked.</p></div>
         <div class="f"><span class="ico" aria-hidden="true">📸</span><b>Your food, not stock photos</b>
-          <p>We use pictures of your plates. A stock photo of a salad reads as a place that closed two years ago, and people can tell.</p></div>
+          <p>We use pictures of your plates. A stock photo of a salad reads as a place that closed two years ago, and people can tell. Yours from a phone are fine. If you would rather they were shot properly, we can book that for you, <span data-photoprice>$750</span> once.</p></div>
       </div>
     </section>
 
@@ -554,9 +554,10 @@
   ────────────────────────────────────────────────────────────────────────── */
   const CONFIG = {
     brand:    "ReplyPlate",
-    price:    "$199",
-    webPrice: "$1,200",
-    email:    "hello@reply-plate.com",
+    price:      "$199",
+    webPrice:   "$1,200",
+    photoPrice: "$750",
+    email:      "hello@reply-plate.com",
     };
     /* config.js wins where it sets something. If it failed to load, or a field
        in it is blank, the literal above still applies and the page works. */
@@ -567,6 +568,7 @@
     document.querySelectorAll("[data-brand]").forEach(function (n) { n.textContent = CONFIG.brand; });
     document.querySelectorAll("[data-price]").forEach(function (n) { n.textContent = CONFIG.price; });
     document.querySelectorAll("[data-webprice]").forEach(function (n) { n.textContent = CONFIG.webPrice; });
+    document.querySelectorAll("[data-photoprice]").forEach(function (n) { n.textContent = CONFIG.photoPrice; });
     var quote = "mailto:" + CONFIG.email + "?subject=" + encodeURIComponent("A website for my restaurant") +
       "&body=" + encodeURIComponent("My restaurant is called:\n\nWe are in:\n\nOur website now (or none):\n");
     document.querySelectorAll("[data-quote]").forEach(function (a) { a.href = quote; });
@@ -709,7 +711,7 @@
       { chip: "What's on the page",
         q: ["what do i get","what is included","what is on it","how many pages","is it one page","what does the site have",
             "can i have more pages","do i get a menu page","what about photos","who takes the photos","do you use stock photos"],
-        a: "One page that does the whole job: your name and what you sell, tonight's hours, Call and Directions as buttons at the top, your menu with prices as real text, your photos, and the chat.\n\nNot ten pages. Ten pages is ten places for something to go out of date.\n\nPhotos should be yours. Snap them on a phone in daylight and they will beat stock every time. A stock photo of a salad reads as a place that closed." },
+        a: "One page that does the whole job: your name and what you sell, tonight's hours, Call and Directions as buttons at the top, your menu with prices as real text, your photos, and the chat.\n\nNot ten pages. Ten pages is ten places for something to go out of date.\n\nPhotos should be yours, never stock. A stock photo of a salad reads as a place that closed. Snapped on a phone near a window at eleven in the morning, yours will beat stock every time.\n\nIf you would rather they were done properly, we can arrange that. We book a photographer in your town and hand you the edited set, " + CONFIG.photoPrice + " once. It is an extra, not part of the build, and plenty of restaurants never need it." },
       { chip: "Will it show up on Google?",
         q: ["will it show on google","google search","seo","will people find it","search engine","will i rank","google ranking",
             "how do people find my site"],
