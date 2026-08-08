@@ -33,14 +33,17 @@ and raise questions about who they are. Every prompt below already says so.
 
 **5. Check the bottom right corner for a sparkle.**
 Google's free Gemini stamps a small four-pointed star into the corner of every
-picture it makes. It is faint, but on a dark photo you can see it, and it is
-currently sitting on all ten of the pictures on the demo. Nobody is likely to
-notice it, but it is the kind of thing a sharp-eyed restaurant owner spots.
+picture and every clip it makes. It is faint, but on a dark photo you can see
+it, and it was on all thirteen of these.
 
-Two ways round it. Generate the picture in Google AI Studio instead of the
-Gemini app, which gives you the file without the star. Or send me the word and
-I will trim the corner off, which costs a few pixels of a photo that is already
-centred. Either is fine. It is not worth redoing ten good pictures over.
+It has been painted out of all of them. Not cropped: cropping it off would have
+cost a tenth of every frame and pushed the centred subject off centre, which is
+rule 1 above. The star is the same shape every time, so it was measured once
+and then, in each picture, the pixels it covered were replaced with a piece of
+the same picture from just beside it.
+
+If you generate a new one, expect the star again. Google AI Studio gives you
+the file without it, which saves the bother.
 
 ---
 
