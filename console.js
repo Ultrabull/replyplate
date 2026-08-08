@@ -54,6 +54,12 @@
     cOwner: $("cOwner"), cNever: $("cNever"), cFaq: $("cFaq"), cPickup: $("cPickup"),
     cOrders: $("cOrders"), cDirect: $("cDirect"), cHours: $("cHours"), cNotes: $("cNotes"),
     cPrepayAsk: $("cPrepayAsk"), cPrepay: $("cPrepay"),
+    /* Question 8. The loyalty card and the offer are the owner's decision, so
+       they are asked for and stored per client rather than typed into the
+       Website chat tab from memory. */
+    cBackAsk: $("cBackAsk"), cLoyEvery: $("cLoyEvery"), cLoyReward: $("cLoyReward"),
+    cOffer: $("cOffer"), cOfferSub: $("cOfferSub"), cOfferDays: $("cOfferDays"),
+    cOfferEnds: $("cOfferEnds"),
     wlNumber: $("wlNumber"), wlPost: $("wlPost"), wlHours: $("wlHours"), wlCap: $("wlCap"),
     wlClients: $("wlClients"), wlManual: $("wlManual"), wlAdd: $("wlAdd"), wlUndo: $("wlUndo"),
     ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
@@ -256,7 +262,7 @@
       const row = el("div", "client-row" + (c.id === state.activeId ? " active" : ""));
       const nm = el("div", "nm"); nm.innerHTML = `${c.name}<small>${[c.cuisine, c.city].filter(Boolean).join(" · ") || "—"}</small>`;
       const use = el("button"); use.type = "button"; use.textContent = c.id === state.activeId ? "✓ Active" : "Use";
-      use.addEventListener("click", () => { state.activeId = c.id; save(S.active, c.id); renderClients(); renderClientSelect(); renderPhotos(); });
+      use.addEventListener("click", () => { state.activeId = c.id; save(S.active, c.id); renderClients(); renderClientSelect(); renderPhotos(); fillOfferFromClient(); });
       const edit = el("button"); edit.type = "button"; edit.textContent = "Edit";
       edit.addEventListener("click", () => fillClientForm(c));
       const del = el("button"); del.type = "button"; del.textContent = "Delete";
@@ -275,6 +281,10 @@
     dom.cOrders.value = c.orderPhone || ""; dom.cDirect.value = c.directOffer || "";
     dom.cHours.value = c.hours || ""; dom.cNotes.value = c.ownerNotes || "";
     dom.cPrepayAsk.value = c.prepayAsk || ""; dom.cPrepay.value = c.prepay || "";
+    dom.cBackAsk.value = c.backAsk || ""; dom.cLoyEvery.value = c.loyEvery || "";
+    dom.cLoyReward.value = c.loyReward || ""; dom.cOffer.value = c.offer || "";
+    dom.cOfferSub.value = c.offerSub || ""; dom.cOfferDays.value = c.offerDays || "";
+    dom.cOfferEnds.value = c.offerEnds || "";
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function clearClientForm() {
@@ -282,7 +292,8 @@
     [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90,
      dom.cPhone, dom.cEmail, dom.cOwner, dom.cNever, dom.cFaq, dom.cPickup,
      dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes,
-     dom.cPrepayAsk, dom.cPrepay].forEach((i) => i.value = "");
+     dom.cPrepayAsk, dom.cPrepay, dom.cBackAsk, dom.cLoyEvery, dom.cLoyReward,
+     dom.cOffer, dom.cOfferSub, dom.cOfferDays, dom.cOfferEnds].forEach((i) => i.value = "");
   }
   function saveClient() {
     const name = dom.cName.value.trim();
@@ -293,7 +304,11 @@
       faq: dom.cFaq.value.trim(), pickup: dom.cPickup.value,
       orderPhone: dom.cOrders.value.trim(), directOffer: dom.cDirect.value.trim(),
       hours: dom.cHours.value.trim(), ownerNotes: dom.cNotes.value.trim(),
-      prepayAsk: dom.cPrepayAsk.value, prepay: dom.cPrepay.value.trim() };
+      prepayAsk: dom.cPrepayAsk.value, prepay: dom.cPrepay.value.trim(),
+      backAsk: dom.cBackAsk.value, loyEvery: dom.cLoyEvery.value.trim(),
+      loyReward: dom.cLoyReward.value.trim(), offer: dom.cOffer.value.trim(),
+      offerSub: dom.cOfferSub.value.trim(), offerDays: dom.cOfferDays.value.trim(),
+      offerEnds: dom.cOfferEnds.value.trim() };
     if (editingClientId) {
       const c = state.clients.find((x) => x.id === editingClientId);
       if (c) Object.assign(c, data);
@@ -319,14 +334,14 @@
      block of answers. Used only to tell a heading apart from an owner's own
      numbered line further down an answer. */
   const QZ_HEADINGS = [
-    "What is the place called, and where is it?",
+    "Where can we find you?",
     "Who are we dealing with?",
     "What do you sell, in your own words?",
     "How should a reply sound?",
     "What must we never say?",
-    "Your Google listing",
     "What do people ask you all day?",
     "Do you want pickup ordering on your site?",
+    "What would bring somebody back?",
     "Your opening hours",
     "Anything coming up, or anything sore?",
   ];
@@ -334,6 +349,8 @@
   const QZ_KEYS = ["Restaurant", "Where", "Your name", "Mobile", "Email", "What you sell",
     "Voice", "More on the voice", "Never say", "Google listing", "Questions you get asked",
     "Pickup ordering", "Orders go to", "For ordering direct", "Pay before pickup", "Payment link",
+    "A reason to come back", "Loyalty every", "Loyalty reward",
+    "Offer", "Offer details", "Offer days", "Offer ends",
     "Hours", "Anything else"];
 
   function parseQuestionnaire(raw) {
@@ -417,6 +434,13 @@
     put(dom.cDirect,  d["For ordering direct"]);
     put(dom.cPrepayAsk, d["Pay before pickup"]);
     put(dom.cPrepay,  d["Payment link"]);
+    put(dom.cBackAsk,   d["A reason to come back"]);
+    put(dom.cLoyEvery,  d["Loyalty every"]);
+    put(dom.cLoyReward, d["Loyalty reward"]);
+    put(dom.cOffer,     d["Offer"]);
+    put(dom.cOfferSub,  d["Offer details"]);
+    put(dom.cOfferDays, d["Offer days"]);
+    put(dom.cOfferEnds, d["Offer ends"]);
     put(dom.cHours,   d["Hours"]);
     put(dom.cNotes,   d["Anything else"]);
 
@@ -1549,6 +1573,51 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
       dom.chOffDays.appendChild(b);
     });
   }
+  /* Question 8's answers belong to the owner, and this tab is where they turn
+     into the widget. Copying them across by hand is how a reward the owner
+     never agreed to ends up on their website, so they are carried over here.
+
+     Only ever into an empty box. Whatever the operator has typed on this tab
+     wins, because they may be mid-edit and having the form rewrite itself
+     under them is worse than retyping.
+
+     The stop date is the exception. The owner answers it in words ("end of the
+     month"), the widget needs a real date, and guessing at it is exactly the
+     mistake this whole change is meant to stop. So their words are shown
+     beside the date box and a person picks the day. */
+  function fillOfferFromClient() {
+    const c = activeClient();
+    const note = $("chOffOwner");
+    if (note) {
+      note.textContent = "";
+      note.hidden = true;
+    }
+    if (!c) return;
+    /* The loyalty box starts at 0, which is the off switch rather than a typed
+       answer, so it counts as empty here. Reading it as "already filled in"
+       silently dropped the one number the owner was asked for. */
+    const empty = (elm) => !elm.value.trim() || (elm === dom.chLoyEvery && elm.value.trim() === "0");
+    const put = (elm, v) => { if (elm && v && empty(elm)) elm.value = v; };
+    put(dom.chLoyEvery, c.loyEvery && parseInt(c.loyEvery, 10) > 1 ? parseInt(c.loyEvery, 10) : "");
+    put(dom.chLoyReward, c.loyReward);
+    put(dom.chOffText, c.offer);
+    put(dom.chOffSub, c.offerSub);
+
+    if (c.offerDays && !dom.chOffDays.querySelector('[aria-pressed="true"]')) {
+      const said = c.offerDays.toLowerCase();
+      [].slice.call(dom.chOffDays.children).forEach((b) => {
+        /* "Tue" matches "Tuesday" and "tues", which is how owners write it. */
+        if (said.indexOf(DAYS[+b.dataset.day].toLowerCase()) === -1) return;
+        b.setAttribute("aria-pressed", "true");
+        b.classList.add("on");
+      });
+    }
+    if (note && c.offerEnds && !dom.chOffUntil.value) {
+      note.textContent = 'They said it stops: "' + c.offerEnds + '". Put that in the date box.';
+      note.hidden = false;
+    }
+  }
+
   function offerFromForm() {
     const text = (dom.chOffText.value || "").trim();
     if (!text) return null;
@@ -1609,7 +1678,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.gpCheck.addEventListener("input", renderVerdict);
     dom.gpType.addEventListener("change", renderVerdict);
     renderPhotos();
-    dom.clientSelect.addEventListener("change", () => { state.activeId = dom.clientSelect.value || null; save(S.active, state.activeId); renderClients(); renderPhotos(); renderWorkload(); });
+    dom.clientSelect.addEventListener("change", () => { state.activeId = dom.clientSelect.value || null; save(S.active, state.activeId); renderClients(); renderPhotos(); renderWorkload(); fillOfferFromClient(); });
     dom.settingsBtn.addEventListener("click", openSettings);
     dom.settingsClose.addEventListener("click", closeSettings);
     dom.settingsSave.addEventListener("click", saveSettings);
@@ -1629,6 +1698,7 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     dom.rpGo.addEventListener("click", doReport);
     dom.chGo.addEventListener("click", doChat);
     buildDayToggles();
+    fillOfferFromClient();   /* must follow buildDayToggles: it presses them */
     dom.rpLoad.addEventListener("click", loadFromAutopilot);
     dom.leadAdd.addEventListener("click", addLead);
     dom.leadName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addLead(); } });

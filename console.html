@@ -57,9 +57,10 @@
         <h3>Add / edit a client</h3>
         <p class="hint">The same ten questions the owner answered, in the same order.</p>
 
-        <p class="qn">1. What is the place called, and where is it?</p>
+        <p class="qn">1. Where can we find you?</p>
         <input id="cName" class="in" placeholder="Restaurant name *" />
         <input id="cCity" class="in" placeholder="Town or city" />
+        <input id="cReview" class="in" placeholder="Their Google listing (a street address here will print on their QR cards)" />
 
         <p class="qn">2. Who are we dealing with?</p>
         <input id="cOwner" class="in" placeholder="Your name (what you call the owner)" />
@@ -75,13 +76,10 @@
         <p class="qn">5. What must we never say? <b class="qwarn">Hard rules. These go to the AI as prohibitions.</b></p>
         <textarea id="cNever" class="in" rows="4" placeholder="Never offer a free meal to fix a complaint.&#10;Never blame a supplier.&#10;Never use the word artisan."></textarea>
 
-        <p class="qn">6. Your Google listing</p>
-        <input id="cReview" class="in" placeholder="https://maps.app.goo.gl/... (a street address here will print on their QR cards)" />
-
-        <p class="qn">7. What do people ask you all day?</p>
+        <p class="qn">6. What do people ask you all day?</p>
         <textarea id="cFaq" class="in" rows="5" placeholder="Are you open Mondays? (No, closed Mondays)&#10;Do you do vegan? (Yes, five mains)&#10;Is there parking? (Free on Mill Street after 6pm)"></textarea>
 
-        <p class="qn">8. Do you want pickup ordering on your site?</p>
+        <p class="qn">7. Do you want pickup ordering on your site?</p>
         <select id="cPickup" class="in">
           <option value="">Not answered</option>
           <option value="Yes">Yes</option>
@@ -104,6 +102,26 @@
           want an order prepaid they text this link back themselves, so they judge it order by order. Show them
           Settings, General, Keyboard, Text Replacement on their phone: link as the phrase, something like
           <b>payme</b> as the shortcut. Then it is a thumb-tap inside any reply.</p>
+
+        <p class="qn">8. What would bring somebody back?</p>
+        <p class="hint" style="margin:-2px 0 10px;font-size:13px">The owner's call, not yours. Whatever lands here
+          fills in the loyalty card and the offer on the Website chat tab, so you never have to invent a reward.</p>
+        <select id="cBackAsk" class="in">
+          <option value="">A reason to come back: not answered</option>
+          <option value="Yes">Yes</option>
+          <option value="Not for now">Not for now</option>
+          <option value="Tell me more first">Tell me more first</option>
+        </select>
+        <div class="row">
+          <input id="cLoyEvery" class="in" style="width:120px;margin-bottom:0" placeholder="Every 5" />
+          <input id="cLoyReward" class="in" style="flex:1;min-width:150px;margin-bottom:0" placeholder="…gets a free garlic bread" />
+        </div>
+        <input id="cOffer" class="in" style="margin-top:10px" placeholder="Their offer, e.g. Two for one on pizzas" />
+        <input id="cOfferSub" class="in" placeholder="The small line, e.g. Tuesday and Wednesday, 5pm to 9pm" />
+        <div class="row">
+          <input id="cOfferDays" class="in" style="flex:1;min-width:150px;margin-bottom:0" placeholder="Which days, e.g. Tuesday, Wednesday" />
+          <input id="cOfferEnds" class="in" style="width:150px;margin-bottom:0" placeholder="Stops on" />
+        </div>
 
         <p class="qn">9. Your opening hours</p>
         <textarea id="cHours" class="in" rows="4" placeholder="Mon closed&#10;Tue to Thu 5pm to 10pm&#10;Fri and Sat 12pm to 11pm&#10;Sun 12pm to 8pm"></textarea>
@@ -331,6 +349,7 @@
           <label class="stars">To <input id="chOffTo" class="in" type="time" style="width:120px" /></label>
           <label class="stars">Stops <input id="chOffUntil" class="in" type="date" style="width:160px" /></label>
         </div>
+        <p class="hint" id="chOffOwner" hidden style="margin-top:6px;color:var(--accent)"></p>
         <p class="hint" style="margin-top:6px">Always set a stop date. An offer nobody took down is how a restaurant
           ends up advertising Christmas in March.</p>
 

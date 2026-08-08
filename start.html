@@ -132,14 +132,18 @@
 
       <div class="q">
         <div class="n">Question 1</div>
-        <label class="h" for="q1">What is the place called, and where is it?</label>
-        <p class="why">So we can find your listing.</p>
+        <label class="h" for="q1">Where can we find you?</label>
+        <p class="why">Your listing is where the reviews are, so this is the first thing we need.</p>
         <div class="pair two">
           <div><label class="s" for="q1">Restaurant name</label>
             <input type="text" id="q1" name="Restaurant" placeholder="The Olive Table" /></div>
           <div><label class="s" for="q1b">Town or city</label>
             <input type="text" id="q1b" name="Where" placeholder="Portland, OR" /></div>
         </div>
+        <div style="margin-top:10px"><label class="s" for="q1c">Your Google listing</label>
+          <p class="why" style="margin-bottom:11px">Search your name on Google Maps and paste the link. If you cannot
+            find it, put your street address and we will.</p>
+          <input type="text" id="q1c" name="Google listing" placeholder="https://maps.app.goo.gl/... or 214 Mill Street" /></div>
       </div>
 
       <div class="q">
@@ -188,21 +192,14 @@
 
       <div class="q">
         <div class="n">Question 6</div>
-        <label class="h" for="q6">Your Google listing</label>
-        <p class="why">Search your name on Google Maps and paste the link. If you cannot find it, put your street address and we will.</p>
-        <input type="text" id="q6" name="Google listing" placeholder="https://maps.app.goo.gl/... or 214 Mill Street" />
-      </div>
-
-      <div class="q">
-        <div class="n">Question 7</div>
-        <label class="h" for="q7">What do people ask you all day?</label>
+        <label class="h" for="q6">What do people ask you all day?</label>
         <p class="why">This becomes the chat on your website. It only ever repeats what you write here, so it can never make something up about an allergy.</p>
-        <textarea id="q7" name="Questions you get asked" style="min-height:140px"
+        <textarea id="q6" name="Questions you get asked" style="min-height:140px"
           placeholder="Are you open Mondays? (No, closed Mondays)&#10;Do you do vegan? (Yes, five mains, separate menu)&#10;Is there parking? (Free on Mill Street after 6pm)&#10;Can I bring my dog? (Bar and terrace yes, dining room no)"></textarea>
       </div>
 
       <div class="q">
-        <div class="n">Question 8</div>
+        <div class="n">Question 7</div>
         <label class="h">Do you want pickup ordering on your site?</label>
         <p class="why">Diners tap what they want and text you the order from their own phone. No card machine, no commission, and normally they pay at your counter. The last part of this question is about the times you would rather have the money first.</p>
         <div class="opts three">
@@ -213,11 +210,11 @@
           <label class="opt"><input type="radio" name="Pickup ordering" value="Tell me more first" />
             <span><b>Not sure</b><span>Explain it to me</span></span></label>
         </div>
-        <div style="margin-top:10px"><label class="s" for="q8b">If yes, which phone should orders land on?</label>
-          <input type="tel" id="q8b" name="Orders go to" placeholder="(415) 555 0199" /></div>
+        <div style="margin-top:10px"><label class="s" for="q7b">If yes, which phone should orders land on?</label>
+          <input type="tel" id="q7b" name="Orders go to" placeholder="(415) 555 0199" /></div>
 
         <div style="margin-top:16px">
-          <label class="s" for="q8c" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
+          <label class="s" for="q7c" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
             What could you give someone who orders direct?</label>
           <p class="why" style="margin-bottom:11px">Google lets you put your own ordering link on your listing, above
             DoorDash and the rest. A small thank you for using it is what makes people switch, and you keep the
@@ -225,7 +222,7 @@
             <b>Give something that is not a price cut if you can.</b> Grubhub's contract asks you to keep prices the same
             everywhere and DoorDash quietly ranks you lower when yours are cheaper. A free side has none of that
             trouble and pulls just as hard.</p>
-          <textarea id="q8c" name="For ordering direct" placeholder="A free garlic bread with any pizza"></textarea>
+          <textarea id="q7c" name="For ordering direct" placeholder="A free garlic bread with any pizza"></textarea>
         </div>
 
         <div style="margin-top:16px">
@@ -248,9 +245,59 @@
             <label class="opt"><input type="radio" name="Pay before pickup" value="Tell me more first" />
               <span><b>Not sure</b><span>Explain it to me</span></span></label>
           </div>
-          <div style="margin-top:10px"><label class="s" for="q8d">If you have a payment link already, paste it here
+          <div style="margin-top:10px"><label class="s" for="q7d">If you have a payment link already, paste it here
             and we will show you how to keep it a thumb-tap away on your phone</label>
-            <input type="url" id="q8d" name="Payment link" placeholder="https://buy.stripe.com/..." /></div>
+            <input type="url" id="q7d" name="Payment link" placeholder="https://buy.stripe.com/..." /></div>
+        </div>
+      </div>
+
+      <!-- Both of these are the owner's call, not ours. We sell them on the
+           front page, the console has boxes for them, and until this question
+           existed nobody ever asked. That left the operator either inventing a
+           reward and an offer or phoning to find out. -->
+      <div class="q">
+        <div class="n">Question 8</div>
+        <label class="h">What would bring somebody back?</label>
+        <p class="why">The second visit is where the money is. Two things help, and both are yours to decide. You can
+          have one, both, or neither, and you can change your mind any month.</p>
+        <div class="opts three">
+          <label class="opt"><input type="radio" name="A reason to come back" value="Yes" />
+            <span><b>Yes</b><span>Set it up</span></span></label>
+          <label class="opt"><input type="radio" name="A reason to come back" value="Not for now" />
+            <span><b>Not now</b><span>Maybe later</span></span></label>
+          <label class="opt"><input type="radio" name="A reason to come back" value="Tell me more first" />
+            <span><b>Not sure</b><span>Explain it to me</span></span></label>
+        </div>
+
+        <div style="margin-top:16px">
+          <label class="s" for="q8" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
+            A loyalty card in the chat</label>
+          <p class="why" style="margin-bottom:11px">It counts on the diner's own phone, and the claim is written into
+            the order text so <b>you see it before you give anything away</b>. You choose the number and the reward.
+            Five is the usual answer. <b>The reward comes out of your pocket, so pick something cheap to give and
+            nice to get.</b> A side or a coffee costs you very little. Money off costs you the same every time.
+            This one needs pickup ordering switched on, because it counts orders.</p>
+          <div class="pair two">
+            <div><label class="s" for="q8">After how many orders?</label>
+              <input type="text" id="q8" name="Loyalty every" inputmode="numeric" placeholder="5" /></div>
+            <div><label class="s" for="q8b">They get</label>
+              <input type="text" id="q8b" name="Loyalty reward" placeholder="a free garlic bread" /></div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px">
+          <label class="s" for="q8c" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
+            An offer on the nights you need it</label>
+          <p class="why" style="margin-bottom:11px">Your problem is rarely Saturday. Tell us the offer and the days,
+            and it only shows itself on those days. <b>Give it a date to stop.</b> An offer nobody took down is how a
+            restaurant ends up advertising Christmas in March.</p>
+          <input type="text" id="q8c" name="Offer" placeholder="Two for one on pizzas" />
+          <div style="margin-top:10px"><label class="s" for="q8d">The small line underneath</label>
+            <input type="text" id="q8d" name="Offer details" placeholder="Tuesday and Wednesday, 5pm to 9pm" /></div>
+          <div style="margin-top:12px"><label class="s" for="q8f">Which days?</label>
+            <input type="text" id="q8f" name="Offer days" placeholder="Tuesday, Wednesday" /></div>
+          <div style="margin-top:12px"><label class="s" for="q8e">And it stops on</label>
+            <input type="text" id="q8e" name="Offer ends" placeholder="31 August, or the end of the month" /></div>
         </div>
       </div>
 
@@ -264,8 +311,8 @@
       <div class="q">
         <div class="n">Question 10</div>
         <label class="h" for="q10">Anything coming up, or anything sore?</label>
-        <p class="why">Offers, a closure, a refit, a review you are still annoyed about. Whatever we should know before we write a word.</p>
-        <textarea id="q10" name="Anything else" placeholder="Tuesday is two for one on pizzas. We are shut the first week of September. There is a one star from March about a wait that was not our fault and I do not want it dragged up again."></textarea>
+        <p class="why">A closure, a refit, a review you are still annoyed about. Whatever we should know before we write a word. This one is for us, and none of it is ever published.</p>
+        <textarea id="q10" name="Anything else" placeholder="We are shut the first week of September. The chef is away in October. There is a one star from March about a wait that was not our fault and I do not want it dragged up again."></textarea>
       </div>
 
       <div class="send">
@@ -348,16 +395,22 @@
               "Never blame a member of staff", "Never argue with the reviewer",
               "Never name anyone who works here", "Never discuss prices",
               "Never mention we were closed for a while"] },
-      q7: { items: ["Opening hours", "Parking", "Vegan options", "Gluten free", "Nut allergies",
+      q6: { items: ["Opening hours", "Parking", "Vegan options", "Gluten free", "Nut allergies",
               "Dogs allowed", "Kids menu and high chairs", "Booking a table", "Big groups",
               "Wheelchair access", "Outdoor seating", "Do you deliver", "Card or cash",
               "Wifi", "Corkage and BYO", "Set menus"] },
-      q8c: { items: ["A free side", "A free drink", "A free dessert", "Extra topping on the house",
+      q7c: { items: ["A free side", "A free drink", "A free dessert", "Extra topping on the house",
               "A stamp on a loyalty card", "Ready faster than the apps", "Skip the queue at the counter",
               "10% off (price cut, see the note)", "Nothing for now"] },
+      q8b: { items: ["A free side", "A free drink", "A free coffee", "A free dessert",
+              "A free garlic bread", "Extra topping on the house", "$5 off the bill"] },
+      q8c: { items: ["Two for one on pizzas", "Kids eat free", "A free side with any main",
+              "Half price on a bottle of wine", "Set menu, two courses"] },
+      q8f: { sep: ", ", items: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+              "Saturday", "Sunday"] },
       q9: { items: ["Closed Mondays", "Open seven days", "Lunch and dinner", "Dinner only",
               "Closed Sunday evening", "Later on Friday and Saturday", "Kitchen shuts an hour before we do"] },
-      q10: { items: ["We run a weekly offer", "We are closing for a break soon",
+      q10: { items: ["We are closing for a break soon",
               "A recent bad review still bothers me", "We have just refurbished",
               "A new menu is coming", "We are hiring", "Nothing right now"] }
     };
