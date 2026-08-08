@@ -381,13 +381,6 @@
   .pb-note a{color:var(--accent);font-weight:700}
   @media (max-width:560px){.payback{padding:22px 18px}ol.pb li{padding-left:30px}}
 
-  .faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
-  .faq details{position:relative}
-  .faq summary{font-weight:700;cursor:pointer;font-size:16px;list-style:none;padding-right:30px}
-  .faq summary::-webkit-details-marker{display:none}
-  .faq summary::after{content:"+";position:absolute;right:18px;top:13px;color:var(--accent);font-weight:800;font-size:21px;line-height:1}
-  .faq details[open] summary::after{content:"–"}
-  .faq p{color:var(--muted);margin-top:10px;font-size:15px}
   .final{text-align:center;background:#211a11;border:1px solid #3f331f;color:#fff;border-radius:24px;padding:52px 26px;margin:30px 0;position:relative;overflow:hidden}
   .final::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%,rgba(208,163,78,.20),transparent 62%);pointer-events:none}
   .final > *{position:relative}
@@ -613,7 +606,7 @@
       </div>
       <div class="tilepanel" id="steppanel" role="tabpanel" aria-live="polite"></div>
       <p style="text-align:center;margin-top:26px"><a class="btn" href="./how.html">Watch it happen, step by step →</a></p>
-      <p class="cmp-note mid">A short walkthrough that plays itself. Setup is written out click by click in the <a href="./connect.html">setup guide</a>, and putting your review code on your receipts is in the <a href="./till.html">receipts guide</a>.</p>
+      <p class="cmp-note mid">A short walkthrough that plays itself. Setup is written out click by click in the <a href="./connect.html">setup guide</a>, and putting your review code on your receipts is in the <a href="./qr-code.html#receipts">receipts guide</a>.</p>
     </section>
 
     <section>
@@ -749,7 +742,6 @@
         <b>For clients</b>
         <a href="./connect.html">Setting up</a>
         <a href="./qr-code.html">Make your code</a>
-        <a href="./till.html">Codes on receipts</a>
       </div>
     </div>
     <p class="fnote"><b data-brand>ReplyPlate</b>. Google reviews answered, pickup orders taken, and people brought
@@ -968,14 +960,14 @@
     { h: "Ten questions, once, and you are done setting up",
       p: ["Here they are, so you know exactly what you are being asked. Most of them you answer by tapping, and you can skip any of them."],
       list: [
-        "What is the place called, and where is it?",
+        "Where can we find you? Your name, your town, your Google listing.",
         "Who are we dealing with, and which phone should we reach you on?",
         "What do you sell, in your own words?",
         "How should a reply sound? Warm, straight, or playful.",
         "<b>What must we never say?</b> The one that saves you from a reply that makes you wince.",
-        "Where is your Google listing?",
         "What do people ask you all day? This becomes the chat on your site.",
         "Do you want pickup ordering, and what could you give someone who orders direct?",
+        "What would bring somebody back? The loyalty card and the offer are yours to set.",
         "What are your opening hours, including the days you are shut?",
         "Anything coming up, or anything still sore?"
       ],

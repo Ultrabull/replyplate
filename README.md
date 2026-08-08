@@ -34,7 +34,7 @@ price there and the whole site changes.
 | `social-demo.html` | A month of posts from one owner text |
 | `commission.html` | What the delivery apps cost, on a $40 order |
 | `websites.html` | The $1,200 website build |
-| `qr-code.html` / `till.html` | Their review code, for tables and receipts |
+| `qr-code.html` | Their review code: table cards, stickers, and receipts (`till.html` redirects here) |
 | `start.html` | The ten questions a new client answers |
 | `connect.html` | How a client adds us to their Google profile |
 | `welcome.html` | Where Stripe sends them after paying |
