@@ -291,6 +291,10 @@
   /* ══ Full-width moving band ════════════════════════════════════════════ */
   .band{position:relative;height:min(62vh,480px);overflow:hidden;
     border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  /* The photo that goes here is a 3:1 letterbox. A tall box on a phone would
+     show only its middle quarter, which reads as brown mush rather than an
+     oven. Keep the band short and narrow screens still see the shot. */
+  @media (max-width:640px){.band{height:min(38vh,300px)}}
   .band > .drawn,.band > img,.band > video{position:absolute;inset:0;width:100%;height:100%;
     object-fit:cover;display:block;animation:kb 22s ease-in-out infinite alternate}
   .band > img,.band > video{z-index:1}
@@ -994,7 +998,8 @@
            takes over its tile. Until then the drawing behind it shows, so the
            page is never half built. Six subjects, none repeated, and none of
            them the three pizzas already sitting in the menu above. -->
-      <p class="ssub">A real restaurant's photographs go here. These are drawings, standing in.</p>
+      <p class="ssub">The Olive Table is not a real place, so these pictures were made for it. A real
+        restaurant's own photographs drop straight into these six spaces.</p>
       <div class="gal rv">
         <figure class="shot">
           <svg class="drawn" aria-hidden="true"><use href="#art-oven"/></svg>

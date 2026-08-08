@@ -31,6 +31,17 @@ at 4MB, run it through any "compress JPEG" tool before you upload it.
 Hands and forearms are fine and make food pictures better. Faces date a site
 and raise questions about who they are. Every prompt below already says so.
 
+**5. Check the bottom right corner for a sparkle.**
+Google's free Gemini stamps a small four-pointed star into the corner of every
+picture it makes. It is faint, but on a dark photo you can see it, and it is
+currently sitting on all ten of the pictures on the demo. Nobody is likely to
+notice it, but it is the kind of thing a sharp-eyed restaurant owner spots.
+
+Two ways round it. Generate the picture in Google AI Studio instead of the
+Gemini app, which gives you the file without the star. Or send me the word and
+I will trim the corner off, which costs a few pixels of a photo that is already
+centred. Either is fine. It is not worth redoing ten good pictures over.
+
 ---
 
 ## The whole list
@@ -51,9 +62,17 @@ and raise questions about who they are. Every prompt below already says so.
 | 12 | `gallery-5.jpg` | Gallery | 1000 x 1000 | square |
 | 13 | `room.jpg` | The wide strip under the gallery | 2100 x 700 | very wide |
 
-**Do these five first if you only have an hour:** `hero.jpg`, `margherita.jpg`,
-`pepperoni.jpg`, `vegan.jpg`, `gallery-2.jpg`. They are the ones a prospect
-sees before they decide whether to keep scrolling.
+**Ten of these are already in.** Everything except the three below is done and
+live. Nothing on that list needs touching again.
+
+**Still to come, in the order they are worth doing:**
+
+1. `room.jpg` — the wide strip under the gallery. This is the only picture slot
+   still showing a drawing, and it sits right underneath five real photographs,
+   so it is the one that stands out. Do this one next.
+2. `hero.mp4` — the oven, moving, behind the restaurant name. A nice-to-have.
+   The still photo already there does the job.
+3. `oven.mp4` — same again for the quote band. Last.
 
 ---
 
