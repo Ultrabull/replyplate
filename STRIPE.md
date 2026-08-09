@@ -215,6 +215,17 @@ Two things worth knowing:
 
 ## The bits people forget
 
+**Your bank account.** Stripe will let you build a link and take a payment
+before it has anywhere to send the money. That is not a favour. The money piles
+up in your Stripe balance and stays there until you add a bank account and
+finish the identity checks, and Stripe will eventually refund a customer whose
+money it has been holding with nowhere to send it.
+
+Add it before a client pays, not after. **Settings → Bank accounts and
+currencies.** Check **Account status** while you are in there: it tells you in
+one line whether payouts are actually switched on, which is the only answer
+that matters.
+
 **Payouts.** Stripe holds your first payment for about 7 days, then pays into
 your bank every 2 days. Do not panic on day one when the money is not there.
 
