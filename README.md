@@ -27,12 +27,10 @@ price there and the whole site changes.
 |---|---|
 | `index.html` | The landing page |
 | `details.html` | Costs and the long FAQ, including what costs extra |
-| `how.html` | A review getting answered, step by step |
-| `maps-demo.html` | Their Google listing, before and after, on a drawn phone |
+| `maps-demo.html` | Their Google listing, before and after, and what the apps cost |
 | `chat-demo.html` | The Olive Table, a made-up restaurant with the chat and ordering live |
 | `report-demo.html` | The monthly report, built from fourteen reviews |
 | `social-demo.html` | A month of posts from one owner text |
-| `commission.html` | What the delivery apps cost, on a $40 order |
 | `websites.html` | The $1,200 website build |
 | `qr-code.html` | Their review code, printed: table cards, stickers, a counter sign |
 | `start.html` | The ten questions a new client answers |

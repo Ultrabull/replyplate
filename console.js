@@ -67,7 +67,7 @@
     ocLastPost: $("ocLastPost"), ocReview: $("ocReview"), ocChannel: $("ocChannel"),
     ocGo: $("ocGo"), ocOut: $("ocOut"),
     chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
-    chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chMethod: $("chMethod"), chCurrency: $("chCurrency"),
+    chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chCurrency: $("chCurrency"),
     chLoyEvery: $("chLoyEvery"), chLoyReward: $("chLoyReward"),
     chOffText: $("chOffText"), chOffSub: $("chOffSub"), chOffDays: $("chOffDays"),
     chOffFrom: $("chOffFrom"), chOffTo: $("chOffTo"), chOffUntil: $("chOffUntil"),
@@ -886,7 +886,6 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       cfg.menu = menu;
       cfg.order = {
         enabled: true,
-        method: dom.chMethod.value,
         phone: orderPhone,
         currency: dom.chCurrency.value.trim() || "$",
         chip: "Order for pickup",

@@ -11,9 +11,8 @@
 
    2. Ordering never takes money and never routes the order itself. The customer
       taps items, then sends the finished order from their own phone to the
-      restaurant's phone number. A text message by default, because that is what
-      a US restaurant already has; set method:"whatsapp" for the ones that live
-      in it instead. That means no card handling, no refunds, and no order
+      restaurant's phone number. A text message, because that is what a US
+      restaurant already has. That means no card handling, no refunds, and no order
       sitting unseen in a dashboard nobody opens. It also verifies the customer
       for free, because the message arrives from their real number.
 
@@ -481,13 +480,6 @@
     if (off) lines.push("", "Offer showing: " + off.text);
     return lines.join("\n");
   }
-  /* Orders go by text. Every US restaurant already has a number that receives
-     them, far fewer run WhatsApp, and an order that needs an app the diner has
-     not installed is an order lost. Nothing in the console or on any page offers
-     WhatsApp any more; this branch survives only for a config hand-written with
-     method:"whatsapp", which no US client has needed. */
-  function isWa() { return ORDER.method === "whatsapp"; }
-
   /* Turn whatever the owner typed into +<country><number>. The dangerous case
      is a US number typed without its +1: stripping "415-555-0199" to digits and
      gluing a "+" on the front makes +4155550199, which is a Swiss number. So a
@@ -503,10 +495,10 @@
     return "+" + d;
   }
 
-  /* Shows what lands on the owner's phone. In demo mode this replaces opening
-     WhatsApp, because a demo restaurant has no real number to open. */
+  /* Shows what lands on the owner's phone, under the order, so it can be read
+     and copied on a machine that cannot open Messages. */
   function phonePreview(text) {
-    var app = isWa() ? "WhatsApp" : "Messages";
+    var app = "Messages";
     var d = document.createElement("div");
     d.className = "rpc-wa";
     var hd = document.createElement("div"); hd.className = "hd";
@@ -522,18 +514,16 @@
     basket = {}; refreshBasket();
     var m = panel.querySelector("#rpcMenu"); m.innerHTML = ""; buildMenu();
   }
-  /* Handing a link to the phone's own app. An anchor that gets clicked is the
-     reliable way to do it from inside a tap: window.open with _blank leaves a
-     stray blank tab sitting behind Messages on iOS Safari, and on a desktop it
-     hands back a perfectly truthy window for a link nothing can handle. */
+  /* Handing the order to the phone's own Messages app. An anchor that gets
+     clicked is the reliable way to do it from inside a tap: window.open with
+     _blank leaves a stray blank tab sitting behind Messages on iOS Safari, and
+     on a desktop it hands back a perfectly truthy window for a link nothing can
+     handle. No target, deliberately: giving an sms: link one is what leaves the
+     blank tab behind. */
   function openLink(url) {
     var a = document.createElement("a");
     a.href = url;
     a.rel = "noopener";
-    /* WhatsApp is a web address, so it needs its own tab or the restaurant's
-       page is the thing that disappears. sms: is not: giving it a target is
-       what leaves a blank tab sitting behind Messages on iOS. */
-    if (url.indexOf("http") === 0) a.target = "_blank";
     a.style.display = "none";
     document.body.appendChild(a);
     a.click();
@@ -541,16 +531,14 @@
   }
 
   function sendOrder() {
-    var app = isWa() ? "WhatsApp" : "Messages";
+    var app = "Messages";
     var text = orderText();
 
     var full = e164(ORDER.phone);
     if (!full) return;
-    var enc = encodeURIComponent(text);
-    /* wa.me wants bare digits, sms: wants the + form. Neither tolerates the
-       spaces and brackets of a raw "+1 (555) 010-2288". */
-    var url = isWa() ? ("https://wa.me/" + full.slice(1) + "?text=" + enc)
-                     : ("sms:" + full + "?&body=" + enc);
+    /* sms: wants the + form and tolerates none of the spaces and brackets of a
+       raw "+1 (555) 010-2288". */
+    var url = "sms:" + full + "?&body=" + encodeURIComponent(text);
     openLink(url);
     showChat();
 
