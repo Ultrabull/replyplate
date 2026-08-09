@@ -26,7 +26,7 @@ window.RP_CONFIG = {
      Leave it "" and those buttons open an email to you instead. That is a
      working fallback, not a broken site, so an empty value is safe. It is just
      slower, and you have to chase the card details yourself.                */
-  stripe: "",             // e.g. "https://buy.stripe.com/aEU00abc123"
+  stripe: "https://buy.stripe.com/dRmaEXe5ZefY1akbz63AY00",
 
   /* The one-off website build. This one is not wired to a public button on
      purpose: you quote a website after seeing their place, you do not sell it
