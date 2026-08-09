@@ -120,8 +120,11 @@
 
   .callout{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);
     border-radius:14px;padding:16px 18px;margin-top:18px}
-  .callout b{display:block;margin-bottom:6px}
+  .callout > b{display:block;margin-bottom:6px}
   .callout p{font-size:14.5px;line-height:1.6;color:var(--muted)}
+  .callout p + p{margin-top:10px}
+  .callout p b{color:var(--ink)}
+  .callout .fine{font-size:13px}
 
   .notes{display:grid;gap:12px;grid-template-columns:1fr;margin-top:16px}
   @media (min-width:760px){.notes{grid-template-columns:repeat(2,1fr)}}
@@ -258,20 +261,18 @@
     </div>
 
     <div class="callout" id="feeNote">
-      <b>Careful with the words "No fee"</b>
-      <p>That means no fee <b>to the diner</b>. It says nothing about what you pay. A pickup order through a
-        marketplace app still costs the restaurant a commission, commonly somewhere around 6% to 15% depending on
-        the plan, and a delivery order a good deal more. Treat those as rough figures and check your own
+      <b>"No fee" does not mean free for you</b>
+      <p>It means the <b>diner</b> pays no extra fee. You still pay.</p>
+      <p>The app keeps a cut of every order it passes you. Roughly 6% to 15% of the bill on a pickup order, and a
+        good deal more on a delivery one.</p>
+      <p><b>On a $40 delivery order, the app can take $10.</b> Your profit on that order was about $1.60 to start
+        with. So the order made you close to nothing.</p>
+      <p>That is a fair price for a stranger who had never heard of you. It is a bad one for a regular who
+        searched your name, because they had already found you. <a href="./chat-demo.html">Do the sum with your
+        own numbers &rarr;</a></p>
+      <p class="fine">Rough figures for comparison, not a quote. Three to five percent is the commonly cited
+        profit margin for an independent restaurant, and 25% is DoorDash's published Plus rate. Check your own
         agreement.</p>
-      <p style="margin-top:10px"><b>On a $40 delivery order at 25%, the app takes $10.</b> An independent
-        restaurant runs on somewhere between three and five percent net profit, so the profit on that order was
-        about $1.60. The commission does not dent it, it removes it.</p>
-      <p style="margin-top:10px">That is a fair price for a stranger who had never heard of you. It is a poor one
-        for a regular who searched your name, because they had already found you. <a href="./chat-demo.html">The
-        demo restaurant has a calculator that does this with your own numbers &rarr;</a></p>
-      <p style="margin-top:10px;font-size:13px">Margin figure is the commonly cited three to five percent range
-        for independent restaurants. The commission is DoorDash's published Plus rate. Both are estimates for
-        comparison, not a quote.</p>
     </div>
   </section>
 
@@ -281,7 +282,7 @@
       <b>Picking your name costs the diner one extra tap</b>
       <p>They choose their food the same way. The last step is different: instead of paying inside an app, they
         press send on a text that is already written, and pay when they pick it up.</p>
-      <p style="margin-top:10px">That one tap is also why there is no card machine, no card fee, no chargeback six
+      <p>That one tap is also why there is no card machine, no card fee, no chargeback six
         weeks later and no commission. And the message arrives from their real number, which is what tells you the
         order is real.</p>
     </div>
