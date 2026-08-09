@@ -14,7 +14,7 @@ code.**
 | How they get there | Needs code? |
 |---|---|
 | Taps **Order online** on the Google listing | **No** |
-| Scans a **QR code** on the table, the bag or the receipt | **No** |
+| Scans a **QR code** on the table, the counter or the bag | **No** |
 | Taps the link in the **Instagram bio** | **No** |
 | Taps the **chat bubble on the restaurant's own website** | **Yes** |
 
@@ -43,7 +43,7 @@ site as `r/their-name.json`.
 That one link then goes in four places:
 
 1. **Their Google listing**, under Food ordering, marked preferred
-2. **A QR code** for table cards, takeaway bags and receipts
+2. **A QR code** for table cards, takeout bags and the counter
 3. **Their Instagram bio**
 4. **A button on their existing website**
 
