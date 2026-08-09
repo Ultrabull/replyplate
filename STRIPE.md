@@ -8,6 +8,39 @@ is the entire job. It takes about twenty minutes once.
 
 ---
 
+## Step 0: your account has two names, and they are not the same
+
+This trips everybody, so do it before anything else.
+
+**Account name** is a label for the account itself. It is the name at the top
+of your dashboard, and the one you would use to tell two Stripe accounts apart.
+Put **`ReplyPlate`** here. This is the account that takes ReplyPlate money.
+
+**Your legal name** is a different box, and Stripe asks for it separately when
+you activate the account. That one has to be your real name exactly as it
+appears on your ID and your bank account, because it is how Stripe checks you
+are a real person and how the money reaches you. If you have not registered a
+company, pick **Individual** or **Sole proprietor** as the business type. You
+are not pretending to be a company, and saying you are one when you are not is
+the kind of mismatch that freezes a payout.
+
+**Public business name** is the third one, under **Settings → Business →
+Public details**. Set it to `ReplyPlate` and the statement descriptor to
+`REPLYPLATE`. This is what a restaurant owner actually sees on their card
+statement. Get it wrong and they see a name they do not recognise, do not
+remember agreeing to, and charge back.
+
+**Never leave a made-up company name on the account.** A name you invented
+while testing can end up on a receipt, on a statement, or in front of a bank
+during a dispute.
+
+**Planning other products later?** Make a second Stripe account under the same
+login rather than trying to make one account serve two brands. It is free, it
+takes a minute, and the public name and statement descriptor are set per
+account, so one account can only ever wear one name in front of customers.
+
+---
+
 ## What a Payment Link is
 
 A web address that charges people.
