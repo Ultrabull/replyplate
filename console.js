@@ -36,6 +36,7 @@
     dataExport: $("dataExport"), dataImport: $("dataImport"), dataFile: $("dataFile"), dataMsg: $("dataMsg"),
     clientsList: $("clientsList"),
     cName: $("cName"), cCuisine: $("cCuisine"), cTone: $("cTone"), cReview: $("cReview"), cCity: $("cCity"),
+    cGAccess: $("cGAccess"), cGHolder: $("cGHolder"),
     cPhone: $("cPhone"), cEmail: $("cEmail"),
     qzPaste: $("qzPaste"), qzGo: $("qzGo"), qzMsg: $("qzMsg"),
     cSave: $("cSave"), cClear: $("cClear"),
@@ -275,6 +276,7 @@
     editingClientId = c.id;
     dom.cName.value = c.name || ""; dom.cCuisine.value = c.cuisine || ""; dom.cTone.value = c.tone || "";
     dom.cReview.value = c.reviewLink || ""; dom.cCity.value = c.city || ""; dom.cRev90.value = c.rev90 || "";
+    dom.cGAccess.value = c.gAccess || ""; dom.cGHolder.value = c.gHolder || "";
     dom.cPhone.value = c.ownerPhone || ""; dom.cEmail.value = c.ownerEmail || "";
     dom.cOwner.value = c.ownerName || ""; dom.cNever.value = c.neverSay || "";
     dom.cFaq.value = c.faq || ""; dom.cPickup.value = c.pickup || "";
@@ -289,7 +291,7 @@
   }
   function clearClientForm() {
     editingClientId = null;
-    [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90,
+    [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90, dom.cGAccess, dom.cGHolder,
      dom.cPhone, dom.cEmail, dom.cOwner, dom.cNever, dom.cFaq, dom.cPickup,
      dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes,
      dom.cPrepayAsk, dom.cPrepay, dom.cBackAsk, dom.cLoyEvery, dom.cLoyReward,
@@ -299,6 +301,7 @@
     const name = dom.cName.value.trim();
     if (!name) { toast("Give the restaurant a name"); return; }
     const data = { name, cuisine: dom.cCuisine.value.trim(), tone: dom.cTone.value.trim(), reviewLink: dom.cReview.value.trim(), city: dom.cCity.value.trim(), rev90: dom.cRev90.value.trim(),
+      gAccess: dom.cGAccess.value, gHolder: dom.cGHolder.value.trim(),
       ownerPhone: dom.cPhone.value.trim(), ownerEmail: dom.cEmail.value.trim(),
       ownerName: dom.cOwner.value.trim(), neverSay: dom.cNever.value.trim(),
       faq: dom.cFaq.value.trim(), pickup: dom.cPickup.value,
@@ -347,7 +350,8 @@
   ];
 
   const QZ_KEYS = ["Restaurant", "Where", "Your name", "Mobile", "Email", "What you sell",
-    "Voice", "More on the voice", "Never say", "Google listing", "Questions you get asked",
+    "Voice", "More on the voice", "Never say", "Google listing",
+    "Google account", "Who holds the listing", "Questions you get asked",
     "Pickup ordering", "Orders go to", "For ordering direct", "Pay before pickup", "Payment link",
     "A reason to come back", "Loyalty every", "Loyalty reward",
     "Offer", "Offer details", "Offer days", "Offer ends",
@@ -428,6 +432,8 @@
     put(dom.cTone,    [d["Voice"], d["More on the voice"]].filter(Boolean).join(". "));
     put(dom.cNever,   d["Never say"]);
     put(dom.cReview,  d["Google listing"]);
+    put(dom.cGAccess, d["Google account"]);
+    put(dom.cGHolder, d["Who holds the listing"]);
     put(dom.cFaq,     d["Questions you get asked"]);
     put(dom.cPickup,  d["Pickup ordering"]);
     put(dom.cOrders,  d["Orders go to"]);
@@ -466,6 +472,19 @@
     const link = dom.cReview.value.trim();
     if (link && !/^https?:\/\//i.test(link)) {
       msg.push("Heads up: the Google listing is not a link, so it will print as written on their review cards.");
+    }
+    /* We cannot answer a single review until we are a Manager on their listing,
+       and only whoever owns the Google account can add us. A good number of
+       independents do not own theirs: an old web designer, an agency they left,
+       or it was never claimed. Finding that out after they have paid is the
+       worst order to find it out in, so say it here, before billing starts. */
+    const acc = dom.cGAccess.value;
+    if (acc === "No, somebody else has it" || acc === "I do not know") {
+      msg.push(acc === "I do not know"
+        ? "STOP before billing: they do not know who owns their Google listing. Get them to try signing in first."
+        : "STOP before billing: somebody else holds their Google listing" +
+          (dom.cGHolder.value.trim() ? " (" + dom.cGHolder.value.trim() + ")" : "") +
+          ". Reviews cannot be answered until that is transferred, which takes weeks.");
     }
     dom.qzMsg.textContent = msg.join(" ");
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
