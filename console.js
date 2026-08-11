@@ -759,7 +759,7 @@
     const n = dom.soCount.value;
     setLoading(dom.soOut); dom.soGo.disabled = true;
     try {
-      const sys = `You are a social media writer for restaurants. Write scroll-stopping Instagram/Facebook captions: appetising, on-brand, 1-3 short lines, 1-2 tasteful emojis, and 3-6 relevant hashtags at the end. Each post distinct. Output ${n} posts, numbered.`;
+      const sys = `You are a social media writer for restaurants. Write scroll-stopping Instagram and Google Business Profile captions: appetising, on-brand, 1-3 short lines, 1-2 tasteful emojis, and 3-6 relevant hashtags at the end. Each post distinct. Output ${n} posts, numbered.`;
       const rules = ownerRules();
       const sysR = rules ? sys + "\n\n" + rules : sys;
       const prompt = `Write ${n} social posts for ${clientContext()}.\nTopic: ${topic}`;
