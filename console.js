@@ -59,8 +59,6 @@
        they are asked for and stored per client rather than typed into the
        Website chat tab from memory. */
     cBackAsk: $("cBackAsk"), cLoyEvery: $("cLoyEvery"), cLoyReward: $("cLoyReward"),
-    cOffer: $("cOffer"), cOfferSub: $("cOfferSub"), cOfferDays: $("cOfferDays"),
-    cOfferEnds: $("cOfferEnds"),
     wlNumber: $("wlNumber"), wlPost: $("wlPost"), wlHours: $("wlHours"), wlCap: $("wlCap"),
     wlClients: $("wlClients"), wlManual: $("wlManual"), wlAdd: $("wlAdd"), wlUndo: $("wlUndo"),
     ocName: $("ocName"), ocCity: $("ocCity"), ocCuisine: $("ocCuisine"), ocRating: $("ocRating"),
@@ -284,9 +282,7 @@
     dom.cHours.value = c.hours || ""; dom.cNotes.value = c.ownerNotes || "";
     dom.cPrepayAsk.value = c.prepayAsk || ""; dom.cPrepay.value = c.prepay || "";
     dom.cBackAsk.value = c.backAsk || ""; dom.cLoyEvery.value = c.loyEvery || "";
-    dom.cLoyReward.value = c.loyReward || ""; dom.cOffer.value = c.offer || "";
-    dom.cOfferSub.value = c.offerSub || ""; dom.cOfferDays.value = c.offerDays || "";
-    dom.cOfferEnds.value = c.offerEnds || "";
+    dom.cLoyReward.value = c.loyReward || "";
     dom.cName.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function clearClientForm() {
@@ -295,7 +291,7 @@
      dom.cPhone, dom.cEmail, dom.cOwner, dom.cNever, dom.cFaq, dom.cPickup,
      dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes,
      dom.cPrepayAsk, dom.cPrepay, dom.cBackAsk, dom.cLoyEvery, dom.cLoyReward,
-     dom.cOffer, dom.cOfferSub, dom.cOfferDays, dom.cOfferEnds].forEach((i) => i.value = "");
+     ].forEach((i) => i.value = "");
   }
   function saveClient() {
     const name = dom.cName.value.trim();
@@ -309,9 +305,8 @@
       hours: dom.cHours.value.trim(), ownerNotes: dom.cNotes.value.trim(),
       prepayAsk: dom.cPrepayAsk.value, prepay: dom.cPrepay.value.trim(),
       backAsk: dom.cBackAsk.value, loyEvery: dom.cLoyEvery.value.trim(),
-      loyReward: dom.cLoyReward.value.trim(), offer: dom.cOffer.value.trim(),
-      offerSub: dom.cOfferSub.value.trim(), offerDays: dom.cOfferDays.value.trim(),
-      offerEnds: dom.cOfferEnds.value.trim() };
+      loyReward: dom.cLoyReward.value.trim(),
+      };
     if (editingClientId) {
       const c = state.clients.find((x) => x.id === editingClientId);
       if (c) Object.assign(c, data);
@@ -354,7 +349,6 @@
     "Google account", "Who holds the listing", "Questions you get asked",
     "Pickup ordering", "Orders go to", "For ordering direct", "Pay before pickup", "Payment link",
     "A reason to come back", "Loyalty every", "Loyalty reward",
-    "Offer", "Offer details", "Offer days", "Offer ends",
     "Hours", "Anything else"];
 
   function parseQuestionnaire(raw) {
@@ -443,10 +437,6 @@
     put(dom.cBackAsk,   d["A reason to come back"]);
     put(dom.cLoyEvery,  d["Loyalty every"]);
     put(dom.cLoyReward, d["Loyalty reward"]);
-    put(dom.cOffer,     d["Offer"]);
-    put(dom.cOfferSub,  d["Offer details"]);
-    put(dom.cOfferDays, d["Offer days"]);
-    put(dom.cOfferEnds, d["Offer ends"]);
     put(dom.cHours,   d["Hours"]);
     put(dom.cNotes,   d["Anything else"]);
 
@@ -1638,22 +1628,12 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     const put = (elm, v) => { if (elm && v && empty(elm)) elm.value = v; };
     put(dom.chLoyEvery, c.loyEvery && parseInt(c.loyEvery, 10) > 1 ? parseInt(c.loyEvery, 10) : "");
     put(dom.chLoyReward, c.loyReward);
-    put(dom.chOffText, c.offer);
-    put(dom.chOffSub, c.offerSub);
-
-    if (c.offerDays && !dom.chOffDays.querySelector('[aria-pressed="true"]')) {
-      const said = c.offerDays.toLowerCase();
-      [].slice.call(dom.chOffDays.children).forEach((b) => {
-        /* "Tue" matches "Tuesday" and "tues", which is how owners write it. */
-        if (said.indexOf(DAYS[+b.dataset.day].toLowerCase()) === -1) return;
-        b.setAttribute("aria-pressed", "true");
-        b.classList.add("on");
-      });
-    }
-    if (note && c.offerEnds && !dom.chOffUntil.value) {
-      note.textContent = 'They said it stops: "' + c.offerEnds + '". Put that in the date box.';
-      note.hidden = false;
-    }
+    /* The day-of-week offer is no longer part of what is sold, so there is
+       nothing on the client record to carry across. The offer builder below is
+       still here as an operator tool: a client who really wants one can have
+       one, set once, rather than a thing we ask about and re-ask about every
+       month. Four fields the owner keeps changing their mind about was the
+       whole cost of the feature. */
   }
 
   function offerFromForm() {

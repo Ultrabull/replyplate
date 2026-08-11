@@ -1526,9 +1526,12 @@ window.RP_CHAT = {
     note: "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
   },
   loyalty: { enabled: true, every: 5, reward: "a free garlic bread" },
-  /* No days set, so the demo always shows one. A real restaurant would tick
-     Tuesday and Wednesday and set a stop date. */
-  offers: [{ text: "Two for one on pizzas", sub: "Tuesday and Wednesday, 5pm to 9pm" }],
+  /* No offer. The day-of-week offer is no longer part of what is sold: four
+     fields an owner kept changing their mind about, each change a message to
+     answer. The widget still knows how to run one, so a client who asks for
+     one can have it set once, but the demo shows the promise, not the
+     capability. */
+  offers: [],
   menu: [
     { section: "Pizzas", items: [
       { name: "Margherita", price: 12.00 },
