@@ -518,7 +518,13 @@
     /* The owner is the last check on the card, so the claim has to be in the
        message they read, not only on the diner's screen. */
     if (LOY && loyDue()) {
-      lines.push("", "*** " + (LOY.reward || "A free item") + " earned, order " + LOY.every + " of " + LOY.every + " ***");
+      /* Read on a Friday, mid-service, by somebody who did not set this up.
+         So the line says what was claimed, and says whose count it is, because
+         the owner is the check and needs to know that before handing anything
+         over. */
+      lines.push("",
+        "*** LOYALTY: order " + LOY.every + " of " + LOY.every + ", " + (LOY.reward || "a free item") + " ***",
+        "Counted on their phone, so it is your call. Their last orders are further up this thread.");
     }
     /* Say the offer was on screen, never that a discount was applied. Prices
        here are only ever the ones the owner typed, so the till is still theirs. */
