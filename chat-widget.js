@@ -132,6 +132,7 @@
     + '.rpc-bk .rpc-chip[aria-pressed="true"]{background:' + accent + ';color:#fff;border-color:' + accent + '}'
     + '.rpc-date{border:1px solid #e6ddd1;border-radius:999px;padding:7px 12px;font:600 13px inherit;color:#1c1613;background:#fff;-webkit-appearance:none;appearance:none}'
     + '.rpc-warn{background:#fff5e2;border:1px solid #e8d5ad;border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:#4d390b;margin-bottom:14px}'
+    + '.rpc-warn-order{flex:0 0 auto;margin:12px 14px 0;border-radius:10px}'
     + '.rpc-warn b{font-weight:800}'
     + '.rpc-menu{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 14px;background:#f8f5ef}'
     + '.rpc-sec{font:800 11px inherit;text-transform:uppercase;letter-spacing:.5px;color:#8a7b6e;margin:14px 0 7px}'
@@ -204,7 +205,7 @@
         ? '  <button class="rpc-orderbar" id="rpcOrderBar" type="button">'
         +   '<span class="ic" aria-hidden="true">🍽</span>'
         +   '<span class="tx"><b>' + esc(ORDER.chip || "Order for pickup") + '</b>'
-        +   '<span>' + esc(ORDER.barNote || "Tap the menu, pay when you pick up") + '</span></span>'
+        +   '<span>' + esc(ORDER.barNote || "Tap the menu, they text back to confirm") + '</span></span>'
         +   '<span class="ar" aria-hidden="true">›</span></button>'
         : '')
     + (BOOK
@@ -221,6 +222,12 @@
     + '</div>'
     + '<div class="rpc-view" id="rpcOrderView">'
     + '  <div class="rpc-offer" hidden></div>'
+    /* Said before the first tap, not after the order has gone. A diner who
+       thinks the kitchen has their order and turns up to nothing blames the
+       restaurant, and the restaurant blames us. The booking screen has carried
+       this from the start; ordering was relying on one line after the fact. */
+    + '  <div class="rpc-warn rpc-warn-order"><b>Your order is not confirmed until they text you back.</b> '
+    +      'This sends a text to ' + esc(C.name || "the restaurant") + '. They reply to say yes and when it will be ready.</div>'
     + '  <div class="rpc-menu" id="rpcMenu"></div>'
     + '  <div class="rpc-basket">'
     + '    <div class="rpc-loy" id="rpcLoy" hidden></div>'
@@ -530,6 +537,10 @@
        here are only ever the ones the owner typed, so the till is still theirs. */
     var off = liveOffer();
     if (off) lines.push("", "Offer showing: " + off.text);
+    /* The diner has been told they are not confirmed until this is answered, so
+       the owner has to be told they are the one who answers. Without it the
+       promise on the diner's screen depends on the owner guessing. */
+    lines.push("", "Reply to confirm and say when it will be ready.");
     return lines.join("\n");
   }
   /* Turn whatever the owner typed into +<country><number>. The dangerous case
@@ -615,9 +626,9 @@
        silently does nothing, so "ready to send" would print to somebody who saw
        nothing happen. Say it plainly and always show the order, which is right
        on every device and needs no browser sniffing. */
-    bubble("Your order is ready to send in " + app + ". Press send there and " +
-      (C.name || "we") + " will confirm shortly.\n\nIf nothing opened, here it is to copy and send to " +
-      (ORDER.phone || "us") + " yourself.", "bot");
+    bubble("Your order is ready to send in " + app + ". Press send there.\n\n" +
+      "It is not confirmed until " + (C.name || "we") + " text you back. If the kitchen is busy that can take a " +
+      "few minutes.\n\nIf nothing opened, here it is to copy and send to " + (ORDER.phone || "us") + " yourself.", "bot");
     phonePreview(text);
     /* Count it only once the order has really been handed to the phone. An
        order that never left the panel must never earn a stamp. */
