@@ -157,5 +157,24 @@
       ]
     }
   ],
-  "pageSub": "Questions answered, and order for pickup."
+  "pageSub": "Questions answered, and order for pickup.",
+  "book": {
+    "enabled": true,
+    "demo": true,
+    "phone": "+1 (555) 010-2288",
+    "chip": "Book a table",
+    "barNote": "Text us, we reply to confirm",
+    "times": [
+      "5:00pm",
+      "5:30pm",
+      "6:00pm",
+      "6:30pm",
+      "7:00pm",
+      "7:30pm",
+      "8:00pm",
+      "8:30pm",
+      "9:00pm"
+    ],
+    "note": "Sent from your own phone, so we can reply straight to you."
+  }
 }

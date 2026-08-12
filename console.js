@@ -1575,15 +1575,35 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
       dom.glOut.textContent = "Use lowercase letters, numbers and dashes only, the same slug as their r/<slug>.json file.";
       return;
     }
-    const url = "https://reply-plate.com/r.html?c=" + slug + "&order";
+    /* A restaurant listing has two link slots, not one: ordering and bookings.
+       They are edited in different places in the Business Profile and they show
+       as different buttons, so the console hands over both rather than leaving
+       the second one to be remembered. Same page either way, opened on the
+       screen the button promised. */
+    const links = [
+      ["Order online", "https://reply-plate.com/r.html?c=" + slug + "&order",
+       "Goes in Edit profile, then Food ordering. Sits in the list above the apps, marked Preferred by business."],
+      ["Reserve a table", "https://reply-plate.com/r.html?c=" + slug + "&book",
+       "Goes in Edit profile, then Bookings, then the option for your own booking tool. Only offered if their category is a restaurant one. Takes a day or two to show."],
+    ];
     dom.glOut.innerHTML = "";
-    const code = el("code");
-    code.textContent = url;
-    code.style.cssText = "display:block;word-break:break-all;margin-bottom:8px";
-    const b = el("button", "btn ghost");
-    b.type = "button"; b.textContent = "Copy";
-    b.addEventListener("click", () => copy(url, b));
-    dom.glOut.appendChild(code); dom.glOut.appendChild(b);
+    links.forEach(([label, url, where]) => {
+      const wrap = el("div");
+      wrap.style.cssText = "margin-bottom:14px";
+      const h = el("b"); h.textContent = label;
+      h.style.cssText = "display:block;margin-bottom:4px";
+      const code = el("code");
+      code.textContent = url;
+      code.style.cssText = "display:block;word-break:break-all;margin-bottom:6px";
+      const note = el("p", "hint");
+      note.textContent = where;
+      note.style.cssText = "margin-bottom:6px";
+      const b = el("button", "btn ghost");
+      b.type = "button"; b.textContent = "Copy";
+      b.addEventListener("click", () => copy(url, b));
+      wrap.appendChild(h); wrap.appendChild(code); wrap.appendChild(note); wrap.appendChild(b);
+      dom.glOut.appendChild(wrap);
+    });
   }
 
 

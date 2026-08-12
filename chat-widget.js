@@ -827,15 +827,22 @@
   }
 
   btn.addEventListener("click", open);
-  /* Google Maps lets a restaurant post its own "Order online" link. Somebody
-     arriving from that button pressed Order, so land them on the menu rather
-     than on the chat and make them find it. openOrder=true in the config, or
-     ?order in the address, both do it. */
+  /* Google Maps lets a restaurant post its own links, and a restaurant gets two
+     separate slots: one for ordering and one for bookings. Somebody arriving
+     from either pressed a button that said what they wanted, so land them on
+     the matching screen rather than on the chat and make them find it.
+
+     ?order and ?book in the address, or openOrder / openBook in the config.
+     Booking is checked first: it is the narrower intent, and a page that has
+     both should not swallow "?book" because the config happens to say
+     openOrder. */
   if (MOUNT) {
     open();
-    var wantsOrder = C.openOrder === true ||
-      (typeof location !== "undefined" && /(^|[?&])order(=|&|$)/.test(location.search));
-    if (wantsOrder && ORDER) showOrder();
+    var qs = typeof location !== "undefined" ? location.search : "";
+    var wantsBook = C.openBook === true || /(^|[?&])book(=|&|$)/.test(qs);
+    var wantsOrder = C.openOrder === true || /(^|[?&])order(=|&|$)/.test(qs);
+    if (wantsBook && BOOK) showBook();
+    else if (wantsOrder && ORDER) showOrder();
   }
 
   /* The launcher is fixed, so it floats over whatever is at the bottom of the
