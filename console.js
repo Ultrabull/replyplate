@@ -68,6 +68,7 @@
     ocGo: $("ocGo"), ocOut: $("ocOut"),
     chNotes: $("chNotes"), chPhone: $("chPhone"), chGo: $("chGo"), chOut: $("chOut"),
     chMenu: $("chMenu"), chOrderPhone: $("chOrderPhone"), chCurrency: $("chCurrency"),
+    chMenuPic: $("chMenuPic"), chMenuPicMsg: $("chMenuPicMsg"),
     chLoyEvery: $("chLoyEvery"), chLoyReward: $("chLoyReward"),
     chOffText: $("chOffText"), chOffSub: $("chOffSub"), chOffDays: $("chOffDays"),
     chOffFrom: $("chOffFrom"), chOffTo: $("chOffTo"), chOffUntil: $("chOffUntil"),
@@ -91,11 +92,20 @@
   }
   const activeClient = () => state.clients.find((c) => c.id === state.activeId) || null;
 
-  async function generate(prompt, system) {
+  /* images is an optional array of data: URLs. When present the user turn is
+     sent as the multimodal array form instead of a plain string, which is what
+     every vision model on OpenRouter expects. Text-only models reject it, and
+     the caller is told to change model rather than left with a raw 400. */
+  async function generate(prompt, system, images) {
     if (!state.key) { openSettings(); throw new Error("Add your OpenRouter API key in Settings first."); }
     const messages = [];
     if (system) messages.push({ role: "system", content: system });
-    messages.push({ role: "user", content: prompt });
+    if (images && images.length) {
+      messages.push({ role: "user", content: [{ type: "text", text: prompt }].concat(
+        images.map((url) => ({ type: "image_url", image_url: { url } }))) });
+    } else {
+      messages.push({ role: "user", content: prompt });
+    }
     const res = await fetch(ENDPOINT + "/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${state.key}`, "X-Title": "ReplyPlate" },
@@ -105,6 +115,9 @@
       let d = ""; try { const j = await res.json(); d = j?.error?.message || ""; } catch {}
       if (res.status === 401) throw new Error("Invalid API key (401).");
       if (res.status === 402) throw new Error("Out of credits (402) — add credits or pick a free model in Settings.");
+      if (images && images.length && (res.status === 400 || /image|vision|modal/i.test(d))) {
+        throw new Error("This model cannot read pictures. Open Settings and pick one that can, for example anthropic/claude-3.5-sonnet.");
+      }
       throw new Error(d || `Request failed (${res.status}).`);
     }
     const j = await res.json();
@@ -866,7 +879,13 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
   function parseMenu(raw) {
     const out = [];
     let sec = null;
-    String(raw || "").split(/\n/).forEach((line) => {
+    String(raw || "").split(/\n/).forEach((rawLine) => {
+      /* The photo reader marks anything it strained to read with "<< check this
+         one". That marker is for the operator's eyes and must never reach a
+         diner, so it is stripped here rather than relying on somebody deleting
+         every one of them by hand. An item whose price is still missing falls
+         out below, as it always did. */
+      const line = rawLine.replace(/\s*<<\s*check this one\s*$/i, "");
       const t = line.trim();
       if (!t) return;
       if (t.indexOf("|") === -1) { sec = { section: t, items: [] }; out.push(sec); return; }
@@ -879,6 +898,130 @@ Return ONLY minified JSON, no markdown, with exactly these keys:
       sec.items.push(item);
     });
     return out.filter((s) => s.items.length);
+  }
+
+  /* ── Reading a menu off a photo ─────────────────────────────────────────
+     Typing a pamphlet in is the most retyped job in the week, so the console
+     does the typing. It is the console and not the site because only the
+     console holds an API key.
+
+     Two rules shape this. Prices are money, so nothing is ever saved from a
+     photo without a human looking at it: the result lands in the box and the
+     operator still presses Build. And the model must say what it could not
+     read clearly rather than guess a number, because a confidently wrong $12
+     is worse than a blank line somebody fills in. */
+  const MENU_MAX_EDGE = 1600;   // enough for OCR, small enough to send
+
+  function fileToImage(file) {
+    return new Promise((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onerror = () => reject(new Error("Could not read that file."));
+      fr.onload = () => {
+        const img = new Image();
+        img.onerror = () => reject(new Error("That file is not a picture we can open."));
+        img.onload = () => resolve(img);
+        img.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+
+  /* A phone photo is 3 to 4 MB and base64 adds a third on top. Shrinking the
+     long edge keeps the request sane without costing legibility: menu type is
+     large, and 1600px reads it comfortably. */
+  async function shrink(file) {
+    const img = await fileToImage(file);
+    const scale = Math.min(1, MENU_MAX_EDGE / Math.max(img.width, img.height));
+    const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+    const cv = document.createElement("canvas");
+    cv.width = w; cv.height = h;
+    cv.getContext("2d").drawImage(img, 0, 0, w, h);
+    return cv.toDataURL("image/jpeg", 0.85);
+  }
+
+  const MENU_SYS =
+    "You read restaurant menus from photographs and turn them into structured data. " +
+    "You never invent an item and never guess a price. If a price is blurred, cut off, handwritten over, " +
+    "or you are not certain of it, set price to null and add a short line to warnings saying which item and why. " +
+    "A price you cannot read is worth far less than a price you get wrong, because the restaurant will be arguing " +
+    "with a customer at the counter. Return only JSON.";
+
+  function menuPrompt() {
+    return "Read every menu item in these pictures.\n\n" +
+      "Return JSON exactly like this and nothing else:\n" +
+      '{"sections":[{"section":"Pizzas","items":[{"name":"Margherita","price":12,"note":"","sure":true}]}],' +
+      '"warnings":["Could not read the price for Calzone, it is covered by a sticker"]}\n\n' +
+      "Rules:\n" +
+      "- price is a number with no currency symbol. Use null if you are not certain.\n" +
+      "- sure is false for any item whose name or price you had to strain to read.\n" +
+      "- note is the short description under an item, or an empty string. Keep it under 8 words.\n" +
+      "- Keep the menu's own section headings and its own order.\n" +
+      "- Skip anything that is not a purchasable item: opening hours, addresses, allergy notices, slogans.\n" +
+      "- If a picture contains no menu at all, return empty sections and say so in warnings.";
+  }
+
+  function menuToLines(data) {
+    const out = [];
+    (data.sections || []).forEach((sct) => {
+      const items = (sct.items || []).filter((i) => i && i.name);
+      if (!items.length) return;
+      if (sct.section) out.push(String(sct.section).replace(/\|/g, "/"));
+      items.forEach((i) => {
+        /* An unreadable price becomes an obvious blank, never a guess. The line
+           still lands in the box so the operator can see the item exists and
+           type the number in from the pamphlet in front of them. */
+        const price = (i.price === null || i.price === undefined || isNaN(+i.price)) ? "" : (+i.price).toFixed(2);
+        const bits = [String(i.name).replace(/\|/g, "/"), price];
+        if (i.note) bits.push(String(i.note).replace(/\|/g, "/"));
+        out.push(bits.join(" | ") + (i.sure === false ? "      << check this one" : ""));
+      });
+      out.push("");
+    });
+    return out.join("\n").trim();
+  }
+
+  async function readMenuPhotos(files) {
+    const msg = dom.chMenuPicMsg;
+    const list = [].slice.call(files || []).filter((f) => /^image\//.test(f.type)).slice(0, 6);
+    if (!list.length) { msg.textContent = "Pick a picture of the menu."; return; }
+    msg.textContent = "Reading " + list.length + (list.length === 1 ? " picture…" : " pictures…");
+    try {
+      const images = [];
+      for (const f of list) images.push(await shrink(f));
+      const raw = await generate(menuPrompt(), MENU_SYS, images);
+      let data;
+      try {
+        const m = raw.match(/\{[\s\S]*\}/);
+        data = JSON.parse(m ? m[0] : raw);
+      } catch (e) {
+        throw new Error("The model did not return readable JSON. Try again, or type the menu in.");
+      }
+      const lines = menuToLines(data);
+      if (!lines) {
+        msg.textContent = "No menu items found in that picture.";
+        return;
+      }
+      /* Appended, never overwritten. Somebody who has already typed half a menu
+         and then photographs the drinks list must not lose the half they typed. */
+      const had = dom.chMenu.value.trim();
+      dom.chMenu.value = had ? had + "\n\n" + lines : lines;
+
+      const items = (data.sections || []).reduce((a, sc) => a + (sc.items || []).length, 0);
+      const missing = (data.sections || []).reduce((a, sc) =>
+        a + (sc.items || []).filter((i) => i.price === null || i.price === undefined || isNaN(+i.price)).length, 0);
+      const unsure = (data.sections || []).reduce((a, sc) =>
+        a + (sc.items || []).filter((i) => i.sure === false).length, 0);
+      const warn = (data.warnings || []).slice(0, 4);
+
+      const parts = [items + " item" + (items === 1 ? "" : "s") + " read."];
+      if (missing) parts.push(missing + " with no price — type those in.");
+      if (unsure) parts.push(unsure + " marked << check this one.");
+      parts.push("Check every price against the pamphlet before you build. A wrong price is an argument at the counter.");
+      if (warn.length) parts.push("Model said: " + warn.join(" · "));
+      msg.textContent = parts.join(" ");
+    } catch (e) {
+      msg.textContent = e.message || "Could not read that.";
+    }
   }
 
   function chatSnippet(kb, client) {
@@ -1693,6 +1836,10 @@ Mark risk "high" for anything mentioning illness/food poisoning, legal threats, 
     initTabs();
     dom.gpGo.addEventListener("click", doGooglePost);
     dom.glMake.addEventListener("click", buildOrderLink);
+    dom.chMenuPic.addEventListener("change", (e) => {
+      readMenuPhotos(e.target.files);
+      e.target.value = "";   // so the same file can be picked again after a fix
+    });
     dom.wlPost.addEventListener("input", () => {
       state.wcfg.postSecs = Math.max(0, Math.min(600, +dom.wlPost.value || 0));
       save(S.wcfg, state.wcfg); renderWorkload();

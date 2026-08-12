@@ -328,6 +328,15 @@
 
         <h3 style="margin-top:18px">2. Pickup orders <span style="font-weight:400;color:var(--muted);font-size:13px">(optional)</span></h3>
         <p class="hint" style="margin-bottom:10px">Customers tap items, then send the finished order from their own phone. <b>No money changes hands here</b> and no order sits in a dashboard nobody opens. Leave the menu blank to skip this.</p>
+        <!-- Typing a menu off a pamphlet is ten minutes of the operator's life per
+             client, and it is the single most retyped thing in the job. The
+             console already holds an API key, so it can read the photo. The
+             website never could and never will: it has no server and no key. -->
+        <div class="row" style="margin-bottom:8px">
+          <label class="btn ghost" for="chMenuPic" style="margin-bottom:0">Read a photo of the menu</label>
+          <input id="chMenuPic" type="file" accept="image/*" multiple hidden />
+          <span class="hint" id="chMenuPicMsg" style="margin:0;align-self:center"></span>
+        </div>
         <textarea id="chMenu" class="ta" rows="7" placeholder="A line with no | is a heading. Everything else is: name | price | optional note&#10;&#10;Pizzas&#10;Margherita | 12&#10;Pepperoni | 13.50&#10;Vegan Special | 14 | cashew base, no dairy&#10;&#10;Sides&#10;Garlic Bread | 5"></textarea>
         <div class="row">
           <input id="chOrderPhone" class="in" style="flex:1;min-width:150px;margin-bottom:0" placeholder="Order number, e.g. +12125550147" />
