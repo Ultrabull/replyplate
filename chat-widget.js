@@ -29,6 +29,12 @@
   if (!C || !C.answers || !C.answers.length) return;
 
   var ORDER = C.order && C.order.enabled && C.menu && C.menu.length ? C.order : null;
+  /* Booking a table is the same trick as ordering and deliberately no cleverer:
+     the diner's own phone sends a text, and the owner is the availability. No
+     calendar, no table plan, nothing to double-book, and nothing to sync with a
+     booking system the restaurant does not have. The one thing it must never do
+     is imply the table is held. It is a request until a human replies. */
+  var BOOK = C.book && C.book.enabled && C.book.phone ? C.book : null;
   // Embed mode: render inline on a page of its own instead of floating over a
   // restaurant's site. Used by r.html, the link-and-QR version for owners who
   // cannot or will not paste code into their website.
@@ -120,6 +126,13 @@
     + '.rpc-orderbar .tx span{display:block;font-size:12.5px;color:#8a7b6e}'
     + '.rpc-orderbar .ar{color:' + accent + ';font-weight:700;flex:0 0 auto}'
     /* order view */
+    + '.rpc-bookwrap{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:14px;background:#f8f5ef}'
+    + '.rpc-bk{margin-bottom:15px}'
+    + '.rpc-bk > b{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a7b6e;margin-bottom:7px}'
+    + '.rpc-bk .rpc-chip[aria-pressed="true"]{background:' + accent + ';color:#fff;border-color:' + accent + '}'
+    + '.rpc-date{border:1px solid #e6ddd1;border-radius:999px;padding:7px 12px;font:600 13px inherit;color:#1c1613;background:#fff;-webkit-appearance:none;appearance:none}'
+    + '.rpc-warn{background:#fff5e2;border:1px solid #e8d5ad;border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:#4d390b;margin-bottom:14px}'
+    + '.rpc-warn b{font-weight:800}'
     + '.rpc-menu{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:12px 14px;background:#f8f5ef}'
     + '.rpc-sec{font:800 11px inherit;text-transform:uppercase;letter-spacing:.5px;color:#8a7b6e;margin:14px 0 7px}'
     + '.rpc-sec:first-child{margin-top:2px}'
@@ -168,7 +181,11 @@
   document.head.appendChild(style);
 
   /* The launcher has to say ordering is here, or nobody finds it. */
-  var launchText = C.buttonText || (ORDER ? "Order food or ask us" : "Ask us a question");
+  var launchText = C.buttonText ||
+    (ORDER && BOOK ? "Order, book a table, or ask us"
+     : ORDER ? "Order food or ask us"
+     : BOOK ? "Book a table or ask us"
+     : "Ask us a question");
   var btn = document.createElement("button");
   btn.className = "rpc-btn"; btn.type = "button";
   btn.setAttribute("aria-label", launchText);
@@ -190,6 +207,13 @@
         +   '<span>' + esc(ORDER.barNote || "Tap the menu, pay when you pick up") + '</span></span>'
         +   '<span class="ar" aria-hidden="true">›</span></button>'
         : '')
+    + (BOOK
+        ? '  <button class="rpc-orderbar" id="rpcBookBar" type="button">'
+        +   '<span class="ic" aria-hidden="true">\uD83D\uDCC5</span>'
+        +   '<span class="tx"><b>' + esc(BOOK.chip || "Book a table") + '</b>'
+        +   '<span>' + esc(BOOK.barNote || "Text the restaurant, they reply to confirm") + '</span></span>'
+        +   '<span class="ar" aria-hidden="true">\u203A</span></button>'
+        : '')
     + '  <div class="rpc-offer" hidden></div>'
     + '  <div class="rpc-log" id="rpcLog"></div>'
     + '  <form class="rpc-form"><input class="rpc-in" id="rpcIn" placeholder="Type your question" autocomplete="off" /><button class="rpc-send" type="submit">Ask</button></form>'
@@ -205,7 +229,28 @@
     + '    <button class="rpc-go" id="rpcGo" type="button" disabled>Send this order</button>'
     + '    <div class="rpc-hint" id="rpcHint"></div>'
     + '  </div>'
-    + '</div>';
+    + '</div>'
+    + (BOOK
+        ? '<div class="rpc-view" id="rpcBookView">'
+        + '  <div class="rpc-bookwrap">'
+        /* Said before anything is tapped, not after it is sent. A diner who
+           thinks a table is held and finds it is not blames the restaurant. */
+        + '    <div class="rpc-warn"><b>This sends a text, it does not book the table.</b> '
+        +      esc(C.name || "The restaurant") + ' will reply to say yes, or to offer another time. '
+        +      'You are booked when they reply, not before.</div>'
+        + '    <div class="rpc-bk" id="rpcBkSize"><b>How many people</b><div class="rpc-chips"></div></div>'
+        + '    <div class="rpc-bk" id="rpcBkDay"><b>Which day</b><div class="rpc-chips"></div></div>'
+        + '    <div class="rpc-bk" id="rpcBkTime"><b>What time</b><div class="rpc-chips"></div></div>'
+        + '  </div>'
+        + '  <div class="rpc-basket">'
+        + '    <div class="rpc-tot"><span id="rpcBkSum">Nothing chosen yet</span></div>'
+        + '    <input class="rpc-name" id="rpcBkWho" placeholder="Your name" autocomplete="name" />'
+        + '    <input class="rpc-name" id="rpcBkNote" placeholder="Anything else? (high chair, allergy, birthday)" />'
+        + '    <button class="rpc-go" id="rpcBkGo" type="button" disabled>Send this request</button>'
+        + '    <div class="rpc-hint" id="rpcBkHint"></div>'
+        + '  </div>'
+        + '</div>'
+        : '');
 
   if (MOUNT) {
     panel.classList.add("rpc-embed", "open");
@@ -218,6 +263,7 @@
 
   var log = panel.querySelector("#rpcLog"), input = panel.querySelector("#rpcIn");
   var chatView = panel.querySelector("#rpcChatView"), orderView = panel.querySelector("#rpcOrderView");
+  var bookView = panel.querySelector("#rpcBookView");
   var backBtn = panel.querySelector("#rpcBack"), title = panel.querySelector("#rpcTitle"), sub = panel.querySelector("#rpcSub");
 
   function bubble(text, who) {
@@ -580,16 +626,164 @@
     clearBasket();
   }
 
+  /* ── Booking a table ────────────────────────────────────────────────────
+     Three taps and a name. The owner is the availability, so nothing here
+     checks anything: it builds a sentence and hands it to the phone's own
+     Messages app, exactly as an order does.
+
+     The date is a native <input type="date"> rather than a home-made picker,
+     because every phone already has a good one and ours would be worse. Today
+     and Tomorrow are chips because that is what most requests are, and the
+     picker only appears when neither fits. */
+  var bk = { size: "", day: "", dayLabel: "", time: "" };
+
+  function bkChip(wrap, label, value, field, extra) {
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "rpc-chip"; b.textContent = label;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      [].slice.call(wrap.children).forEach(function (n) {
+        if (n.setAttribute) n.setAttribute("aria-pressed", "false");
+      });
+      b.setAttribute("aria-pressed", "true");
+      bk[field] = value;
+      if (extra) extra();
+      refreshBook();
+    });
+    wrap.appendChild(b);
+    return b;
+  }
+
+  function isoPlus(days) {
+    var d = new Date();
+    d.setDate(d.getDate() + days);
+    /* Local parts, not toISOString: that converts to UTC and can hand back
+       yesterday for anybody west of Greenwich in the evening. */
+    var m = String(d.getMonth() + 1), day = String(d.getDate());
+    return d.getFullYear() + "-" + (m.length < 2 ? "0" + m : m) + "-" + (day.length < 2 ? "0" + day : day);
+  }
+  function prettyDay(iso) {
+    var p = String(iso).split("-");
+    if (p.length !== 3) return iso;
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    if (isNaN(d)) return iso;
+    var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var MON = ["January", "February", "March", "April", "May", "June",
+               "July", "August", "September", "October", "November", "December"];
+    return DAYS[d.getDay()] + " " + d.getDate() + " " + MON[d.getMonth()];
+  }
+
+  function buildBook() {
+    var sizes = BOOK.sizes || [1, 2, 3, 4, 5, 6, 7, 8];
+    var sw = panel.querySelector("#rpcBkSize .rpc-chips");
+    if (!sw.children.length) {
+      sizes.forEach(function (n) {
+        bkChip(sw, n === sizes[sizes.length - 1] ? n + "+" : String(n), String(n), "size");
+      });
+    }
+    var dw = panel.querySelector("#rpcBkDay .rpc-chips");
+    if (!dw.children.length) {
+      bkChip(dw, "Tonight", isoPlus(0), "day", function () { bk.dayLabel = "tonight"; });
+      bkChip(dw, "Tomorrow", isoPlus(1), "day", function () { bk.dayLabel = "tomorrow"; });
+      var pick = document.createElement("input");
+      pick.type = "date"; pick.className = "rpc-date"; pick.min = isoPlus(0);
+      pick.setAttribute("aria-label", "Pick another day");
+      pick.addEventListener("change", function () {
+        [].slice.call(dw.children).forEach(function (n) {
+          if (n.setAttribute && n !== pick) n.setAttribute("aria-pressed", "false");
+        });
+        bk.day = pick.value;
+        bk.dayLabel = pick.value ? prettyDay(pick.value) : "";
+        refreshBook();
+      });
+      dw.appendChild(pick);
+    }
+    var tw = panel.querySelector("#rpcBkTime .rpc-chips");
+    if (!tw.children.length) {
+      (BOOK.times || ["5:00pm", "5:30pm", "6:00pm", "6:30pm", "7:00pm", "7:30pm", "8:00pm", "8:30pm", "9:00pm"])
+        .forEach(function (t) { bkChip(tw, t, t, "time"); });
+    }
+    panel.querySelector("#rpcBkHint").textContent = BOOK.note ||
+      "Sent from your own phone, so they can reply straight to you.";
+  }
+
+  function bookText() {
+    var who = (panel.querySelector("#rpcBkWho").value || "").trim();
+    var note = (panel.querySelector("#rpcBkNote").value || "").trim();
+    var lines = ["Table request"];
+    lines.push((bk.size === "1" ? "1 person" : bk.size + " people") + ", " + (bk.dayLabel || bk.day) + " at " + bk.time);
+    if (who) lines.push("Name: " + who);
+    if (note) lines.push("Note: " + note);
+    lines.push("", "Sent from your website. Reply to confirm.");
+    return lines.join("\n");
+  }
+
+  function refreshBook() {
+    var ready = bk.size && bk.day && bk.time;
+    panel.querySelector("#rpcBkSum").textContent = ready
+      ? (bk.size === "1" ? "1 person" : bk.size + " people") + ", " + (bk.dayLabel || bk.day) + ", " + bk.time
+      : "Pick how many, which day and what time";
+    panel.querySelector("#rpcBkGo").disabled = !ready;
+  }
+
+  function clearBook() {
+    bk = { size: "", day: "", dayLabel: "", time: "" };
+    ["#rpcBkSize", "#rpcBkDay", "#rpcBkTime"].forEach(function (id) {
+      [].slice.call(panel.querySelectorAll(id + " .rpc-chips > *")).forEach(function (n) {
+        if (n.setAttribute) n.setAttribute("aria-pressed", "false");
+        if (n.tagName === "INPUT") n.value = "";
+      });
+    });
+    panel.querySelector("#rpcBkWho").value = "";
+    panel.querySelector("#rpcBkNote").value = "";
+    refreshBook();
+  }
+
+  function sendBook() {
+    var text = bookText();
+    var full = e164(BOOK.phone);
+    if (!full) return;
+    openLink("sms:" + full + "?&body=" + encodeURIComponent(text));
+    showChat();
+    if (BOOK.demo) {
+      bubble("Messages should have opened on your phone with the request already typed. On a computer nothing " +
+        "opens, which is normal.", "bot");
+      phonePreview(text);
+      bubble("Do not press send: " + BOOK.phone + " is made up for this demo. On your own restaurant it is your " +
+        "number, the request arrives as a normal text with the diner's number attached, and you reply yes or " +
+        "offer another time.", "bot");
+      clearBook();
+      return;
+    }
+    bubble("Sent. " + (C.name || "The restaurant") + " will text you back to confirm. You are not booked until " +
+      "they do.", "bot");
+    clearBook();
+  }
+
+  function showBook() {
+    buildBook();
+    chatView.classList.remove("on");
+    if (orderView) orderView.classList.remove("on");
+    bookView.classList.add("on");
+    backBtn.style.display = ""; title.textContent = BOOK.title || "Book a table";
+    sub.textContent = BOOK.subtitle || "They reply to confirm";
+    refreshBook();
+  }
+
   function showOrder() {
     paintOffer();
     buildMenu();
-    chatView.classList.remove("on"); orderView.classList.add("on");
+    chatView.classList.remove("on");
+    if (bookView) bookView.classList.remove("on");
+    orderView.classList.add("on");
     backBtn.style.display = ""; title.textContent = ORDER.title || "Order for pickup";
     sub.textContent = ORDER.subtitle || "Tap what you'd like";
     refreshBasket();
   }
   function showChat() {
-    orderView.classList.remove("on"); chatView.classList.add("on");
+    if (orderView) orderView.classList.remove("on");
+    if (bookView) bookView.classList.remove("on");
+    chatView.classList.add("on");
     backBtn.style.display = "none"; title.textContent = C.name || "Ask us";
     sub.textContent = C.subtitle || (ORDER ? "Order pickup, or ask us anything" : "Quick answers, any time");
   }
@@ -683,6 +877,7 @@
   window.RPChat = {
     open: function () { open(); showChat(); },
     openOrder: function () { if (!ORDER) return open(); open(); showOrder(); },
+    openBook: function () { if (!BOOK) return open(); open(); showBook(); },
     close: close,
     /* Read-only, for testing a knowledge base before it goes live. Always use
        these rather than a copy of the scoring rules: a copy that drifts tells
@@ -694,9 +889,15 @@
   document.addEventListener("click", function (e) {
     var o = e.target.closest("[data-rp-order]");
     if (o) { e.preventDefault(); window.RPChat.openOrder(); return; }
+    var bkEl = e.target.closest("[data-rp-book]");
+    if (bkEl) { e.preventDefault(); window.RPChat.openBook(); return; }
     var c = e.target.closest("[data-rp-chat]");
     if (c) { e.preventDefault(); window.RPChat.open(); }
   });
+  if (BOOK) {
+    panel.querySelector("#rpcBookBar").addEventListener("click", showBook);
+    panel.querySelector("#rpcBkGo").addEventListener("click", sendBook);
+  }
   panel.querySelector(".rpc-x").addEventListener("click", close);
   backBtn.addEventListener("click", showChat);
   var orderBar = panel.querySelector("#rpcOrderBar");

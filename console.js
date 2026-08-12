@@ -37,6 +37,7 @@
     clientsList: $("clientsList"),
     cName: $("cName"), cCuisine: $("cCuisine"), cTone: $("cTone"), cReview: $("cReview"), cCity: $("cCity"),
     cGAccess: $("cGAccess"), cGHolder: $("cGHolder"),
+    cBooking: $("cBooking"), cBookTimes: $("cBookTimes"),
     cPhone: $("cPhone"), cEmail: $("cEmail"),
     qzPaste: $("qzPaste"), qzGo: $("qzGo"), qzMsg: $("qzMsg"),
     cSave: $("cSave"), cClear: $("cClear"),
@@ -279,6 +280,7 @@
     dom.cOwner.value = c.ownerName || ""; dom.cNever.value = c.neverSay || "";
     dom.cFaq.value = c.faq || ""; dom.cPickup.value = c.pickup || "";
     dom.cOrders.value = c.orderPhone || ""; dom.cDirect.value = c.directOffer || "";
+    dom.cBooking.value = c.booking || ""; dom.cBookTimes.value = c.bookTimes || "";
     dom.cHours.value = c.hours || ""; dom.cNotes.value = c.ownerNotes || "";
     dom.cPrepayAsk.value = c.prepayAsk || ""; dom.cPrepay.value = c.prepay || "";
     dom.cBackAsk.value = c.backAsk || ""; dom.cLoyEvery.value = c.loyEvery || "";
@@ -289,7 +291,7 @@
     editingClientId = null;
     [dom.cName, dom.cCuisine, dom.cTone, dom.cReview, dom.cCity, dom.cRev90, dom.cGAccess, dom.cGHolder,
      dom.cPhone, dom.cEmail, dom.cOwner, dom.cNever, dom.cFaq, dom.cPickup,
-     dom.cOrders, dom.cDirect, dom.cHours, dom.cNotes,
+     dom.cOrders, dom.cDirect, dom.cBooking, dom.cBookTimes, dom.cHours, dom.cNotes,
      dom.cPrepayAsk, dom.cPrepay, dom.cBackAsk, dom.cLoyEvery, dom.cLoyReward,
      ].forEach((i) => i.value = "");
   }
@@ -302,6 +304,7 @@
       ownerName: dom.cOwner.value.trim(), neverSay: dom.cNever.value.trim(),
       faq: dom.cFaq.value.trim(), pickup: dom.cPickup.value,
       orderPhone: dom.cOrders.value.trim(), directOffer: dom.cDirect.value.trim(),
+      booking: dom.cBooking.value, bookTimes: dom.cBookTimes.value.trim(),
       hours: dom.cHours.value.trim(), ownerNotes: dom.cNotes.value.trim(),
       prepayAsk: dom.cPrepayAsk.value, prepay: dom.cPrepay.value.trim(),
       backAsk: dom.cBackAsk.value, loyEvery: dom.cLoyEvery.value.trim(),
@@ -347,7 +350,8 @@
   const QZ_KEYS = ["Restaurant", "Where", "Your name", "Mobile", "Email", "What you sell",
     "Voice", "More on the voice", "Never say", "Google listing",
     "Google account", "Who holds the listing", "Questions you get asked",
-    "Pickup ordering", "Orders go to", "For ordering direct", "Pay before pickup", "Payment link",
+    "Pickup ordering", "Orders go to", "For ordering direct",
+    "Table reservations", "Booking times", "Pay before pickup", "Payment link",
     "A reason to come back", "Loyalty every", "Loyalty reward",
     "Hours", "Anything else"];
 
@@ -432,6 +436,8 @@
     put(dom.cPickup,  d["Pickup ordering"]);
     put(dom.cOrders,  d["Orders go to"]);
     put(dom.cDirect,  d["For ordering direct"]);
+    put(dom.cBooking,   d["Table reservations"]);
+    put(dom.cBookTimes, d["Booking times"]);
     put(dom.cPrepayAsk, d["Pay before pickup"]);
     put(dom.cPrepay,  d["Payment link"]);
     put(dom.cBackAsk,   d["A reason to come back"]);

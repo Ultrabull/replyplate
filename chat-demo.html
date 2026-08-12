@@ -1526,6 +1526,14 @@ window.RP_CHAT = {
     note: "You'll send this from your own phone. Nothing is paid here, and The Olive Table will text you back to confirm."
   },
   loyalty: { enabled: true, every: 5, reward: "a free garlic bread" },
+  /* Same phone as the orders, on purpose: one number the owner already watches
+     beats a second one they forget. */
+  book: {
+    enabled: true, demo: true, phone: "+1 555 010 2288",
+    chip: "Book a table", barNote: "Text us, we reply to confirm",
+    times: ["5:00pm", "5:30pm", "6:00pm", "6:30pm", "7:00pm", "7:30pm", "8:00pm", "8:30pm", "9:00pm"],
+    note: "Sent from your own phone, so we can reply straight to you."
+  },
   /* No offer. The day-of-week offer is no longer part of what is sold: four
      fields an owner kept changing their mind about, each change a message to
      answer. The widget still knows how to run one, so a client who asks for

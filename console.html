@@ -98,6 +98,13 @@
              single-line input strips newlines rather than replacing them, which
              fuses two tapped answers into one run-on word. -->
         <textarea id="cDirect" class="in" rows="2" placeholder="What could you give someone who orders direct? (goes on the Google listing link)"></textarea>
+        <select id="cBooking" class="in">
+          <option value="">Table reservations: not answered</option>
+          <option value="Yes">Yes</option>
+          <option value="Not for now">Not for now</option>
+          <option value="Tell me more first">Tell me more first</option>
+        </select>
+        <input id="cBookTimes" class="in" placeholder="Which times can people ask for? (5pm to 9pm, every half hour)" />
         <select id="cPrepayAsk" class="in">
           <option value="">Pay before pickup: not answered</option>
           <option value="No, they pay at the counter">No, they pay at the counter</option>

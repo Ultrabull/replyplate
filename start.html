@@ -232,6 +232,30 @@
         <div style="margin-top:10px"><label class="s" for="q7b">If yes, which phone should orders land on?</label>
           <input type="tel" id="q7b" name="Orders go to" placeholder="(415) 555 0199" /></div>
 
+        <!-- Reservations ride on the same rails as an order and are folded into
+             the same question on purpose: this stays ten questions, and it is
+             one phone the owner already watches rather than a second one they
+             forget. The widget never holds a table, so there is nothing here
+             about availability to collect. -->
+        <div style="margin-top:16px">
+          <label class="s" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
+            And table reservations, the same way?</label>
+          <p class="why" style="margin-bottom:11px">A diner taps how many, which day and what time, and it arrives
+            on the same phone as a normal text. <b>Nothing is held and nothing is promised.</b> You reply yes, or
+            you offer a different time, or you ring them. The good part is the late one: somebody asking at 11pm
+            for tomorrow gets no answer from a ringing phone, but a text is still sitting there in the morning.</p>
+          <div class="opts three">
+            <label class="opt"><input type="radio" name="Table reservations" value="Yes" />
+              <span><b>Yes</b><span>Set it up</span></span></label>
+            <label class="opt"><input type="radio" name="Table reservations" value="Not for now" />
+              <span><b>Not now</b><span>Maybe later</span></span></label>
+            <label class="opt"><input type="radio" name="Table reservations" value="Tell me more first" />
+              <span><b>Not sure</b><span>Explain it to me</span></span></label>
+          </div>
+          <div style="margin-top:10px"><label class="s" for="q7e">Which times can people ask for?</label>
+            <input type="text" id="q7e" name="Booking times" placeholder="5pm to 9pm, every half hour" /></div>
+        </div>
+
         <div style="margin-top:16px">
           <label class="s" for="q7c" style="font-size:14px;color:var(--ink);font-weight:700;margin-bottom:4px">
             What could you give someone who orders direct?</label>
@@ -415,6 +439,8 @@
               "10% off (price cut, see the note)", "Nothing for now"] },
       q8b: { sep: ", ", items: ["A free side", "A free drink", "A free coffee", "A free dessert",
               "A free garlic bread", "Extra topping on the house", "$5 off the bill"] },
+      q7e: { sep: ", ", items: ["5pm to 9pm every half hour", "6pm to 9pm every half hour",
+        "Only the early tables", "Last booking 8:30pm", "Weekends only", "We take walk ins too"] },
       q9: { items: ["Closed Mondays", "Open seven days", "Lunch and dinner", "Dinner only",
               "Closed Sunday evening", "Later on Friday and Saturday", "Kitchen shuts an hour before we do"] },
       q10: { items: ["We are closing for a break soon",
