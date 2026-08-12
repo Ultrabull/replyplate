@@ -63,6 +63,7 @@
   .pacts::-webkit-scrollbar{display:none}
   .pact{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px;
     min-width:66px;font-size:11.5px;color:var(--pblue)}
+  .pact[hidden],.latebtn[hidden]{display:none}
   .pact .c{width:42px;height:42px;border-radius:50%;border:1px solid var(--pline);
     display:flex;align-items:center;justify-content:center}
   .pact.solid .c{background:var(--pblue);border-color:var(--pblue)}
@@ -113,6 +114,14 @@
   .opt .tx b{display:block;font-size:15.5px;font-weight:600}
   .opt .tx em{display:block;font-style:normal;font-size:13px;color:var(--pmuted);margin-top:2px}
   .opt .go{color:var(--pmuted);font-size:15px}
+  .latebar{border-top:1px solid var(--pline);padding:12px 18px;text-align:center}
+  .latebtn{background:transparent;border:1px solid var(--pline);color:var(--pmuted);
+    border-radius:999px;padding:9px 15px;font:600 13px inherit;cursor:pointer;min-height:44px}
+  .latebtn:hover{color:#fff;border-color:#6d757c}
+  .latebtn[aria-pressed="true"]{background:#2a2f33;color:#fff;border-color:#3d444a}
+  .opt.shut .ic{opacity:.4}
+  .opt.shut .tx b,.opt.shut .tx em{opacity:.45}
+  .opt.mine.shut .ic,.opt.mine.shut .tx b,.opt.mine.shut .tx em{opacity:1}
   .opt.mine{background:rgba(124,176,255,.09)}
   .opt.mine .ic{background:#3a2f1c;color:#e0b25f}
   .opt.mine .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;
@@ -184,13 +193,14 @@
           <span>(312)</span>
           <span>&middot;</span><span>Pizza</span><span>&middot;</span><span>$$</span>
         </div>
-        <div class="pmeta"><b>Open</b> &middot; Closes 10 PM &middot; 214 Mill Street</div>
+        <div class="pmeta" id="pmeta"><b>Open</b> &middot; Closes 10 PM &middot; 214 Mill Street</div>
 
         <div class="pacts">
           <div class="pact"><span class="c"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8-8-2z"/></svg></span>Directions</div>
           <div class="pact"><span class="c"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg></span>Save</div>
           <div class="pact"><span class="c"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-3 2a12 12 0 006 6l2-3 5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg></span>Call</div>
           <div class="pact solid" id="actOrder"><span class="c"><svg viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 016 0"/></svg></span>Order online</div>
+          <div class="pact solid" id="actBook" hidden><span class="c"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>Reserve a table</div>
           <div class="pact"><span class="c"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 010 18M12 3a15 15 0 000 18"/></svg></span>Website</div>
         </div>
 
@@ -258,6 +268,9 @@
       <div class="sh-tabs"><span class="on">&#10003; Pickup</span><span>Delivery</span></div>
       <div class="sh-lbl">Place order with</div>
       <div id="orderList"></div>
+      <div class="latebar">
+        <button class="latebtn" id="lateBtn" type="button" aria-pressed="false">What if they tap this at 11pm?</button>
+      </div>
     </div>
 
     <div class="callout" id="feeNote">
@@ -358,11 +371,16 @@
   var LEAF = '<svg viewBox="0 0 24 24"><path d="M20 4c0 8-5 13-13 13"/><path d="M7 17c0-5 4-9 9-10"/><path d="M4 20l3-3"/></svg>';
 
   var list = document.getElementById("orderList");
-  var on = false;
+  var on = false, late = false;
 
-  function row(name, sub, mine) {
-    var d = document.createElement("div");
-    d.className = "opt" + (mine ? " mine" : "");
+  /* The restaurant's own row is the only one that goes anywhere, and it goes to
+     the real thing: r.html with the same flag the real Google link carries. A
+     demo whose one live button is a mock-up teaches an owner nothing. The apps
+     stay inert, because sending a prospect to DoorDash is not our job. */
+  function row(name, sub, mine, href) {
+    var d = document.createElement(href ? "a" : "div");
+    if (href) { d.href = href; d.style.textDecoration = "none"; d.style.color = "inherit"; }
+    d.className = "opt" + (mine ? " mine" : "") + (late ? " shut" : "");
     d.innerHTML = '<span class="ic">' + (mine ? LEAF : BAG) + "</span>" +
       '<span class="tx"><b></b><em></em>' + (mine ? '<span class="tag">Preferred by business</span>' : "") + "</span>" +
       '<span class="go">&#8599;</span>';
@@ -375,8 +393,23 @@
 
   function draw() {
     list.innerHTML = "";
-    if (on) list.appendChild(row("The Olive Table", "No fee · Ready in 15 min", true));
-    APPS.forEach(function (a) { list.appendChild(row(a.name, a.sub, false)); });
+    if (on) {
+      list.appendChild(row("The Olive Table",
+        late ? "Closed now · Text them anyway, they reply in the morning" : "No fee · Ready in 15 min",
+        true, "./r.html?c=demo&order"));
+    }
+    APPS.forEach(function (a) {
+      list.appendChild(row(a.name, late ? "Closed · Opens 5 PM" : a.sub, false));
+    });
+    document.getElementById("actBook").hidden = !on;
+    document.getElementById("lateBtn").hidden = !on;
+    document.getElementById("lateBtn").setAttribute("aria-pressed", late ? "true" : "false");
+    document.getElementById("lateBtn").textContent = late
+      ? "Back to opening hours"
+      : "What if they tap this at 11pm?";
+    document.getElementById("pmeta").innerHTML = late
+      ? "<b style=\"color:#e0806a\">Closed</b> &middot; Opens 5 PM &middot; 214 Mill Street"
+      : "<b>Open</b> &middot; Closes 10 PM &middot; 214 Mill Street";
 
     document.querySelectorAll(".reply").forEach(function (n) { n.hidden = !on; });
     document.querySelectorAll(".none").forEach(function (n) { n.hidden = on; });
@@ -384,13 +417,32 @@
     document.getElementById("postEmpty").hidden = on;
     document.getElementById("offBtn").setAttribute("aria-pressed", on ? "false" : "true");
     document.getElementById("onBtn").setAttribute("aria-pressed", on ? "true" : "false");
-    document.getElementById("tglNote").textContent = on
-      ? "Same listing. The reviews have answers, there is something posted this month, and your own name is in the ordering list."
-      : "Most listings look like this. Nothing here is broken, it is just nobody's job.";
+    document.getElementById("tglNote").textContent = !on
+      ? "Most listings look like this. Nothing here is broken, it is just nobody's job."
+      : late
+        ? "Everyone on this list is shut, including you. The difference is that tapping your name still sends you a text, and it is waiting when you open. Nobody is pretending the kitchen is on."
+        : "Same listing. The reviews have answers, there is something posted this month, and your own name is in the ordering list. Tap it: it goes where the real one goes.";
   }
 
-  document.getElementById("offBtn").addEventListener("click", function () { on = false; draw(); });
-  document.getElementById("onBtn").addEventListener("click", function () { on = true; draw(); });
+  document.getElementById("lateBtn").addEventListener("click", function () { late = !late; draw(); });
+  document.getElementById("actBook").addEventListener("click", function () {
+    location.href = "./r.html?c=demo&book";
+  });
+  /* Turning ReplyPlate off takes the late view with it: the "off" listing has
+     no link of the owner's in it, so there is nothing for 11pm to demonstrate. */
+  document.getElementById("offBtn").addEventListener("click", function () {
+    on = false; late = false; draw();
+    var acts = document.querySelector(".pacts");
+    if (acts) acts.scrollTo({ left: 0, behavior: "smooth" });
+  });
+  document.getElementById("onBtn").addEventListener("click", function () {
+    on = true; draw();
+    var acts = document.querySelector(".pacts");
+    if (acts && acts.scrollWidth > acts.clientWidth) {
+      var b = document.getElementById("actBook");
+      acts.scrollTo({ left: b.offsetLeft + b.offsetWidth - acts.clientWidth + 8, behavior: "smooth" });
+    }
+  });
   document.getElementById("actOrder").addEventListener("click", function () {
     document.querySelector(".sheet").scrollIntoView({ behavior: "smooth", block: "center" });
   });
