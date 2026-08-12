@@ -35,6 +35,9 @@
   /* what goes in */
   .feed{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 16px;
     max-height:330px;overflow-y:auto}
+  /* On a phone this is what stands between the reader and the report, so it
+     becomes a sample you may scroll rather than a section you must. */
+  @media (max-width:560px){.feed{max-height:200px}}
   .rev{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:14.5px}
   .rev:last-child{border-bottom:0}
   .rev .st{flex:none;width:64px;color:var(--gold);font-size:13px;letter-spacing:1px}
@@ -50,7 +53,8 @@
   .rp-head{border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:18px}
   .rp-head h3{font-size:22px;margin:0}
   .rp-period{color:var(--muted);font-size:14px;margin-top:2px}
-  .rp-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:20px}
+  .rp-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+  @media (min-width:560px){.rp-stats{grid-template-columns:repeat(4,1fr)}}
   .rp-stat{background:var(--soft);border-radius:11px;padding:12px;text-align:center}
   .rp-stat b{display:block;font-size:22px;line-height:1.2}
   .rp-stat span{font-size:11.5px;color:var(--muted)}
@@ -65,11 +69,13 @@
      tell an owner about their restaurant, this tells them what the $199 bought.
      Every figure in it is a count, never an estimate, which is why it can sit
      next to the "every number is countable" rule without breaking it. */
-  .rp-did{border-top:1px solid var(--line);padding-top:18px}
-  .rp-did .rp-n{color:var(--accent);font-weight:800}
+  .rp-did{background:var(--soft);border-radius:12px;padding:16px 18px}
+  .rp-did h4{color:var(--accent)}
+  .rp-did .rp-n{background:var(--card)}
   .rp-caveat{font-size:13px;color:var(--muted);line-height:1.6;margin-top:12px;
     border-left:2px solid var(--line);padding-left:12px}
-  .rp-n{background:var(--soft);color:var(--accent);font-weight:800;font-size:12px;padding:1px 7px;border-radius:999px}
+  .rp-n{background:var(--soft);color:var(--accent);font-weight:800;font-size:12px;padding:1px 7px;
+    border-radius:999px;white-space:nowrap;display:inline-block}
   .rp-pat{color:var(--muted);font-size:13px}
   .rp-actions{background:var(--soft);border-radius:12px;padding:16px 18px}
   .rp-actions h4{color:var(--accent)}
@@ -105,6 +111,9 @@
     <h1>A month of reviews, read for you</h1>
     <p class="sub">Nobody running a kitchen has time to read forty reviews and work out what they add up to.
       This is a real example: what goes in, and the one page that comes out.</p>
+    <p class="sub" style="margin-top:14px"><b>Yours arrives on the first of the month</b>, by text and by email,
+      with your name on it and your numbers in it. This one is The Olive Table, a restaurant we made up, so you can
+      check every count against the reviews underneath it.</p>
   </div>
 
   <!-- What goes in. These are the reviews the report below is built from, so the
@@ -146,9 +155,26 @@
         <div class="rp-stat"><b>4</b><span>3 star or below</span></div>
       </div>
 
-      <p class="rp-headline">Fourteen reviews this month, averaging four stars, and ten of them were four or five.
+      <p class="rp-headline"><b>Fourteen reviews, all fourteen answered.</b> Averaging four stars, and ten of them were four or five.
         The one thing holding you back is the wait. Four people mentioned it, and three of those four were on a
         Friday or a Saturday night. Everything else people wrote about was good.</p>
+
+      <div class="rp-sec rp-did">
+        <h4>What we did, and what it kept</h4>
+        <ul>
+          <li><b>14 replies written.</b> <span class="rp-n">12 posted</span><em>Two were held for your OK. You
+            approved both, one the same evening and one the next morning.</em></li>
+          <li><b>4 posts published.</b> <span class="rp-n">Instagram + Google</span><em>The Friday vegan special
+            was the one people saved.</em></li>
+          <li><b>19 pickup orders came in by text.</b> <span class="rp-n">$742</span><em>That is the money that
+            went through your own counter this month rather than an app's. No commission came out of it.</em></li>
+          <li><b>37 people opened your ordering page.</b> <span class="rp-n">12 from Google</span><em>You do not
+            have a website, so all 37 landed on the page we host for you.</em></li>
+        </ul>
+        <p class="rp-caveat">We are not going to turn that $742 into a saving for you. Some of those diners would
+          have walked in anyway, and nobody can tell you which ones. What is true is that no app took a cut of
+          any of it.</p>
+      </div>
 
       <div class="rp-sec">
         <h4>What people loved</h4>
@@ -202,22 +228,6 @@
         </ol>
       </div>
 
-      <div class="rp-sec rp-did">
-        <h4>What we did, and what it kept</h4>
-        <ul>
-          <li><b>14 replies written.</b> <span class="rp-n">12 posted</span><em>Two were held for your OK. You
-            approved both, one the same evening and one the next morning.</em></li>
-          <li><b>4 posts published.</b> <span class="rp-n">Instagram, Google listing</span><em>The Friday vegan special
-            was the one people saved.</em></li>
-          <li><b>19 pickup orders came in by text.</b> <span class="rp-n">$742</span><em>That is the money that
-            went through your own counter this month rather than an app's. No commission came out of it.</em></li>
-          <li><b>37 people opened your ordering page.</b> <span class="rp-n">12 from Google</span><em>You do not
-            have a website, so all 37 landed on the page we host for you.</em></li>
-        </ul>
-        <p class="rp-caveat">We are not going to turn that $742 into a saving for you. Some of those diners would
-          have walked in anyway, and nobody can tell you which ones. What is true is that no app took a cut of
-          any of it.</p>
-      </div>
 
       <p class="rp-foot">Based on 14 reviews in this period. Counts are exact. The themes are read from what people
         wrote, and nothing here is guessed.</p>
