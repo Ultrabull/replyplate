@@ -164,8 +164,8 @@
   <section>
     <p class="stitle">How it works, in four taps</p>
     <ol class="howsteps">
-      <li><span><b>Something comes in.</b> A sack of basmati rice arrives. Someone taps "+3kg," once.</span></li>
-      <li><span><b>Something goes out.</b> A cook takes chicken for tonight's orders. They tap "&minus;2kg."</span></li>
+      <li><span><b>Something comes in.</b> A sack of basmati rice arrives. Someone taps "+1 bag," once.</span></li>
+      <li><span><b>Something goes out.</b> A cook takes chicken for tonight's orders. They tap "&minus;5 lb."</span></li>
       <li><span><b>Nobody counts the shelf.</b> No walking round the kitchen with a clipboard. The number just adds
         itself up from those taps, all day.</span></li>
       <li><span><b>A nudge before it runs out.</b> When something gets low, you are told, with the amount to
@@ -256,7 +256,7 @@
   <a href="./chat-demo.html">A demo restaurant</a> &bull;
   <a href="./details.html">Costs and questions</a>
   <br>The stock numbers on this page reset every time you load it. Nothing here is saved anywhere.
-  <br><span style="opacity:.55">Build 2026-08-14b</span>
+  <br><span style="opacity:.55">Build 2026-08-14c</span>
 </div></footer>
 
 <script>
@@ -268,12 +268,12 @@
      picked so paneer crosses the line in three taps and the others take a
      few more, so there is always a fast one and a slower one to try. */
   var ITEMS = [
-    { key: "rice",    name: "Basmati rice",  unit: "kg", step: 3, stock: 22, threshold: 6, refill: 20 },
-    { key: "onion",   name: "Onions",        unit: "kg", step: 2, stock: 14, threshold: 4, refill: 15 },
-    { key: "tomato",  name: "Tomatoes",      unit: "kg", step: 2, stock: 9,  threshold: 3, refill: 10 },
-    { key: "chicken", name: "Chicken",       unit: "kg", step: 2, stock: 11, threshold: 4, refill: 15 },
-    { key: "paneer",  name: "Paneer",        unit: "kg", step: 1, stock: 5,  threshold: 2, refill: 6  },
-    { key: "oil",     name: "Cooking oil",   unit: "L",  step: 1, stock: 10, threshold: 3, refill: 10 }
+    { key: "rice",    name: "Basmati rice",  unit: "bag", step: 1, stock: 8,  threshold: 2,  refill: 10 },
+    { key: "onion",   name: "Onions",        unit: "lb",  step: 5, stock: 30, threshold: 10, refill: 25 },
+    { key: "tomato",  name: "Tomatoes",      unit: "lb",  step: 5, stock: 20, threshold: 8,  refill: 20 },
+    { key: "chicken", name: "Chicken",       unit: "lb",  step: 5, stock: 25, threshold: 10, refill: 25 },
+    { key: "paneer",  name: "Paneer",        unit: "lb",  step: 2, stock: 10, threshold: 4,  refill: 10 },
+    { key: "oil",     name: "Cooking oil",   unit: "gal", step: 1, stock: 5,  threshold: 2,  refill: 5  }
   ];
   var mode = "take";
   /* The key of whatever was just tapped, so both cards can flash that one row
@@ -288,7 +288,11 @@
   var modeTake = document.getElementById("modeTake");
   var modeDeliver = document.getElementById("modeDeliver");
 
-  function fmt(n, unit) { return (Math.round(n * 10) / 10) + " " + unit; }
+  function fmt(n, unit) {
+    var num = Math.round(n * 10) / 10;
+    if (unit === "bag") return num + " " + (num === 1 ? "bag" : "bags");
+    return num + " " + unit;
+  }
 
   function adjust(key, dir) {
     var it = ITEMS.find(function (i) { return i.key === key; });
@@ -307,7 +311,7 @@
       var row = document.createElement("div");
       row.className = "itemrow" + (it.key === lastChanged ? " flash" : "");
       var dir = mode === "take" ? -1 : 1;
-      var stepLabel = it.step + " " + it.unit;
+      var stepLabel = fmt(it.step, it.unit);
       row.innerHTML =
         '<span class="nm"><b>' + it.name + '</b><span>' + fmt(it.stock, it.unit) + ' on hand</span></span>' +
         '<span class="stepper">' +
