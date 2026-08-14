@@ -24,11 +24,13 @@ window.RP_CONFIG = {
      the public site, because selling something that does not exist is how you
      end up owing a refund. Move them onto the site when it actually runs.
 
-     Why $99: Square charges $99 a month for restaurant stock tracking on its
-     own. A self-checkout is a separate company again, roughly $50 a month
-     plus $149 for a tablet. So the honest comparison is about $149 a month
-     across two suppliers, plus hardware. Yours does both, needs no hardware,
-     and sits under the $100 line. Checked August 2026, list prices.        */
+     Why $99: Square sells both halves and they do talk to each other, so do
+     not claim otherwise. Theirs is $99 a month for stock tracking plus about
+     $50 a month and $149 for a kiosk tablet, so roughly $149 a month all in.
+     What you have on them is not features, it is fit: theirs only works if
+     the restaurant runs entirely on Square, and it needs hardware. Yours runs
+     on any till and on the customer's own phone. Checked August 2026, list
+     prices, and they mostly quote by phone.                                */
   addonPrice: "$99",      // stock tracking + self checkout, every month
   addonSetup: "$300",     // menu, payment link, QR sign. Charged once, up front
   pilotPrice: "$49",      // first client only, six months, for being the guinea pig
