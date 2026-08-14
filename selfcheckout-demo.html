@@ -69,8 +69,21 @@
   .shelfrow .left{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;white-space:nowrap}
   .shelfrow.out .nm b,.shelfrow.out .left{color:var(--muted);text-decoration:line-through;text-decoration-color:#d8c9a8}
   .shelfrow.out .nm span{text-decoration:none}
+  /* Low is not out: the item is still sellable, it just needs the kitchen to
+     start the next batch. Kept visually distinct from .out (struck through,
+     unsellable) so staff never confuse "getting low" with "gone." */
+  .shelfrow.low{background:var(--warnwash);margin:0 -14px;padding:12px 14px}
+  .shelfrow.low .left{color:var(--warn)}
   @keyframes flashSold{0%{background:var(--warnwash)}100%{background:transparent}}
   .shelfrow.flash{animation:flashSold 1s ease-out}
+  .addbtn{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
+    background:var(--soft);font:700 20px inherit;color:var(--ink);cursor:pointer;
+    transition:transform .1s,background .15s}
+  .addbtn:active{background:var(--good);border-color:var(--good);color:#fff;transform:scale(.92)}
+  .lownudge{display:none;background:var(--warnwash);border:1px solid #eeccc0;border-radius:10px;
+    padding:12px 14px;margin-top:14px;font-size:13.5px;color:var(--warn);line-height:1.5}
+  .lownudge.show{display:block}
+  .lownudge b{font-weight:800}
 
   /* ── the customer side: pick, cart, pay ───────────────────────────────── */
   .ordercard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
@@ -186,6 +199,7 @@
           <div class="camnote">📷 <span><b>A visible camera watches this shelf.</b> That alone is most of the
             deterrent — nothing here needs to be smart.</span></div>
           <div id="shelfList"></div>
+          <div class="lownudge" id="lowNudge"></div>
         </div>
       </div>
 
@@ -224,6 +238,11 @@
           waste, a staff snack, a mistake — still needs a hand to tap it, same as the stock tracker.</p>
       </div>
       <div class="note">
+        <b>The kitchen tops it up</b>
+        <p>A fresh batch comes out, someone taps the shelf item once per one added. Get low and it says so, and
+          it says "make more," not "reorder" — nothing here is bought in.</p>
+      </div>
+      <div class="note">
         <b>A camera, not a lock</b>
         <p>Micro-markets running this exact model average 2% to 4% shrinkage with a visible camera and a sign, and
           up to 10% with neither. That is the whole security budget: a camera and a sign.</p>
@@ -255,12 +274,12 @@
      demo exists to prove, since it is the answer to "how does this connect
      to the stock tracker." */
   var ITEMS = [
-    { key: "samosa",  name: "Samosas",              note: "3 pack",   price: 4.99, packed: 5 },
-    { key: "tikka",   name: "Chicken tikka masala", note: "16oz box", price: 9.99, packed: 3 },
-    { key: "biryani", name: "Vegetable biryani",    note: "16oz box", price: 8.99, packed: 4 },
-    { key: "lassi",   name: "Mango lassi",          note: "16oz cup", price: 3.99, packed: 6 },
-    { key: "naan",    name: "Garlic naan",          note: "2 pack",   price: 2.99, packed: 4 },
-    { key: "jamun",   name: "Gulab jamun",          note: "4 pcs",    price: 4.99, packed: 2 }
+    { key: "samosa",  name: "Samosas",              note: "3 pack",   price: 4.99, packed: 5, threshold: 2 },
+    { key: "tikka",   name: "Chicken tikka masala", note: "16oz box", price: 9.99, packed: 3, threshold: 1 },
+    { key: "biryani", name: "Vegetable biryani",    note: "16oz box", price: 8.99, packed: 4, threshold: 1 },
+    { key: "lassi",   name: "Mango lassi",          note: "16oz cup", price: 3.99, packed: 6, threshold: 2 },
+    { key: "naan",    name: "Garlic naan",          note: "2 pack",   price: 2.99, packed: 4, threshold: 1 },
+    { key: "jamun",   name: "Gulab jamun",          note: "4 pcs",    price: 4.99, packed: 2, threshold: 1 }
   ];
   var cart = {};   // key -> qty chosen, not yet paid
   /* Every key bought in the last checkout, not just one: a single purchase
@@ -269,6 +288,7 @@
   var lastSold = [];
 
   var shelfList = document.getElementById("shelfList");
+  var lowNudge = document.getElementById("lowNudge");
   var orderList = document.getElementById("orderList");
   var cartCount = document.getElementById("cartCount");
   var cartTotal = document.getElementById("cartTotal");
@@ -279,16 +299,46 @@
   function money(n) { return "$" + n.toFixed(2); }
   function cartQty(key) { return cart[key] || 0; }
 
-  function renderShelf() {
+  function restock(key) {
+    var it = ITEMS.find(function (i) { return i.key === key; });
+    if (!it) return;
+    /* One tap, one item, same tap-to-add pattern as the stock tracker. A
+       fresh tray of ten is ten taps -- deliberately no separate number box to
+       type into, so restocking never needs the keyboard mid-shift. */
+    it.packed += 1;
+    lastSold = [];   // this is a restock, not a sale; the sold-row flash is not the right one
+    renderShelf(key);
+  }
+
+  function renderShelf(justRestocked) {
     shelfList.innerHTML = "";
+    var low = [];
     ITEMS.forEach(function (it) {
+      var isLow = it.packed > 0 && it.packed <= it.threshold;
+      if (isLow) low.push(it);
       var row = document.createElement("div");
-      row.className = "shelfrow" + (it.packed <= 0 ? " out" : "") + (lastSold.indexOf(it.key) !== -1 ? " flash" : "");
+      row.className = "shelfrow" +
+        (it.packed <= 0 ? " out" : isLow ? " low" : "") +
+        (lastSold.indexOf(it.key) !== -1 || it.key === justRestocked ? " flash" : "");
       row.innerHTML =
         '<span class="nm"><b>' + it.name + '</b><span>' + it.note + '</span></span>' +
-        '<span class="left">' + (it.packed <= 0 ? "Sold out" : it.packed + " left") + '</span>';
+        '<span class="left">' + (it.packed <= 0 ? "Sold out" : it.packed + " left") + '</span>' +
+        '<button class="addbtn" type="button" data-key="' + it.key + '" aria-label="Add one ' + it.name +
+          ' to the shelf">+</button>';
       shelfList.appendChild(row);
     });
+    shelfList.querySelectorAll(".addbtn").forEach(function (b) {
+      b.addEventListener("click", function () { restock(b.dataset.key); });
+    });
+    if (low.length) {
+      lowNudge.classList.add("show");
+      lowNudge.innerHTML = low.map(function (it) {
+        return '<b>' + it.name + ' is getting low: ' + it.packed + ' left.</b> Kitchen should make more.';
+      }).join("<br>");
+    } else {
+      lowNudge.classList.remove("show");
+      lowNudge.innerHTML = "";
+    }
   }
 
   function renderOrder() {
