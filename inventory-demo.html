@@ -78,11 +78,20 @@
   .itemrow:first-of-type{border-top:none}
   .itemrow .nm{flex:1;min-width:0}
   .itemrow .nm b{display:block;font-size:15px}
-  .itemrow .nm span{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+  .itemrow .nm span{display:block;font-size:13.5px;color:var(--muted);margin-top:1px;
+    font-variant-numeric:tabular-nums;font-weight:600}
   .stepper{display:flex;align-items:center;gap:10px;flex:0 0 auto}
-  .stepbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--soft);
-    font:700 18px inherit;color:var(--ink);cursor:pointer}
+  /* 44x44 is Apple's own stated minimum tappable size. The first version of
+     this button was 38x38: small enough that a real finger, moving fast on a
+     phone, could miss it and land on nothing. That reads exactly like "the
+     numbers aren't moving," when the numbers were never touched at all. */
+  .stepbtn{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--soft);
+    font:700 20px inherit;color:var(--ink);cursor:pointer;transition:transform .1s,background .15s}
   .stepbtn:hover{border-color:var(--accent)}
+  /* :hover barely applies on a touchscreen, so it was the only feedback a tap
+     had, which means it had none. :active fires the instant a finger presses
+     down, before anything else on the page has had time to update. */
+  .stepbtn:active{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(.92)}
   .stepbtn:disabled{opacity:.35;cursor:default}
   .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:66px;text-align:center;font-size:13.5px}
 
@@ -97,11 +106,19 @@
   .ownerhead h3{font-size:19px}
   .ownerhead span{font-size:13px;color:var(--muted)}
   .stockrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);
-    transition:background .25s}
+    transition:background .25s;border-radius:8px}
+  /* Fires on every change, low or not, so the eye catches it even when a row
+     never crosses into the red. Keyframes rather than a CSS transition: a
+     transition only animates between two states you hold, and this state is
+     gone again within a second. */
+  @keyframes flashChanged{0%{background:var(--soft)}100%{background:transparent}}
+  .stockrow.flash{animation:flashChanged .9s ease-out}
+  .itemrow{transition:background .2s}
+  .itemrow.flash{animation:flashChanged .9s ease-out}
   .stockrow:first-of-type{border-top:none}
   .stockrow .nm{flex:1;min-width:0}
   .stockrow .nm b{display:block;font-size:15px}
-  .stockrow .lvl{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;white-space:nowrap}
+  .stockrow .lvl{font-variant-numeric:tabular-nums;font-weight:800;font-size:18px;white-space:nowrap}
   .stockrow.low{background:var(--warnwash);margin:0 -14px;padding:13px 14px;border-radius:10px}
   .stockrow.low .lvl{color:var(--warn)}
   .nudge{display:none;background:var(--warnwash);border:1px solid #eeccc0;border-radius:10px;
@@ -258,6 +275,10 @@
     { key: "oil",     name: "Cooking oil",   unit: "L",  step: 1, stock: 10, threshold: 3, refill: 10 }
   ];
   var mode = "take";
+  /* The key of whatever was just tapped, so both cards can flash that one row
+     and nothing else. Cleared straight after render reads it, so switching
+     mode or reloading never replays an old flash. */
+  var lastChanged = null;
 
   var itemList = document.getElementById("itemList");
   var ownerList = document.getElementById("ownerList");
@@ -275,6 +296,7 @@
        minus number, because a tap cannot remove more than is physically
        there. */
     it.stock = Math.max(0, it.stock + dir * it.step);
+    lastChanged = key;
     render();
   }
 
@@ -282,7 +304,7 @@
     itemList.innerHTML = "";
     ITEMS.forEach(function (it) {
       var row = document.createElement("div");
-      row.className = "itemrow";
+      row.className = "itemrow" + (it.key === lastChanged ? " flash" : "");
       var dir = mode === "take" ? -1 : 1;
       var stepLabel = it.step + " " + it.unit;
       row.innerHTML =
@@ -306,12 +328,13 @@
       var isLow = it.stock <= it.threshold;
       if (isLow) low.push(it);
       var row = document.createElement("div");
-      row.className = "stockrow" + (isLow ? " low" : "");
+      row.className = "stockrow" + (isLow ? " low" : "") + (it.key === lastChanged ? " flash" : "");
       row.innerHTML =
         '<span class="nm"><b>' + it.name + '</b></span>' +
         '<span class="lvl">' + fmt(it.stock, it.unit) + '</span>';
       ownerList.appendChild(row);
     });
+    lastChanged = null;   // read by both cards above; spent once render is done
     if (low.length) {
       nudgeBox.classList.add("show");
       nudgeBox.innerHTML = low.map(function (it) {
