@@ -85,6 +85,44 @@
   .lownudge.show{display:block}
   .lownudge b{font-weight:800}
 
+  /* ── counting: the checkpoint that turns a shortage into a time window ── */
+  .countwrap{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .countbtn{width:100%;background:var(--soft);border:1px solid var(--line);border-radius:10px;
+    padding:12px;font:700 14.5px inherit;color:var(--ink);cursor:pointer;min-height:48px}
+  .countbtn:active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .countpanel{display:none;margin-top:12px}
+  .countpanel.show{display:block}
+  .counthead{font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.5}
+  .counthead b{color:var(--ink)}
+  .countrow{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}
+  .countrow:first-of-type{border-top:none}
+  .countrow .cn{flex:1;min-width:0;font-size:14px;font-weight:600}
+  .cstep{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
+    background:var(--soft);font:700 18px inherit;color:var(--ink);cursor:pointer;transition:transform .1s}
+  .cstep:active{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(.92)}
+  .cval{font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;min-width:30px;text-align:center}
+  .savebtn{width:100%;margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;
+    padding:13px;font:700 15px inherit;cursor:pointer;min-height:48px}
+  .countreport{display:none;margin-top:12px;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.55}
+  .countreport.show{display:block}
+  .countreport.good{background:var(--goodwash);border:1px solid #cfe3d5;color:var(--good)}
+  .countreport.bad{background:var(--warnwash);border:1px solid #eeccc0;color:var(--warn)}
+  .countreport b{font-weight:800}
+  .countreport .when{display:block;margin-top:6px;color:var(--muted);font-weight:600;font-size:12.5px}
+
+  /* ── the log: the timestamps, made visible, so "when" is never a guess ── */
+  .stitle + .stsub{margin-top:-8px;margin-bottom:16px;color:var(--muted);font-size:14.5px}
+  .logcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 18px}
+  .logrow{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-top:1px solid var(--line);
+    font-size:14.5px}
+  .logrow:first-of-type{border-top:none}
+  .logrow .lt{flex:0 0 auto;font-variant-numeric:tabular-nums;font-weight:800;color:var(--accent2);
+    font-size:13px;min-width:60px}
+  .logrow .lx{flex:1;min-width:0}
+  .logrow .lx.out{color:var(--good);font-weight:600}
+  .logrow .lx.count{font-weight:700}
+  .logempty{padding:16px 0;color:var(--muted);font-size:14px;line-height:1.55}
+
   /* ── the customer side: pick, cart, pay ───────────────────────────────── */
   .ordercard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
   .ordrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
@@ -204,6 +242,16 @@
             deterrent — nothing here needs to be smart.</span></div>
           <div id="shelfList"></div>
           <div class="lownudge" id="lowNudge"></div>
+
+          <div class="countwrap">
+            <button class="countbtn" id="countBtn" type="button">Count the shelf</button>
+            <div class="countpanel" id="countPanel">
+              <p class="counthead">Set what is <b>really</b> on the shelf. Last counted <span id="countedAt"></span>.</p>
+              <div id="countRows"></div>
+              <button class="savebtn" id="saveCount" type="button">Save this count</button>
+            </div>
+            <div class="countreport" id="countReport"></div>
+          </div>
         </div>
       </div>
 
@@ -232,6 +280,13 @@
   </section>
 
   <section>
+    <p class="stitle">Today's log</p>
+    <p class="stsub">Every sale and every tray put out, with the time on it. This is what a count gets compared
+      against, and what tells you which hours are even worth looking at.</p>
+    <div class="logcard"><div id="activityLog"></div></div>
+  </section>
+
+  <section>
     <p class="stitle">What this is, plainly</p>
     <div class="notes">
       <div class="note">
@@ -248,6 +303,12 @@
         <b>The kitchen tops it up</b>
         <p>A fresh batch comes out, someone taps the shelf item once per one added. Get low and it says so, and
           it says "make more," not "reorder" — nothing here is bought in.</p>
+      </div>
+      <div class="note">
+        <b>Count at the shift change</b>
+        <p>A count resets the clock. Count weekly and a missing box could be any of seven days. Count when the
+          shift changes and it narrows to four hours, which is a searchable amount of footage and one shift of
+          staff.</p>
       </div>
       <div class="note">
         <b>A camera, not a lock</b>
@@ -293,6 +354,16 @@
      can cover several items, and each row that actually sold should flash,
      not only the last one a forEach loop happened to touch. */
   var lastSold = [];
+  /* Every sale and every restock, with the time on it, newest first. A count
+     on its own tells you something is missing; the log is what tells you
+     which hours are even worth looking at. */
+  var log = [];
+  /* When a human last physically counted this shelf. Seeded three hours back
+     so the page opens mid-shift with a believable window behind it. Anything
+     missing is missing since this moment and nothing earlier, which is the
+     whole reason the count exists. */
+  var countedAt = new Date(Date.now() - 3 * 60 * 60 * 1000);
+  var counting = null;   // key -> number a human is entering, while the panel is open
 
   var shelfList = document.getElementById("shelfList");
   var lowNudge = document.getElementById("lowNudge");
@@ -303,9 +374,39 @@
   var confirmBox = document.getElementById("confirmBox");
   var confirmSum = document.getElementById("confirmSum");
   var orderCode = document.getElementById("orderCode");
+  var activityLog = document.getElementById("activityLog");
+  var countBtn = document.getElementById("countBtn");
+  var countPanel = document.getElementById("countPanel");
+  var countRows = document.getElementById("countRows");
+  var countedAtEl = document.getElementById("countedAt");
+  var saveCount = document.getElementById("saveCount");
+  var countReport = document.getElementById("countReport");
 
   function money(n) { return "$" + n.toFixed(2); }
   function cartQty(key) { return cart[key] || 0; }
+
+  function clock(d) {
+    var h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? "pm" : "am";
+    h = h % 12; if (h === 0) h = 12;
+    return h + ":" + (m < 10 ? "0" + m : m) + ap;
+  }
+
+  function note(text, kind) {
+    log.unshift({ at: new Date(), text: text, kind: kind || "" });
+    renderLog();
+  }
+
+  function renderLog() {
+    if (!log.length) {
+      activityLog.innerHTML = '<p class="logempty">Nothing yet today. Buy something, or top the shelf up, and it ' +
+        'lands here with the time on it.</p>';
+      return;
+    }
+    activityLog.innerHTML = log.map(function (e) {
+      return '<div class="logrow"><span class="lt">' + clock(e.at) + '</span>' +
+        '<span class="lx ' + e.kind + '">' + e.text + '</span></div>';
+    }).join("");
+  }
 
   function restock(key) {
     var it = ITEMS.find(function (i) { return i.key === key; });
@@ -314,6 +415,7 @@
        fresh tray of ten is ten taps -- deliberately no separate number box to
        type into, so restocking never needs the keyboard mid-shift. */
     it.packed += 1;
+    note("1x " + it.name + " put out on the shelf", "in");
     lastSold = [];   // this is a restock, not a sale; the sold-row flash is not the right one
     renderShelf(key);
   }
@@ -412,15 +514,95 @@
     orderCode.textContent = "Order " + code;
     confirmSum.textContent = money(total) + " paid: " + lines.join(", ");
     confirmBox.classList.add("show");
+    note("Order " + code + " &middot; " + lines.join(", ") + " &middot; " + money(total) + " paid", "out");
     cart = {};
     renderShelf();   // reads lastSold to flash every row that just sold
     renderOrder();
     lastSold = [];    // spent once renderShelf has used it
   }
 
+  /* ── counting: what turns "some food went missing" into a time window ────
+     A sale drops the shelf on its own, so the count above is right for every
+     item that was paid for. It is wrong by exactly the amount that walked off
+     without paying, and that gap only shows up when a human counts. Because
+     the count also resets the clock, the next gap is pinned to a known window
+     rather than to the whole week. Count at the shift change and a missing
+     box narrows to four hours of footage, and to one shift of staff. */
+  function openCount() {
+    if (countPanel.classList.contains("show")) { closeCount(); return; }
+    counting = {};
+    ITEMS.forEach(function (it) { counting[it.key] = it.packed; });
+    countedAtEl.textContent = clock(countedAt);
+    countPanel.classList.add("show");
+    countBtn.textContent = "Cancel the count";
+    countReport.classList.remove("show");
+    renderCount();
+  }
+
+  function closeCount() {
+    counting = null;
+    countPanel.classList.remove("show");
+    countBtn.textContent = "Count the shelf";
+  }
+
+  function renderCount() {
+    countRows.innerHTML = "";
+    ITEMS.forEach(function (it) {
+      var row = document.createElement("div");
+      row.className = "countrow";
+      row.innerHTML =
+        '<span class="cn">' + it.name + '</span>' +
+        '<button class="cstep" type="button" data-key="' + it.key + '" data-dir="-1" ' +
+          'aria-label="One less ' + it.name + ' counted">&minus;</button>' +
+        '<span class="cval">' + counting[it.key] + '</span>' +
+        '<button class="cstep" type="button" data-key="' + it.key + '" data-dir="1" ' +
+          'aria-label="One more ' + it.name + ' counted">+</button>';
+      countRows.appendChild(row);
+    });
+    countRows.querySelectorAll(".cstep").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var k = b.dataset.key;
+        counting[k] = Math.max(0, counting[k] + Number(b.dataset.dir));
+        renderCount();
+      });
+    });
+  }
+
+  function saveTheCount() {
+    var gaps = [], extras = [], lost = 0;
+    ITEMS.forEach(function (it) {
+      var real = counting[it.key], diff = it.packed - real;
+      if (diff > 0) { gaps.push(diff + "x " + it.name); lost += diff * it.price; }
+      if (diff < 0) extras.push(-diff + "x " + it.name + " more than expected");
+      it.packed = real;
+    });
+    var since = clock(countedAt), now = new Date();
+    countReport.className = "countreport show " + (gaps.length ? "bad" : "good");
+    if (gaps.length) {
+      countReport.innerHTML = '<b>Gone without paying since ' + since + ': ' + gaps.join(", ") + '.</b> ' +
+        'That is ' + money(lost) + ' at menu price' + (extras.length ? ", and " + extras.join(", ") : "") + '.' +
+        '<span class="when">Look at ' + since + ' to ' + clock(now) + ', and nothing before it. ' +
+        'New count saved ' + clock(now) + '.</span>';
+    } else if (extras.length) {
+      countReport.innerHTML = '<b>Nothing missing.</b> ' + extras.join(", ") +
+        ', so something went out without being tapped.<span class="when">New count saved ' + clock(now) + '.</span>';
+    } else {
+      countReport.innerHTML = '<b>Everything matched.</b> Every box that left this shelf since ' + since +
+        ' was paid for.<span class="when">New count saved ' + clock(now) + '.</span>';
+    }
+    note("Counted by hand &middot; " + (gaps.length ? gaps.join(", ") + " unpaid" : "everything matched"), "count");
+    countedAt = now;
+    closeCount();
+    renderShelf();
+    renderOrder();
+  }
+
   payBtn.addEventListener("click", pay);
+  countBtn.addEventListener("click", openCount);
+  saveCount.addEventListener("click", saveTheCount);
   renderShelf();
   renderOrder();
+  renderLog();
 })();
 </script>
 
