@@ -50,6 +50,30 @@
     text-transform:uppercase;padding:2px 6px;border-radius:5px;vertical-align:2px;margin-left:6px}
   .tag.you{background:#3b2f22;color:var(--gold)}
   .tag.them{background:#233529;color:var(--good)}
+  .tag.soon{background:#3a2a26;color:var(--accent);margin-left:0}
+
+  /* ── the price list ───────────────────────────────────────────────────────
+     The same card as the link rows above, so it reads as part of the same
+     hub, but it goes nowhere on tap: this is the sheet you read out when an
+     owner asks "how much," not another page to get lost in. Money that
+     repeats is gold, money that lands once is plain, because the first kind
+     is the only kind that adds up. */
+  .prow{display:flex;align-items:center;gap:12px;padding:12px 14px;
+    border-bottom:1px solid var(--line);min-height:56px}
+  .prow:last-child{border-bottom:0}
+  .pn{flex:1;min-width:0;font-size:15.5px;font-weight:650}
+  .pn span{display:block;color:var(--muted);font-size:13px;font-weight:400;
+    line-height:1.35;margin-top:2px}
+  /* .pn span puts the description on its own line, and that rule is specific
+     enough to catch a tag nested inside it too, which stretched the badge into
+     a full-width bar. Same fix as .txt span span above: put it back inline. */
+  .pn .tag{display:inline-block;margin-right:5px}
+  .pv{flex:none;text-align:right}
+  .pv b{display:block;font-size:17px;font-weight:750;color:var(--gold);
+    font-variant-numeric:tabular-nums;letter-spacing:-.2px}
+  .pv i{display:block;font-style:normal;font-size:11px;color:var(--muted);
+    font-weight:600;margin-top:1px;text-transform:uppercase;letter-spacing:.04em}
+  .prow.once .pv b{color:var(--ink)}
 
   .tip{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);
     border-radius:12px;padding:14px;font-size:14px;color:var(--muted);margin-top:24px}
@@ -123,6 +147,52 @@
       <span class="ico">🎉</span>
       <span class="txt"><b>What they see after paying</b><span>Check it still reads right</span></span>
       <span class="go"></span></a>
+  </div>
+
+  <h2>What to charge</h2>
+  <div class="grp">
+    <div class="prow">
+      <span class="pn">The service<span>Replies, posts, ordering, the report</span></span>
+      <span class="pv"><b data-price>$199</b><i>a month</i></span>
+    </div>
+    <div class="prow">
+      <span class="pn">Stock &amp; self checkout
+        <span><span class="tag soon">Not built yet</span> Sell the pair, never one half on its own</span></span>
+      <span class="pv"><b data-addonprice>$99</b><i>a month</i></span>
+    </div>
+    <div class="prow once">
+      <span class="pn">Setting that up<span>Their menu, payment link, printed QR sign</span></span>
+      <span class="pv"><b data-addonsetup>$300</b><i>once</i></span>
+    </div>
+    <div class="prow once">
+      <span class="pn">A website<span>Quote it after seeing their place, not off a page</span></span>
+      <span class="pv"><b data-webprice>$1,200</b><i>once</i></span>
+    </div>
+    <div class="prow once">
+      <span class="pn">A photo shoot<span>Book the photographer first, so you know your cost</span></span>
+      <span class="pv"><b data-photoprice>$750</b><i>once</i></span>
+    </div>
+  </div>
+
+  <div class="tip">
+    <b>Why the add-on is <span data-addonprice>$99</span></b>
+    <p>Square charges <b>$99 a month</b> for restaurant stock tracking on its own. A self checkout is a
+      different company again, about <b>$50 a month plus $149</b> for a tablet.</p>
+    <p style="margin-top:8px">So buying it elsewhere is roughly <b>$149 a month</b>, from two companies that
+      do not talk to each other, and a gadget on the counter. You do both for
+      <span data-addonprice>$99</span>, with no gadget, because it runs on the customer's own phone.</p>
+    <p style="margin-top:8px;font-size:13px">Their published prices, checked August 2026. Most of them quote by
+      phone, so treat these as estimates.</p>
+  </div>
+
+  <div class="tip" style="border-left-color:var(--accent)">
+    <b>Sell the first one as a pilot</b>
+    <p>It is not built yet, so do not offer it to everybody. Offer it to <b>one</b> restaurant, and say this:</p>
+    <p style="margin-top:8px;color:var(--ink)">"<span data-addonsetup>$300</span> to set it up, then
+      <span data-pilotprice>$49</span> a month for six months, because you are my first. After that it is
+      <span data-addonprice>$99</span>."</p>
+    <p style="margin-top:8px">Their money pays for the build, and you find out what breaks in a real kitchen
+      before anyone else is relying on it. Put the six months in writing.</p>
   </div>
 
   <h2>Accounts you depend on</h2>
@@ -241,11 +311,21 @@
    operator's own browser storage behind them. */
 (function () {
   "use strict";
-  var CONFIG = { webPrice: "$1,200" };
+  /* Fallbacks, so the price sheet still reads correctly if config.js fails to
+     load. Every one of these is also in config.js, which is the file to edit:
+     change a price there and it changes here and on the public site together,
+     rather than leaving this page quoting last year's number. */
+  var CONFIG = { price: "$199", webPrice: "$1,200", photoPrice: "$750",
+                 addonPrice: "$99", addonSetup: "$300", pilotPrice: "$49" };
   if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
     if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
   });
-  document.querySelectorAll("[data-webprice]").forEach(function (n) { n.textContent = CONFIG.webPrice; });
+  var SLOTS = { price: "data-price", webPrice: "data-webprice", photoPrice: "data-photoprice",
+                addonPrice: "data-addonprice", addonSetup: "data-addonsetup",
+                pilotPrice: "data-pilotprice" };
+  Object.keys(SLOTS).forEach(function (k) {
+    document.querySelectorAll("[" + SLOTS[k] + "]").forEach(function (n) { n.textContent = CONFIG[k]; });
+  });
 
   /* A quiet nudge rather than a dashboard. It reads the same storage the
      console writes, so it stays honest with no wiring between them. */

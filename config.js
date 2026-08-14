@@ -19,6 +19,20 @@ window.RP_CONFIG = {
   webPrice:   "$1,200",   // building a website, charged once
   photoPrice: "$750",     // a professional photo shoot, charged once
 
+  /* ── The stock and self-checkout add-on ───────────────────────────────────
+     NOT BUILT YET. These numbers only appear on your own HQ page, never on
+     the public site, because selling something that does not exist is how you
+     end up owing a refund. Move them onto the site when it actually runs.
+
+     Why $99: Square charges $99 a month for restaurant stock tracking on its
+     own. A self-checkout is a separate company again, roughly $50 a month
+     plus $149 for a tablet. So the honest comparison is about $149 a month
+     across two suppliers, plus hardware. Yours does both, needs no hardware,
+     and sits under the $100 line. Checked August 2026, list prices.        */
+  addonPrice: "$99",      // stock tracking + self checkout, every month
+  addonSetup: "$300",     // menu, payment link, QR sign. Charged once, up front
+  pilotPrice: "$49",      // first client only, six months, for being the guinea pig
+
   /* ── Stripe ───────────────────────────────────────────────────────────────
      Paste the Payment Link for the monthly plan here and every "Start for
      $199/mo" button on the site becomes a real checkout.
