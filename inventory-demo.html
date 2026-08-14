@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Stock, without the counting | ReplyPlate</title>
-<meta name="description" content="A working preview: staff scan a code when stock is taken or a delivery arrives, and the owner sees it change, with a nudge when something runs low." />
+<meta name="description" content="A working preview: staff tap when stock is taken or a delivery arrives, and the owner sees it change, with a nudge when something runs low." />
 <!-- This is a preview built to show one owner an idea, not a shipped feature.
      It is deliberately not linked from the site's own navigation or footer:
      send the link directly, the way you would a private page, and nowhere on
@@ -12,9 +12,13 @@
 <meta name="robots" content="noindex" />
 <style>
   :root{
-    --ink:#1c1613; --muted:#6d6155; --bg:#faf7f1; --card:#fff; --line:#e6ddd1;
-    --soft:#f4eee4; --accent:#b03d29; --gold:#b8893a; --good:#2f6f4f; --warn:#a3311c;
-    --warnwash:#fdf1ee;
+    /* A warmer, richer palette than the site's usual cream-and-brick: a
+       turmeric gold carries the brand colour, and red is spent on nothing
+       except the low-stock warning, so the one colour that means "look at
+       this" never has to compete with the colour used everywhere else. */
+    --ink:#241a10; --muted:#7c6a52; --bg:#fdf8ef; --card:#fffdf9; --line:#ecdec2;
+    --soft:#f8ecd4; --accent:#c1791a; --accent2:#8a4a1f; --good:#3f7d52;
+    --warn:#a52f22; --warnwash:#fbe9e0;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --serif:Georgia,"Times New Roman",serif;
   }
@@ -29,16 +33,15 @@
   .nav a.back{font-size:14.5px;text-decoration:none}
 
   .hero{padding:44px 0 30px;text-align:center}
-  .kicker{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  .kicker{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
   h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;
     letter-spacing:-.5px;margin:10px 0 12px}
   .sub{color:var(--muted);font-size:16.5px;max-width:60ch;margin:0 auto}
   /* This is not part of the $199 and must never read like it is: it sits right
-     under the hero, before anything interactive, so nobody scrolls past it. */
-  /* A full pill shape (border-radius:999px) reads fine for a short one-line
-     badge, but this is a full sentence and wraps to two or three lines on a
-     phone, where a stretched pill looks strained rather than clean. A smaller
-     radius keeps it a badge without fighting the wrap. */
+     under the hero, before anything interactive, so nobody scrolls past it.
+     A full pill (border-radius:999px) reads fine for a short badge, but this
+     is a full sentence and wraps on a phone, where a stretched pill looks
+     strained rather than clean. A smaller radius keeps it a badge, not a pill. */
   .addon{display:inline-block;max-width:440px;margin-top:18px;background:var(--soft);
     border:1px solid var(--line);border-radius:12px;padding:10px 18px;font-size:13.5px;
     color:var(--ink);line-height:1.5}
@@ -47,8 +50,18 @@
   section{padding:26px 0}
   .stitle{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
     color:var(--muted);margin-bottom:12px}
+  .stitle + .stsub{margin-top:-8px;margin-bottom:16px;color:var(--muted);font-size:14.5px}
 
-  /* the staff card: a QR to scan, and the two things a scan can do */
+  /* how it works: four short steps, read before a single button is tapped */
+  .howsteps{list-style:none;counter-reset:hows;display:grid;gap:16px}
+  .howsteps li{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;
+    font-size:15.5px;line-height:1.55}
+  .howsteps li::before{counter-increment:hows;content:counter(hows);
+    width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
+  .howsteps b{color:var(--ink)}
+
+  /* the staff card: a QR to tap, and the two things a scan can do */
   .staffcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
   .qrrow{display:flex;gap:18px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
   .qr{flex:0 0 auto;width:76px;height:76px;border-radius:10px;background:var(--ink);position:relative}
@@ -69,13 +82,13 @@
   .stepper{display:flex;align-items:center;gap:10px;flex:0 0 auto}
   .stepbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--soft);
     font:700 18px inherit;color:var(--ink);cursor:pointer}
-  .stepbtn:hover{border-color:var(--gold)}
+  .stepbtn:hover{border-color:var(--accent)}
   .stepbtn:disabled{opacity:.35;cursor:default}
-  .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:64px;text-align:center;font-size:14.5px}
+  .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:66px;text-align:center;font-size:13.5px}
 
   .arrow{text-align:center;color:var(--muted);font-size:13px;padding:6px 0 2px;
     letter-spacing:.14em;text-transform:uppercase;font-weight:700}
-  .arrow span{display:block;font-size:22px;color:var(--gold);line-height:1.4}
+  .arrow span{display:block;font-size:22px;color:var(--accent2);line-height:1.4}
 
   /* the owner card: what he sees, live */
   .ownercard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
@@ -91,7 +104,7 @@
   .stockrow .lvl{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;white-space:nowrap}
   .stockrow.low{background:var(--warnwash);margin:0 -14px;padding:13px 14px;border-radius:10px}
   .stockrow.low .lvl{color:var(--warn)}
-  .nudge{display:none;background:var(--warnwash);border:1px solid #eccec7;border-radius:10px;
+  .nudge{display:none;background:var(--warnwash);border:1px solid #eeccc0;border-radius:10px;
     padding:12px 14px;margin-top:6px;font-size:13.5px;color:var(--warn);line-height:1.5}
   .nudge.show{display:block}
   .nudge b{font-weight:800}
@@ -126,10 +139,22 @@
   <div class="hero">
     <div class="kicker">A working preview, not a finished feature</div>
     <h1>Stock, without the counting</h1>
-    <p class="sub">A code by the walk-in. Staff scan it when something is taken, or when a delivery comes in. You see
-      the numbers change as it happens, and a nudge when something is about to run out.</p>
+    <p class="sub">A code by the walk-in. Tap it when something is taken, or when a delivery comes in. The kitchen
+      below is set up the way yours would be, with your own ingredients.</p>
     <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
   </div>
+
+  <section>
+    <p class="stitle">How it works, in four taps</p>
+    <ol class="howsteps">
+      <li><span><b>Something comes in.</b> A sack of basmati rice arrives. Someone taps "+3kg," once.</span></li>
+      <li><span><b>Something goes out.</b> A cook takes chicken for tonight's orders. They tap "&minus;2kg."</span></li>
+      <li><span><b>Nobody counts the shelf.</b> No walking round the kitchen with a clipboard. The number just adds
+        itself up from those taps, all day.</span></li>
+      <li><span><b>A nudge before it runs out.</b> When something gets low, you are told, with the amount to
+        reorder.</span></li>
+    </ol>
+  </section>
 
   <section>
     <div class="grid2">
@@ -138,13 +163,13 @@
         <div class="staffcard">
           <div class="qrrow">
             <div class="qr" aria-hidden="true">
-              <svg viewBox="0 0 76 76"><rect width="76" height="76" fill="#1c1613"/>
-                <g fill="#faf7f1">
+              <svg viewBox="0 0 76 76"><rect width="76" height="76" fill="#241a10"/>
+                <g fill="#fdf8ef">
                   <rect x="8" y="8" width="18" height="18"/><rect x="50" y="8" width="18" height="18"/>
                   <rect x="8" y="50" width="18" height="18"/>
-                  <rect x="13" y="13" width="8" height="8" fill="#1c1613"/>
-                  <rect x="55" y="13" width="8" height="8" fill="#1c1613"/>
-                  <rect x="13" y="55" width="8" height="8" fill="#1c1613"/>
+                  <rect x="13" y="13" width="8" height="8" fill="#241a10"/>
+                  <rect x="55" y="13" width="8" height="8" fill="#241a10"/>
+                  <rect x="13" y="55" width="8" height="8" fill="#241a10"/>
                   <rect x="32" y="8" width="6" height="6"/><rect x="32" y="20" width="6" height="6"/>
                   <rect x="44" y="32" width="6" height="6"/><rect x="32" y="32" width="6" height="6"/>
                   <rect x="32" y="44" width="6" height="6"/><rect x="32" y="56" width="6" height="6"/>
@@ -185,19 +210,19 @@
     <p class="stitle">What this is, plainly</p>
     <div class="notes">
       <div class="note">
-        <b>No counting, only in and out</b>
-        <p>Nobody types a full stock take. A number goes up when something arrives, and down when something is
-          taken. That is the whole entry.</p>
-      </div>
-      <div class="note">
         <b>A nudge, not an order</b>
-        <p>When something crosses the line you set, you are told and told the amount to bring it back. Nothing is
+        <p>When something crosses the line you set, you are told, and told the amount to bring it back. Nothing is
           ordered for you. You still make the call.</p>
       </div>
       <div class="note">
-        <b>Only as true as the last scan</b>
-        <p>If somebody takes stock without scanning, the number is wrong until the next one. That is on the habit
+        <b>Only as true as the last tap</b>
+        <p>If somebody takes stock without tapping, the number is wrong until the next one. That is on the habit
           in the kitchen, not on the code.</p>
+      </div>
+      <div class="note">
+        <b>Your ingredients, your amounts</b>
+        <p>Rice, paneer, ghee, whatever is actually in your kitchen. You choose what goes on the list, and what
+          counts as low, for each one.</p>
       </div>
     </div>
   </section>
@@ -218,17 +243,20 @@
 
 <script>
 (function () {
-  /* Three items, because three items were the actual conversation this page
-     exists to answer. Each has a threshold (below this, flag it) and a
-     suggested refill (how much the nudge asks for). Both are numbers an owner
-     would set for their own kitchen; here they are just picked to make the
-     demo cross the line within a few taps. */
+  /* Six items from a real Indian kitchen, each with its own unit and its own
+     step, because rice moves in bigger amounts than paneer does. Threshold is
+     where a row turns red; refill is the amount the nudge asks for. Every
+     number here is a stand-in an owner would set for their own kitchen —
+     picked so paneer crosses the line in three taps and the others take a
+     few more, so there is always a fast one and a slower one to try. */
   var ITEMS = [
-    { key: "rice",    name: "Rice",            unit: "kg", stock: 18, threshold: 6,  refill: 20 },
-    { key: "onion",   name: "Onions",          unit: "kg", stock: 9,  threshold: 3,  refill: 10 },
-    { key: "chicken", name: "Chicken breast",  unit: "kg", stock: 11, threshold: 4,  refill: 15 }
+    { key: "rice",    name: "Basmati rice",  unit: "kg", step: 3, stock: 22, threshold: 6, refill: 20 },
+    { key: "onion",   name: "Onions",        unit: "kg", step: 2, stock: 14, threshold: 4, refill: 15 },
+    { key: "tomato",  name: "Tomatoes",      unit: "kg", step: 2, stock: 9,  threshold: 3, refill: 10 },
+    { key: "chicken", name: "Chicken",       unit: "kg", step: 2, stock: 11, threshold: 4, refill: 15 },
+    { key: "paneer",  name: "Paneer",        unit: "kg", step: 1, stock: 5,  threshold: 2, refill: 6  },
+    { key: "oil",     name: "Cooking oil",   unit: "L",  step: 1, stock: 10, threshold: 3, refill: 10 }
   ];
-  var STEP = 2;   // one scan moves a item by this much, in or out
   var mode = "take";
 
   var itemList = document.getElementById("itemList");
@@ -238,14 +266,15 @@
   var modeTake = document.getElementById("modeTake");
   var modeDeliver = document.getElementById("modeDeliver");
 
-  function fmt(n) { return (Math.round(n * 10) / 10) + " kg"; }
+  function fmt(n, unit) { return (Math.round(n * 10) / 10) + " " + unit; }
 
   function adjust(key, dir) {
     var it = ITEMS.find(function (i) { return i.key === key; });
     if (!it) return;
-    /* Taking stock cannot go negative: an empty shelf reads as zero, not -2,
-       because a scan cannot remove more than is physically there. */
-    it.stock = Math.max(0, it.stock + dir * STEP);
+    /* Taking stock cannot go negative: an empty shelf reads as zero, not a
+       minus number, because a tap cannot remove more than is physically
+       there. */
+    it.stock = Math.max(0, it.stock + dir * it.step);
     render();
   }
 
@@ -255,13 +284,14 @@
       var row = document.createElement("div");
       row.className = "itemrow";
       var dir = mode === "take" ? -1 : 1;
+      var stepLabel = it.step + " " + it.unit;
       row.innerHTML =
-        '<span class="nm"><b>' + it.name + '</b><span>' + fmt(it.stock) + ' on hand</span></span>' +
+        '<span class="nm"><b>' + it.name + '</b><span>' + fmt(it.stock, it.unit) + ' on hand</span></span>' +
         '<span class="stepper">' +
         '<button class="stepbtn" type="button" data-key="' + it.key + '" aria-label="' +
-          (mode === "take" ? "Log " + STEP + "kg taken" : "Log " + STEP + "kg delivered") + '">' +
+          (mode === "take" ? "Log " + stepLabel + " taken" : "Log " + stepLabel + " delivered") + '">' +
           (mode === "take" ? "&minus;" : "+") + '</button>' +
-        '<span class="amt">' + STEP + ' kg</span></span>';
+        '<span class="amt">' + stepLabel + '</span></span>';
       var btn = row.querySelector(".stepbtn");
       if (mode === "take" && it.stock <= 0) btn.disabled = true;
       btn.addEventListener("click", function () { adjust(it.key, dir); });
@@ -279,13 +309,14 @@
       row.className = "stockrow" + (isLow ? " low" : "");
       row.innerHTML =
         '<span class="nm"><b>' + it.name + '</b></span>' +
-        '<span class="lvl">' + fmt(it.stock) + '</span>';
+        '<span class="lvl">' + fmt(it.stock, it.unit) + '</span>';
       ownerList.appendChild(row);
     });
     if (low.length) {
       nudgeBox.classList.add("show");
       nudgeBox.innerHTML = low.map(function (it) {
-        return '<b>' + it.name + ' is low: ' + fmt(it.stock) + ' left.</b> Order ' + fmt(it.refill) + ' to refill.';
+        return '<b>' + it.name + ' is low: ' + fmt(it.stock, it.unit) + ' left.</b> Order ' +
+          fmt(it.refill, it.unit) + ' to refill.';
       }).join("<br>");
     } else {
       nudgeBox.classList.remove("show");
