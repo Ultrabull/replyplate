@@ -115,8 +115,12 @@
     padding:18px 20px;margin-top:16px;text-align:center}
   .confirm.show{display:block}
   .confirm .tick{font-size:26px;margin-bottom:6px}
+  .ordercode{display:inline-block;font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;
+    letter-spacing:.06em;background:#fff;border:1px solid #cfe3d5;border-radius:999px;
+    padding:4px 14px;margin-bottom:10px;color:var(--good)}
   .confirm b{display:block;color:var(--good);font-size:16px;margin-bottom:6px}
   .confirm p{font-size:13.5px;color:var(--ink);line-height:1.5}
+  .qrcaption{color:var(--muted)!important;font-size:12px!important;margin-top:10px!important}
 
   .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .note b{display:block;margin-bottom:5px;font-size:15px}
@@ -215,9 +219,12 @@
           <p class="payhint">Opens Stripe's own checkout page. Nothing here charges a real card.</p>
           <div class="confirm" id="confirmBox">
             <div class="tick">✅</div>
+            <span class="ordercode" id="orderCode"></span>
             <b id="confirmSum"></b>
             <p>Match this to the shelf and take it. You're not booked, held, or waiting on anyone — you're
               done.</p>
+            <p class="qrcaption">A short code, not a QR — there's nothing here yet to scan it. Stripe emails the
+              same order as a proper receipt.</p>
           </div>
         </div>
       </div>
@@ -295,6 +302,7 @@
   var payBtn = document.getElementById("payBtn");
   var confirmBox = document.getElementById("confirmBox");
   var confirmSum = document.getElementById("confirmSum");
+  var orderCode = document.getElementById("orderCode");
 
   function money(n) { return "$" + n.toFixed(2); }
   function cartQty(key) { return cart[key] || 0; }
@@ -394,6 +402,14 @@
       sold.push(it.key);
     });
     lastSold = sold;
+    /* A short code, not a scannable one: nothing exists yet to scan it, so a
+       QR here would promise a capability the demo does not have. This is
+       what a real checkout's own order number would look like -- something
+       a person can read out or compare by eye, not a device requirement. */
+    var letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    var code = letters[Math.floor(Math.random() * letters.length)] + "-" +
+      Math.floor(100 + Math.random() * 900);
+    orderCode.textContent = "Order " + code;
     confirmSum.textContent = money(total) + " paid: " + lines.join(", ");
     confirmBox.classList.add("show");
     cart = {};
