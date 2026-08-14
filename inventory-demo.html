@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Stock, without the counting | ReplyPlate</title>
+<meta name="description" content="A working preview: staff scan a code when stock is taken or a delivery arrives, and the owner sees it change, with a nudge when something runs low." />
+<!-- This is a preview built to show one owner an idea, not a shipped feature.
+     It is deliberately not linked from the site's own navigation or footer:
+     send the link directly, the way you would a private page, and nowhere on
+     ReplyPlate does a visitor stumble onto it by browsing. -->
+<meta name="robots" content="noindex" />
+<style>
+  :root{
+    --ink:#1c1613; --muted:#6d6155; --bg:#faf7f1; --card:#fff; --line:#e6ddd1;
+    --soft:#f4eee4; --accent:#b03d29; --gold:#b8893a; --good:#2f6f4f; --warn:#a3311c;
+    --warnwash:#fdf1ee;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6}
+  a{color:var(--accent)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px}
+
+  header{border-bottom:1px solid var(--line);background:var(--card)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0}
+  .brand{font-weight:800;letter-spacing:-.2px;text-decoration:none;color:var(--ink)}
+  .nav a.back{font-size:14.5px;text-decoration:none}
+
+  .hero{padding:44px 0 30px;text-align:center}
+  .kicker{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;
+    letter-spacing:-.5px;margin:10px 0 12px}
+  .sub{color:var(--muted);font-size:16.5px;max-width:60ch;margin:0 auto}
+  /* This is not part of the $199 and must never read like it is: it sits right
+     under the hero, before anything interactive, so nobody scrolls past it. */
+  /* A full pill shape (border-radius:999px) reads fine for a short one-line
+     badge, but this is a full sentence and wraps to two or three lines on a
+     phone, where a stretched pill looks strained rather than clean. A smaller
+     radius keeps it a badge without fighting the wrap. */
+  .addon{display:inline-block;max-width:440px;margin-top:18px;background:var(--soft);
+    border:1px solid var(--line);border-radius:12px;padding:10px 18px;font-size:13.5px;
+    color:var(--ink);line-height:1.5}
+  .addon b{color:var(--accent)}
+
+  section{padding:26px 0}
+  .stitle{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:12px}
+
+  /* the staff card: a QR to scan, and the two things a scan can do */
+  .staffcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .qrrow{display:flex;gap:18px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+  .qr{flex:0 0 auto;width:76px;height:76px;border-radius:10px;background:var(--ink);position:relative}
+  .qr svg{width:100%;height:100%;display:block}
+  .qrnote{flex:1;min-width:180px;font-size:13.5px;color:var(--muted)}
+  .qrnote b{color:var(--ink)}
+
+  .modes{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .modebtn{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 16px;
+    font:600 13.5px inherit;color:var(--ink);cursor:pointer;min-height:40px}
+  .modebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  .itemrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .itemrow:first-of-type{border-top:none}
+  .itemrow .nm{flex:1;min-width:0}
+  .itemrow .nm b{display:block;font-size:15px}
+  .itemrow .nm span{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+  .stepper{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .stepbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--soft);
+    font:700 18px inherit;color:var(--ink);cursor:pointer}
+  .stepbtn:hover{border-color:var(--gold)}
+  .stepbtn:disabled{opacity:.35;cursor:default}
+  .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:64px;text-align:center;font-size:14.5px}
+
+  .arrow{text-align:center;color:var(--muted);font-size:13px;padding:6px 0 2px;
+    letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .arrow span{display:block;font-size:22px;color:var(--gold);line-height:1.4}
+
+  /* the owner card: what he sees, live */
+  .ownercard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .ownerhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:16px}
+  .ownerhead h3{font-size:19px}
+  .ownerhead span{font-size:13px;color:var(--muted)}
+  .stockrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);
+    transition:background .25s}
+  .stockrow:first-of-type{border-top:none}
+  .stockrow .nm{flex:1;min-width:0}
+  .stockrow .nm b{display:block;font-size:15px}
+  .stockrow .lvl{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;white-space:nowrap}
+  .stockrow.low{background:var(--warnwash);margin:0 -14px;padding:13px 14px;border-radius:10px}
+  .stockrow.low .lvl{color:var(--warn)}
+  .nudge{display:none;background:var(--warnwash);border:1px solid #eccec7;border-radius:10px;
+    padding:12px 14px;margin-top:6px;font-size:13.5px;color:var(--warn);line-height:1.5}
+  .nudge.show{display:block}
+  .nudge b{font-weight:800}
+
+  .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .note b{display:block;margin-bottom:5px;font-size:15px}
+  .note p{color:var(--muted);font-size:14px;line-height:1.55}
+  .notes{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:760px){.notes{grid-template-columns:repeat(3,1fr)}}
+
+  .cta{text-align:center;padding:34px 0 46px}
+  .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
+    padding:15px 26px;border-radius:10px;min-height:50px;line-height:20px;font-size:16px;border:none;
+    cursor:pointer;font:700 16px inherit}
+  .cta p{color:var(--muted);font-size:14px;margin-top:12px}
+  footer{border-top:1px solid var(--line);background:var(--card);padding:22px 0;text-align:center;
+    color:var(--muted);font-size:13.5px}
+
+  .grid2{display:grid;gap:20px;grid-template-columns:1fr}
+  @media (min-width:820px){.grid2{grid-template-columns:1fr 1fr;align-items:start}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap nav">
+  <a class="brand" href="./index.html">ReplyPlate</a>
+  <a class="back" href="./index.html">&larr; Back</a>
+</div></header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">A working preview, not a finished feature</div>
+    <h1>Stock, without the counting</h1>
+    <p class="sub">A code by the walk-in. Staff scan it when something is taken, or when a delivery comes in. You see
+      the numbers change as it happens, and a nudge when something is about to run out.</p>
+    <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
+  </div>
+
+  <section>
+    <div class="grid2">
+      <div>
+        <p class="stitle">What staff do, back of house</p>
+        <div class="staffcard">
+          <div class="qrrow">
+            <div class="qr" aria-hidden="true">
+              <svg viewBox="0 0 76 76"><rect width="76" height="76" fill="#1c1613"/>
+                <g fill="#faf7f1">
+                  <rect x="8" y="8" width="18" height="18"/><rect x="50" y="8" width="18" height="18"/>
+                  <rect x="8" y="50" width="18" height="18"/>
+                  <rect x="13" y="13" width="8" height="8" fill="#1c1613"/>
+                  <rect x="55" y="13" width="8" height="8" fill="#1c1613"/>
+                  <rect x="13" y="55" width="8" height="8" fill="#1c1613"/>
+                  <rect x="32" y="8" width="6" height="6"/><rect x="32" y="20" width="6" height="6"/>
+                  <rect x="44" y="32" width="6" height="6"/><rect x="32" y="32" width="6" height="6"/>
+                  <rect x="32" y="44" width="6" height="6"/><rect x="32" y="56" width="6" height="6"/>
+                  <rect x="44" y="56" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/>
+                  <rect x="56" y="56" width="6" height="6"/><rect x="8" y="32" width="6" height="6"/>
+                  <rect x="20" y="32" width="6" height="6"/><rect x="20" y="44" width="6" height="6"/>
+                </g>
+              </svg>
+            </div>
+            <p class="qrnote">A drawing of the code, not a real one you can scan. On the wall, this is one sticker
+              by the walk-in fridge. <b>Tapping the buttons below does what scanning it would.</b></p>
+          </div>
+
+          <div class="modes">
+            <button class="modebtn" id="modeTake" type="button" aria-pressed="true">Something was taken</button>
+            <button class="modebtn" id="modeDeliver" type="button" aria-pressed="false">A delivery arrived</button>
+          </div>
+
+          <div id="itemList"></div>
+        </div>
+      </div>
+
+      <div>
+        <p class="stitle">What the owner sees, right away</p>
+        <div class="ownercard">
+          <div class="ownerhead">
+            <h3>Current stock</h3>
+            <span id="ownerWhen">Updated just now</span>
+          </div>
+          <div id="ownerList"></div>
+          <div class="nudge" id="nudgeBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="stitle">What this is, plainly</p>
+    <div class="notes">
+      <div class="note">
+        <b>No counting, only in and out</b>
+        <p>Nobody types a full stock take. A number goes up when something arrives, and down when something is
+          taken. That is the whole entry.</p>
+      </div>
+      <div class="note">
+        <b>A nudge, not an order</b>
+        <p>When something crosses the line you set, you are told and told the amount to bring it back. Nothing is
+          ordered for you. You still make the call.</p>
+      </div>
+      <div class="note">
+        <b>Only as true as the last scan</b>
+        <p>If somebody takes stock without scanning, the number is wrong until the next one. That is on the habit
+          in the kitchen, not on the code.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta">
+    <a class="btn" href="mailto:hello@reply-plate.com?subject=Stock%20preview">Ask about this for your kitchen</a>
+    <p>Not live yet. If this is worth building for your place, say so and we will talk price.</p>
+  </div>
+
+</div>
+
+<footer><div class="wrap">
+  <b>ReplyPlate</b> &bull; <a href="./index.html">Home</a> &bull;
+  <a href="./chat-demo.html">A demo restaurant</a> &bull;
+  <a href="./details.html">Costs and questions</a>
+  <br>The stock numbers on this page reset every time you load it. Nothing here is saved anywhere.
+</div></footer>
+
+<script>
+(function () {
+  /* Three items, because three items were the actual conversation this page
+     exists to answer. Each has a threshold (below this, flag it) and a
+     suggested refill (how much the nudge asks for). Both are numbers an owner
+     would set for their own kitchen; here they are just picked to make the
+     demo cross the line within a few taps. */
+  var ITEMS = [
+    { key: "rice",    name: "Rice",            unit: "kg", stock: 18, threshold: 6,  refill: 20 },
+    { key: "onion",   name: "Onions",          unit: "kg", stock: 9,  threshold: 3,  refill: 10 },
+    { key: "chicken", name: "Chicken breast",  unit: "kg", stock: 11, threshold: 4,  refill: 15 }
+  ];
+  var STEP = 2;   // one scan moves a item by this much, in or out
+  var mode = "take";
+
+  var itemList = document.getElementById("itemList");
+  var ownerList = document.getElementById("ownerList");
+  var ownerWhen = document.getElementById("ownerWhen");
+  var nudgeBox = document.getElementById("nudgeBox");
+  var modeTake = document.getElementById("modeTake");
+  var modeDeliver = document.getElementById("modeDeliver");
+
+  function fmt(n) { return (Math.round(n * 10) / 10) + " kg"; }
+
+  function adjust(key, dir) {
+    var it = ITEMS.find(function (i) { return i.key === key; });
+    if (!it) return;
+    /* Taking stock cannot go negative: an empty shelf reads as zero, not -2,
+       because a scan cannot remove more than is physically there. */
+    it.stock = Math.max(0, it.stock + dir * STEP);
+    render();
+  }
+
+  function renderStaff() {
+    itemList.innerHTML = "";
+    ITEMS.forEach(function (it) {
+      var row = document.createElement("div");
+      row.className = "itemrow";
+      var dir = mode === "take" ? -1 : 1;
+      row.innerHTML =
+        '<span class="nm"><b>' + it.name + '</b><span>' + fmt(it.stock) + ' on hand</span></span>' +
+        '<span class="stepper">' +
+        '<button class="stepbtn" type="button" data-key="' + it.key + '" aria-label="' +
+          (mode === "take" ? "Log " + STEP + "kg taken" : "Log " + STEP + "kg delivered") + '">' +
+          (mode === "take" ? "&minus;" : "+") + '</button>' +
+        '<span class="amt">' + STEP + ' kg</span></span>';
+      var btn = row.querySelector(".stepbtn");
+      if (mode === "take" && it.stock <= 0) btn.disabled = true;
+      btn.addEventListener("click", function () { adjust(it.key, dir); });
+      itemList.appendChild(row);
+    });
+  }
+
+  function renderOwner() {
+    ownerList.innerHTML = "";
+    var low = [];
+    ITEMS.forEach(function (it) {
+      var isLow = it.stock <= it.threshold;
+      if (isLow) low.push(it);
+      var row = document.createElement("div");
+      row.className = "stockrow" + (isLow ? " low" : "");
+      row.innerHTML =
+        '<span class="nm"><b>' + it.name + '</b></span>' +
+        '<span class="lvl">' + fmt(it.stock) + '</span>';
+      ownerList.appendChild(row);
+    });
+    if (low.length) {
+      nudgeBox.classList.add("show");
+      nudgeBox.innerHTML = low.map(function (it) {
+        return '<b>' + it.name + ' is low: ' + fmt(it.stock) + ' left.</b> Order ' + fmt(it.refill) + ' to refill.';
+      }).join("<br>");
+    } else {
+      nudgeBox.classList.remove("show");
+      nudgeBox.innerHTML = "";
+    }
+    ownerWhen.textContent = "Updated just now";
+  }
+
+  function render() { renderStaff(); renderOwner(); }
+
+  modeTake.addEventListener("click", function () {
+    mode = "take"; modeTake.setAttribute("aria-pressed", "true"); modeDeliver.setAttribute("aria-pressed", "false");
+    renderStaff();
+  });
+  modeDeliver.addEventListener("click", function () {
+    mode = "deliver"; modeDeliver.setAttribute("aria-pressed", "true"); modeTake.setAttribute("aria-pressed", "false");
+    renderStaff();
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
