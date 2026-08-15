@@ -94,6 +94,56 @@
   .modebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .modehint{font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45}
 
+  /* ── the delivery note ───────────────────────────────────────────────────
+     A delivery is the one moment stock arrives in bulk, and tapping "+1" ten
+     times for a pallet is how a habit dies. A photo fills the list in; the
+     tick is the part that matters, because a note is what was ordered and the
+     shelf is what actually turned up, and those two differ often enough that
+     trusting the paper would quietly corrupt every number underneath. */
+  .deliverbar{display:none;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;
+    padding-bottom:12px;border-bottom:1px dashed var(--line)}
+  .deliverbar.show{display:flex}
+  .photobtn{flex:1;min-width:200px;background:var(--accent2);border:1px solid var(--accent2);
+    border-radius:10px;padding:11px 14px;font:700 13.5px inherit;color:#fff;cursor:pointer;min-height:46px}
+  .orhand{font-size:12px;color:var(--muted)}
+
+  .delivery{display:none;margin-bottom:14px}
+  .delivery.show{display:block}
+  .noteshot{background:linear-gradient(150deg,#2a2521,#3d352d);border-radius:12px;padding:20px 16px;
+    display:flex;justify-content:center}
+  .paper{background:#fffdf9;width:100%;max-width:230px;border-radius:3px;padding:12px 13px;
+    transform:rotate(-1.2deg);box-shadow:0 8px 20px rgba(0,0,0,.35);
+    font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:#2b2b2b;line-height:1.75}
+  .paper .ph{font-weight:700;font-size:11.5px;border-bottom:1px solid #ddd;padding-bottom:5px;margin-bottom:6px}
+  .paper .pl{display:flex;justify-content:space-between;gap:8px}
+  .paper .pf{border-top:1px solid #ddd;margin-top:6px;padding-top:5px;color:#888;font-size:10px}
+  .readnote{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 12px;text-align:center}
+  .reading{text-align:center;padding:16px 0;font-size:13.5px;color:var(--accent2);font-weight:700}
+
+  .dline{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid var(--line)}
+  .dline:first-of-type{border-top:none}
+  .dline .dn{flex:1;min-width:0}
+  .dline .dn b{display:block;font-size:14px}
+  .dline .dn span{display:block;font-size:11px;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
+  .dqty{font-variant-numeric:tabular-nums;font-weight:800;font-size:13px;min-width:52px;text-align:right}
+  .tickbtn{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
+    background:var(--soft);font:700 17px inherit;color:var(--muted);cursor:pointer;transition:transform .1s}
+  .tickbtn[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:#fff}
+  .tickbtn:active{transform:scale(.92)}
+  .dline.done .dn b{color:var(--good)}
+  .dline.unknown{background:var(--warnwash);margin:0 -8px;padding:8px;border-radius:8px;border-top:none}
+  .dline.unknown .dn b{color:var(--warn);font-size:12.5px;font-family:ui-monospace,Menlo,monospace}
+  .dline.unknown .dn span{color:var(--warn);font-family:inherit;font-size:11.5px}
+  .dsmall{background:none;border:1px solid var(--warnline);border-radius:8px;padding:8px 12px;
+    font:700 12px inherit;color:var(--warn);cursor:pointer;min-height:44px;flex:0 0 auto}
+  .dactions{display:flex;gap:8px;margin-top:12px}
+  .dactions button{border-radius:10px;padding:12px;font:700 14px inherit;cursor:pointer;min-height:48px}
+  .tickall{flex:0 0 auto;background:var(--soft);border:1px solid var(--line);color:var(--ink);padding:12px 14px}
+  .putaway{flex:1;background:var(--accent);border:none;color:#fff}
+  .putaway:disabled{opacity:.4;cursor:default}
+  .dcancel{display:block;width:100%;margin-top:8px;background:none;border:none;font:600 13px inherit;
+    color:var(--muted);cursor:pointer;min-height:44px}
+
   .itemrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);
     transition:background .2s}
   .itemrow:first-of-type{border-top:none}
@@ -223,6 +273,35 @@
           <button class="modebtn" id="modeUse" type="button" aria-pressed="false">Kitchen used it</button>
         </div>
         <p class="modehint" id="modeHint"></p>
+
+        <div class="deliverbar" id="deliverBar">
+          <button class="photobtn" id="photoBtn" type="button">Photo of the delivery note</button>
+          <span class="orhand">or tap items in by hand below</span>
+        </div>
+
+        <div class="delivery" id="deliveryPanel">
+          <div class="noteshot">
+            <div class="paper">
+              <div class="ph">SHARMA WHOLESALE<br>Delivery note DN-40218</div>
+              <div class="pl"><span>BASMATI RICE 20LB SACK</span><span>10</span></div>
+              <div class="pl"><span>ONIONS SPANISH 50LB</span><span>50</span></div>
+              <div class="pl"><span>TOMATO ROMA 25LB</span><span>25</span></div>
+              <div class="pl"><span>CHICKEN BREAST 30LB</span><span>30</span></div>
+              <div class="pl"><span>GHEE TIN 5L X2</span><span>2</span></div>
+              <div class="pf">Signed ......................</div>
+            </div>
+          </div>
+          <p class="readnote">A stand-in for your camera. On the real thing your phone camera opens, and this
+            is what it read back.</p>
+          <div class="reading" id="reading">Reading the note&hellip;</div>
+          <div id="deliverLines"></div>
+          <div class="dactions" id="dActions">
+            <button class="tickall" id="tickAll" type="button">Tick all</button>
+            <button class="putaway" id="putAway" type="button" disabled>Put away</button>
+          </div>
+          <button class="dcancel" id="cancelDeliver" type="button">Cancel, I will tap them in</button>
+        </div>
+
         <div id="itemList"></div>
       </div>
 
@@ -257,8 +336,9 @@
     <ol class="howsteps">
       <li><span><b>One sticker, two places.</b> One by the walk-in, one at the unit. The helper who moves the
         stock is the only person who taps, so it is one person's habit, not everybody's.</span></li>
-      <li><span><b>Three buttons, nothing else.</b> A delivery came in. Some went to the kitchen. The kitchen
-        used it. That is the whole job.</span></li>
+      <li><span><b>A photo, or three buttons.</b> Snap the delivery note and it fills itself in, then tick
+        each line off as you shelve it. Everything else is one tap: some went to the kitchen, the kitchen used
+        it.</span></li>
       <li><span><b>You get told which problem you have.</b> Low in the kitchen with stock at the unit means
         send someone, and costs nothing. Low in both means order. Never the same sentence for both.</span></li>
     </ol>
@@ -348,6 +428,9 @@
   var placeKitchen = $("placeKitchen"), placeStore = $("placeStore");
   var saveCount = $("saveCount"), countReport = $("countReport");
   var whoChips = $("whoChips");
+  var deliverBar = $("deliverBar"), deliveryPanel = $("deliveryPanel"), photoBtn = $("photoBtn");
+  var readingEl = $("reading"), deliverLines = $("deliverLines"), dActions = $("dActions");
+  var tickAll = $("tickAll"), putAway = $("putAway"), cancelDeliver = $("cancelDeliver");
   var MODEBTN = { deliver: $("modeDeliver"), move: $("modeMove"), use: $("modeUse") };
 
   function fmt(n, unit) {
@@ -409,6 +492,112 @@
       note(it.name + " &middot; " + fmt(n, it.unit) + " used in the kitchen");
     }
     lastChanged = key;
+    render();
+  }
+
+  /* What the camera read back. Four lines match items on the list; the ghee
+     does not, because nobody has put ghee on this kitchen's list yet. A demo
+     where every line matches would teach an owner the wrong thing: real notes
+     carry pack sizes, abbreviations and things you do not stock, and the
+     honest answer to those is to show them and let a person decide. */
+  var NOTE = [
+    { raw:"BASMATI RICE 20LB SACK", key:"rice",    qty:10 },
+    { raw:"ONIONS SPANISH 50LB",    key:"onion",   qty:50 },
+    { raw:"TOMATO ROMA 25LB",       key:"tomato",  qty:25 },
+    { raw:"CHICKEN BREAST 30LB",    key:"chicken", qty:30 },
+    { raw:"GHEE TIN 5L X2",         key:null,      qty:2  }
+  ];
+  var draft = null;   // the lines being verified, while the panel is open
+
+  function openDelivery() {
+    draft = NOTE.map(function (l) {
+      return { raw:l.raw, key:l.key, qty:l.qty, ticked:false, skipped:false };
+    });
+    deliveryPanel.classList.add("show");
+    deliverBar.classList.remove("show");
+    readingEl.style.display = "block";
+    deliverLines.innerHTML = "";
+    dActions.style.display = "none";
+    /* A beat before the lines appear. Not a fake loading bar for its own sake:
+       reading a photo does take a moment, and a demo that answers instantly
+       sets an expectation the real thing cannot meet. */
+    setTimeout(function () {
+      if (!draft) return;
+      readingEl.style.display = "none";
+      dActions.style.display = "flex";
+      renderDraft();
+    }, 850);
+  }
+
+  function closeDelivery() {
+    draft = null;
+    deliveryPanel.classList.remove("show");
+    if (mode === "deliver") deliverBar.classList.add("show");
+  }
+
+  function renderDraft() {
+    var live = draft.filter(function (l) { return !l.skipped; });
+    deliverLines.innerHTML = "";
+    live.forEach(function (l, i) {
+      var row = document.createElement("div");
+      var it = l.key && ITEMS.find(function (x) { return x.key === l.key; });
+      if (!it) {
+        row.className = "dline unknown";
+        row.innerHTML =
+          '<span class="dn"><b>' + l.raw + '</b><span>Not on your list. Add it in settings, or skip it ' +
+          'and it will not be counted.</span></span>' +
+          '<button class="dsmall" type="button" data-skip="' + i + '">Skip</button>';
+      } else {
+        row.className = "dline" + (l.ticked ? " done" : "");
+        row.innerHTML =
+          '<button class="tickbtn" type="button" data-tick="' + i + '" aria-pressed="' + l.ticked + '" ' +
+            'aria-label="' + (l.ticked ? "Untick" : "Tick") + ' ' + it.name + ' as shelved">&#10003;</button>' +
+          '<span class="dn"><b>' + it.name + '</b><span>' + l.raw + '</span></span>' +
+          '<span class="dqty">' + fmt(l.qty, it.unit) + '</span>' +
+          '<button class="stepbtn" type="button" data-adj="' + i + '" data-dir="-1" ' +
+            'aria-label="One less ' + it.name + ' than the note says">&minus;</button>' +
+          '<button class="stepbtn" type="button" data-adj="' + i + '" data-dir="1" ' +
+            'aria-label="One more ' + it.name + ' than the note says">+</button>';
+      }
+      deliverLines.appendChild(row);
+    });
+    deliverLines.querySelectorAll("[data-tick]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var l = live[Number(b.dataset.tick)];
+        l.ticked = !l.ticked; renderDraft();
+      });
+    });
+    deliverLines.querySelectorAll("[data-adj]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var l = live[Number(b.dataset.adj)];
+        var it = ITEMS.find(function (x) { return x.key === l.key; });
+        l.qty = Math.max(0, l.qty + Number(b.dataset.dir) * it.step);
+        renderDraft();
+      });
+    });
+    deliverLines.querySelectorAll("[data-skip]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        live[Number(b.dataset.skip)].skipped = true; renderDraft();
+      });
+    });
+    var n = live.filter(function (l) { return l.ticked && l.key; }).length;
+    putAway.disabled = n === 0;
+    putAway.textContent = n ? "Put away the " + n + " you ticked" : "Tick what you shelved";
+  }
+
+  /* Only what was ticked goes in. An unticked line is one nobody has put on a
+     shelf yet, and adding it because the paper said so is exactly the drift
+     the count later has to hunt down. */
+  function putItAway() {
+    var done = draft.filter(function (l) { return l.ticked && l.key && !l.skipped; });
+    done.forEach(function (l) {
+      var it = ITEMS.find(function (x) { return x.key === l.key; });
+      if (!it || l.qty <= 0) return;
+      it.store += l.qty;
+      note(it.name + " &middot; " + fmt(l.qty, it.unit) + " delivered to the unit, off the note");
+      lastChanged = it.key;
+    });
+    closeDelivery();
     render();
   }
 
@@ -577,10 +766,22 @@
     Object.keys(MODEBTN).forEach(function (k) {
       MODEBTN[k].setAttribute("aria-pressed", String(k === m));
     });
+    /* The photo only makes sense for a delivery. Leaving it up while somebody
+       is logging what the kitchen used would just be one more thing to read
+       past. */
+    if (m !== "deliver") closeDelivery();
+    deliverBar.classList.toggle("show", m === "deliver" && !deliveryPanel.classList.contains("show"));
     renderHelper();
   }
   Object.keys(MODEBTN).forEach(function (k) {
     MODEBTN[k].addEventListener("click", function () { setMode(k); });
+  });
+  photoBtn.addEventListener("click", openDelivery);
+  cancelDeliver.addEventListener("click", closeDelivery);
+  putAway.addEventListener("click", putItAway);
+  tickAll.addEventListener("click", function () {
+    draft.forEach(function (l) { if (l.key && !l.skipped) l.ticked = true; });
+    renderDraft();
   });
   countBtn.addEventListener("click", togglePanel);
   placeKitchen.addEventListener("click", function () { openCount("kitchen"); });
@@ -594,6 +795,7 @@
   });
 
   renderWho();
+  setMode("deliver");
   render();
   renderLog();
 })();
