@@ -107,6 +107,20 @@
   .orhand{font-size:12px;color:var(--muted)}
   .refill{display:none;margin-bottom:14px}
   .refill.show{display:block}
+  /* ── say what it is, then let it count ───────────────────────────────────
+     Recognising food in a photo is the hard, unreliable half; counting things
+     you have already been told about is the easy, reliable half. One tap buys
+     the difference, so the tap stays. */
+  .pickwhat{padding:2px 0 4px}
+  .pickhead{font-size:14.5px;font-weight:700;margin-bottom:10px}
+  .pickchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .pickchip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:8px 14px;
+    font:700 13px inherit;color:var(--ink);cursor:pointer;min-height:44px}
+  .pickchip[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:#fff}
+  .pickgo{width:100%;background:var(--accent2);border:1px solid var(--accent2);border-radius:10px;
+    padding:12px;font:700 14px inherit;color:#fff;cursor:pointer;min-height:48px}
+  .pickgo:disabled{opacity:.4;cursor:default}
+  .pickwhy{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
   .trayshot{background:linear-gradient(150deg,#2a2521,#3d352d);border-radius:12px;padding:18px 16px}
   .tray{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:250px;margin:0 auto}
   .tray span{background:#e8dcc4;border-radius:4px;height:34px;display:block;
@@ -323,6 +337,14 @@
           </div>
 
           <div class="refill" id="refillPanel">
+            <div class="pickwhat" id="pickWhat">
+              <p class="pickhead">What did you just make?</p>
+              <div class="pickchips" id="pickChips"></div>
+              <button class="pickgo" id="pickGo" type="button" disabled>Now count it with the camera</button>
+              <p class="pickwhy">The camera counts, it does not recognise. Telling it what the tray is takes
+                one tap and is the difference between a number you can trust and a guess.</p>
+            </div>
+            <div id="trayWrap" style="display:none">
             <div class="trayshot">
               <div class="tray" aria-hidden="true">
                 <span></span><span class="b"></span><span></span><span class="b"></span>
@@ -331,13 +353,15 @@
               </div>
               <p class="traycap">The tray, just out of the kitchen</p>
             </div>
-            <p class="readnote">A stand-in for your camera. Counting boxes in a picture is a guess, because
-              boxes hide behind boxes, so check every number before you tick it.</p>
+            <p class="readnote">A stand-in for your camera. It is counting, not recognising: you told it what
+              the tray is, so all it has to do is count boxes. Ones hiding behind other ones it will miss, so
+              check every number before you tick it.</p>
             <div class="reading" id="reading">Counting the tray&hellip;</div>
             <div id="refillLines"></div>
             <div class="dactions" id="dActions">
               <button class="tickall" id="tickAll" type="button">Tick all</button>
               <button class="putout" id="putOut" type="button" disabled>Put out</button>
+            </div>
             </div>
             <button class="dcancel" id="cancelRefill" type="button">Cancel, I will tap them in</button>
           </div>
@@ -351,6 +375,8 @@
             <button class="countbtn" id="countBtn" type="button">Count the shelf</button>
             <div class="countpanel" id="countPanel">
               <button class="photobtn2" id="countPhotoBtn" type="button">Photo of the shelf</button>
+              <p class="pickwhy">Each item has its own place on this shelf, set up once. So the camera does
+                not have to work out what anything is, only how many are in each spot.</p>
               <p class="counthead">Set what is <b>really</b> on the shelf. Last counted <span id="countedAt"></span>.</p>
               <div class="reading" id="countReading" style="display:none">Counting the shelf&hellip;</div>
               <div id="countRows"></div>
@@ -504,6 +530,8 @@
   var refillLines = document.getElementById("refillLines"), dActions = document.getElementById("dActions");
   var tickAll = document.getElementById("tickAll"), putOut = document.getElementById("putOut");
   var cancelRefill = document.getElementById("cancelRefill");
+  var pickWhat = document.getElementById("pickWhat"), pickChips = document.getElementById("pickChips");
+  var pickGo = document.getElementById("pickGo"), trayWrap = document.getElementById("trayWrap");
   var countBtn = document.getElementById("countBtn");
   var countPanel = document.getElementById("countPanel");
   var countRows = document.getElementById("countRows");
@@ -549,18 +577,51 @@
      that honestly is the point: a demo where the picture is always right would
      teach an owner to stop checking, and the first hidden box would then
      become a shortage the count goes hunting for next week. */
-  var SEEN = [
-    { key:"samosa",  qty:6, sure:true  },
-    { key:"biryani", qty:4, sure:true  },
-    { key:"naan",    qty:8, sure:true  },
-    { key:"jamun",   qty:0, sure:false }
-  ];
-  var draft = null;
+  /* What the camera makes of a tray it has already been told the contents of.
+     Recognising food in a photo is the unreliable half of this problem and
+     counting known objects is the reliable half, so the staff tap that says
+     "this is a tray of samosas" is not a formality: it is what moves the job
+     from guesswork to arithmetic. The gulab jamun still comes back uncounted,
+     because a box behind a box is a box no camera can see. */
+  var CAMERA = { samosa:8, tikka:5, biryani:6, lassi:9, naan:8, jamun:null };
+  var picked = {}, draft = null;
 
   function openRefill() {
-    draft = SEEN.map(function (l) { return { key:l.key, qty:l.qty, sure:l.sure, ticked:false }; });
+    picked = {}; draft = null;
     refillPanel.classList.add("show");
     refillBar.style.display = "none";
+    pickWhat.style.display = "block";
+    trayWrap.style.display = "none";
+    refillLines.innerHTML = "";
+    dActions.style.display = "none";
+    renderPick();
+  }
+
+  function renderPick() {
+    pickChips.innerHTML = "";
+    ITEMS.forEach(function (it) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "pickchip"; b.textContent = it.name;
+      b.setAttribute("aria-pressed", String(!!picked[it.key]));
+      b.addEventListener("click", function () {
+        picked[it.key] = !picked[it.key]; renderPick();
+      });
+      pickChips.appendChild(b);
+    });
+    var n = Object.keys(picked).filter(function (k) { return picked[k]; }).length;
+    pickGo.disabled = n === 0;
+    pickGo.textContent = n ? "Now count " + (n === 1 ? "it" : "them") + " with the camera"
+                           : "Pick what you made first";
+  }
+
+  function countTray() {
+    var keys = ITEMS.filter(function (it) { return picked[it.key]; }).map(function (it) { return it.key; });
+    draft = keys.map(function (k) {
+      var seen = CAMERA[k];
+      return { key:k, qty: seen === null ? 0 : seen, sure: seen !== null, ticked:false };
+    });
+    pickWhat.style.display = "none";
+    trayWrap.style.display = "block";
     readingEl.style.display = "block";
     refillLines.innerHTML = "";
     dActions.style.display = "none";
@@ -576,7 +637,7 @@
   }
 
   function closeRefill() {
-    draft = null;
+    draft = null; picked = {};
     refillPanel.classList.remove("show");
     refillBar.style.display = "";
   }
@@ -591,7 +652,8 @@
         '<button class="tickbtn" type="button" data-tick="' + i + '" aria-pressed="' + l.ticked + '" ' +
           'aria-label="' + (l.ticked ? "Untick" : "Tick") + ' ' + it.name + ' as put out">&#10003;</button>' +
         '<span class="dn"><b>' + it.name + '</b><span>' +
-          (l.sure ? "Counted from the picture" : "Hidden behind the others. Count these yourself.") +
+          (l.sure ? "You said it was this. The camera counted them."
+                  : "Stacked too deep for the camera. Count these yourself.") +
         '</span></span>' +
         '<button class="qadj" type="button" data-adj="' + i + '" data-dir="-1" ' +
           'aria-label="One fewer ' + it.name + '">&minus;</button>' +
@@ -896,6 +958,7 @@
 
   payBtn.addEventListener("click", pay);
   photoBtn.addEventListener("click", openRefill);
+  pickGo.addEventListener("click", countTray);
   cancelRefill.addEventListener("click", closeRefill);
   putOut.addEventListener("click", putItOut);
   tickAll.addEventListener("click", function () {

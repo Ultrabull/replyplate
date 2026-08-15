@@ -118,6 +118,8 @@
   .paper .pl{display:flex;justify-content:space-between;gap:8px}
   .paper .pf{border-top:1px solid #ddd;margin-top:6px;padding-top:5px;color:#888;font-size:10px}
   .readnote{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 12px;text-align:center}
+  .readnote b{color:var(--ink)}
+  .pickwhy{font-size:11.5px;color:var(--muted);line-height:1.5;margin:-4px 0 10px}
   .reading{text-align:center;padding:16px 0;font-size:13.5px;color:var(--accent2);font-weight:700}
 
   .dline{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid var(--line)}
@@ -296,8 +298,10 @@
               <div class="pf">Signed ......................</div>
             </div>
           </div>
-          <p class="readnote">A stand-in for your camera. On the real thing your phone camera opens, and this
-            is what it read back.</p>
+          <p class="readnote">A stand-in for your camera. This one is reading <b>printed words</b>, which is
+            the easy kind: it is not looking at food, it is looking at a supplier's own paperwork. The first
+            time a line like "BASMATI RICE 20LB SACK" turns up you tell it which item that is, and it
+            remembers for every delivery after.</p>
           <div class="reading" id="reading">Reading the note&hellip;</div>
           <div id="deliverLines"></div>
           <div class="dactions" id="dActions">
@@ -321,6 +325,8 @@
               <button class="placebtn" id="placeStore" type="button" aria-pressed="false">The unit</button>
             </div>
             <button class="photobtn2" id="countPhotoBtn" type="button">Photo of the shelf</button>
+            <p class="pickwhy">Every item has its own spot, set up once. So the camera never has to work out
+              what anything is, only how many are sitting in each spot.</p>
             <p class="counthead">Set what is really in <span id="countPlace">the kitchen</span>. Last counted
               <span id="countedAt"></span>.</p>
             <div class="reading" id="countReading" style="display:none">Counting&hellip;</div>
@@ -363,6 +369,13 @@
         <b>Only as true as the last tap</b>
         <p>Miss a tap and the number drifts until somebody counts. That is what the count is for, and the gap
           it finds is exactly the stock that moved without anyone saying so.</p>
+      </div>
+      <div class="note">
+        <b>The camera counts, it does not recognise</b>
+        <p>Reading a printed delivery note is the easy half and it works. Working out that a tray is samosas
+          from a picture is the hard half, so it never tries: either you tell it, or the item has its own
+          fixed spot. That is why every photo ends in a list you tick rather than a number that just
+          appears.</p>
       </div>
       <div class="note">
         <b>Your places, your amounts</b>
