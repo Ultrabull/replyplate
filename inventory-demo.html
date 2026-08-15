@@ -187,6 +187,11 @@
   .placebtn{flex:1;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:8px;
     font:700 13px inherit;color:var(--ink);cursor:pointer;min-height:44px}
   .placebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .photobtn2{width:100%;background:var(--accent2);border:1px solid var(--accent2);border-radius:10px;
+    padding:11px 14px;font:700 13px inherit;color:#fff;cursor:pointer;min-height:46px;margin-bottom:10px}
+  .csrc{display:block;font-style:normal;font-size:10.5px;color:var(--muted);font-weight:600;margin-top:1px}
+  .csrc.unseen{color:var(--warn);font-weight:700}
+  .countrow.unseen{background:var(--warnwash);margin:0 -8px;padding:6px 8px;border-radius:8px;border-top:none}
   .counthead{font-size:12.5px;color:var(--muted);margin-bottom:6px;line-height:1.45}
   .countrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
   .countrow:first-of-type{border-top:none}
@@ -315,8 +320,10 @@
               <button class="placebtn" id="placeKitchen" type="button" aria-pressed="true">The kitchen</button>
               <button class="placebtn" id="placeStore" type="button" aria-pressed="false">The unit</button>
             </div>
+            <button class="photobtn2" id="countPhotoBtn" type="button">Photo of the shelf</button>
             <p class="counthead">Set what is really in <span id="countPlace">the kitchen</span>. Last counted
               <span id="countedAt"></span>.</p>
+            <div class="reading" id="countReading" style="display:none">Counting&hellip;</div>
             <div id="countRows"></div>
             <button class="savebtn" id="saveCount" type="button">Save this count</button>
           </div>
@@ -418,6 +425,10 @@
   var countedAt = { kitchen: new Date(Date.now() - 3 * 60 * 60 * 1000),
                     store:   new Date(Date.now() - 26 * 60 * 60 * 1000) };
   var countingPlace = "kitchen", counting = null;
+  /* Where each counted number came from. "unseen" is an item the camera could
+     not make out, and it is left out of the reconciliation rather than assumed
+     present: marking it present hides a loss, marking it missing invents one. */
+  var countSrc = {};
 
   var $ = function (id) { return document.getElementById(id); };
   var verdict = $("verdict"), itemList = $("itemList"), ownerList = $("ownerList");
@@ -427,6 +438,7 @@
   var countPlaceEl = $("countPlace"), countedAtEl = $("countedAt");
   var placeKitchen = $("placeKitchen"), placeStore = $("placeStore");
   var saveCount = $("saveCount"), countReport = $("countReport");
+  var countPhotoBtn = $("countPhotoBtn"), countReading = $("countReading");
   var whoChips = $("whoChips");
   var deliverBar = $("deliverBar"), deliveryPanel = $("deliveryPanel"), photoBtn = $("photoBtn");
   var readingEl = $("reading"), deliverLines = $("deliverLines"), dActions = $("dActions");
@@ -685,8 +697,8 @@
      clock, the next gap is pinned to a known window. */
   function openCount(place) {
     countingPlace = place;
-    counting = {};
-    ITEMS.forEach(function (it) { counting[it.key] = it[place]; });
+    counting = {}; countSrc = {};
+    ITEMS.forEach(function (it) { counting[it.key] = it[place]; countSrc[it.key] = "hand"; });
     countPlaceEl.textContent = placeName(place);
     countedAtEl.textContent = stamp(countedAt[place]);
     placeKitchen.setAttribute("aria-pressed", String(place === "kitchen"));
@@ -700,13 +712,43 @@
     countBtn.textContent = open ? "Never mind" : "Count the stock by hand";
     if (open) { countReport.classList.remove("show"); openCount(countingPlace); }
   }
+  /* One photo of whichever place is being counted. Two pounds of paneer are
+     missing, which is the sort of gap a count exists to find, and the rice is
+     stacked too deep to make out. */
+  function countFromPhoto() {
+    if (!counting) return;
+    countReading.style.display = "block";
+    countRows.style.display = "none";
+    saveCount.disabled = true;
+    setTimeout(function () {
+      if (!counting) return;
+      var place = countingPlace;
+      ITEMS.forEach(function (it) {
+        if (it.key === "rice") { countSrc[it.key] = "unseen"; return; }
+        counting[it.key] = Math.max(0, it[place] - (it.key === "paneer" ? 2 : 0));
+        countSrc[it.key] = "photo";
+      });
+      countReading.style.display = "none";
+      countRows.style.display = "";
+      saveCount.disabled = false;
+      renderCount();
+    }, 850);
+  }
+
+  function srcLine(key) {
+    if (countSrc[key] === "photo") return '<i class="csrc">From the photo</i>';
+    if (countSrc[key] === "unseen")
+      return '<i class="csrc unseen">Stacked too deep to see. Left out unless you count it.</i>';
+    return "";
+  }
+
   function renderCount() {
     countRows.innerHTML = "";
     ITEMS.forEach(function (it) {
       var row = document.createElement("div");
-      row.className = "countrow";
+      row.className = "countrow" + (countSrc[it.key] === "unseen" ? " unseen" : "");
       row.innerHTML =
-        '<span class="cn">' + it.name + '</span>' +
+        '<span class="cn">' + it.name + srcLine(it.key) + '</span>' +
         '<button class="cstep" type="button" data-key="' + it.key + '" data-dir="-1" ' +
           'aria-label="One less ' + it.name + ' counted">&minus;</button>' +
         '<span class="cval">' + fmt(counting[it.key], it.unit) + '</span>' +
@@ -718,28 +760,34 @@
       b.addEventListener("click", function () {
         var it = ITEMS.find(function (i) { return i.key === b.dataset.key; });
         counting[it.key] = Math.max(0, counting[it.key] + Number(b.dataset.dir) * it.step);
+        countSrc[it.key] = "hand";   // a person just touched it, so it is counted now
         renderCount();
       });
     });
   }
   function saveTheCount() {
-    var place = countingPlace, gaps = [], extras = [];
+    var place = countingPlace, gaps = [], extras = [], skipped = [];
     ITEMS.forEach(function (it) {
+      /* An item nobody actually counted is left exactly as it was and named in
+         the report, rather than rolled into a total either way. */
+      if (countSrc[it.key] === "unseen") { skipped.push(it.name); return; }
       var real = counting[it.key], diff = it[place] - real;
       if (diff > 0) gaps.push(it.name + " " + fmt(diff, it.unit) + " short");
       if (diff < 0) extras.push(it.name + " " + fmt(-diff, it.unit) + " more than expected");
       it[place] = real;
     });
+    var tail = skipped.length
+      ? ' <span class="when">Not counted, so not included: ' + skipped.join(", ") + '.</span>' : "";
     var since = stamp(countedAt[place]), now = new Date(), where = placeName(place).replace("the ", "");
     countReport.className = "countreport show " + (gaps.length ? "bad" : "good");
     if (gaps.length || extras.length) {
       countReport.innerHTML = '<b>In the ' + where + ', since ' + since + ':</b> ' +
         gaps.concat(extras).join(", ") + '. Everything else matched.' +
         '<span class="when">That is the window to look at, and nothing before it. Counted by ' + who +
-        ' at ' + clock(now) + '.</span>';
+        ' at ' + clock(now) + '.</span>' + tail;
     } else {
       countReport.innerHTML = '<b>The ' + where + ' matched.</b> Nothing has moved out of it since ' + since +
-        ' without a tap.<span class="when">Counted by ' + who + ' at ' + clock(now) + '.</span>';
+        ' without a tap.<span class="when">Counted by ' + who + ' at ' + clock(now) + '.</span>' + tail;
     }
     note("counted the " + where + " &middot; " +
       (gaps.length ? gaps.length + (gaps.length === 1 ? " item" : " items") + " short" : "everything matched"));
@@ -784,6 +832,7 @@
     renderDraft();
   });
   countBtn.addEventListener("click", togglePanel);
+  countPhotoBtn.addEventListener("click", countFromPhoto);
   placeKitchen.addEventListener("click", function () { openCount("kitchen"); });
   placeStore.addEventListener("click", function () { openCount("store"); });
   saveCount.addEventListener("click", saveTheCount);

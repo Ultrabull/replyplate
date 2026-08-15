@@ -153,6 +153,11 @@
   .countbtn:active{background:var(--accent);border-color:var(--accent);color:#fff}
   .countpanel{display:none;margin-top:12px}
   .countpanel.show{display:block}
+  .photobtn2{width:100%;background:var(--accent2);border:1px solid var(--accent2);border-radius:10px;
+    padding:11px 14px;font:700 13.5px inherit;color:#fff;cursor:pointer;min-height:46px;margin-bottom:10px}
+  .csrc{display:block;font-style:normal;font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+  .csrc.unseen{color:var(--warn);font-weight:700}
+  .countrow.unseen{background:var(--warnwash);margin:0 -8px;padding:7px 8px;border-radius:8px;border-top:none}
   .counthead{font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.5}
   .counthead b{color:var(--ink)}
   .countrow{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}
@@ -345,7 +350,9 @@
           <div class="countwrap">
             <button class="countbtn" id="countBtn" type="button">Count the shelf</button>
             <div class="countpanel" id="countPanel">
+              <button class="photobtn2" id="countPhotoBtn" type="button">Photo of the shelf</button>
               <p class="counthead">Set what is <b>really</b> on the shelf. Last counted <span id="countedAt"></span>.</p>
+              <div class="reading" id="countReading" style="display:none">Counting the shelf&hellip;</div>
               <div id="countRows"></div>
               <button class="savebtn" id="saveCount" type="button">Save this count</button>
             </div>
@@ -465,7 +472,14 @@
      missing is missing since this moment and nothing earlier, which is the
      whole reason the count exists. */
   var countedAt = new Date(Date.now() - 3 * 60 * 60 * 1000);
-  var counting = null;   // key -> number a human is entering, while the panel is open
+  var counting = null;    // key -> number a human is entering, while the panel is open
+  /* Where each number came from. "hand" is the default the panel opens with,
+     "photo" is what the camera read, "unseen" is an item the camera could not
+     make out. That last one matters more here than anywhere else: a count is
+     what catches theft, so quietly leaving an uncounted item at the number the
+     system already assumed would hand back a clean bill of health nobody
+     actually checked. Unseen rows are left out of the reconciliation instead. */
+  var countSrc = {};
 
   /* Whoever picked the phone up. In the real thing this is remembered per
      device, so most shifts nobody touches it at all. A sale that came through
@@ -495,6 +509,8 @@
   var countRows = document.getElementById("countRows");
   var countedAtEl = document.getElementById("countedAt");
   var saveCount = document.getElementById("saveCount");
+  var countPhotoBtn = document.getElementById("countPhotoBtn");
+  var countReading = document.getElementById("countReading");
   var countReport = document.getElementById("countReport");
 
   function money(n) { return "$" + n.toFixed(2); }
@@ -763,8 +779,8 @@
      box narrows to four hours of footage, and to one shift of staff. */
   function openCount() {
     if (countPanel.classList.contains("show")) { closeCount(); return; }
-    counting = {};
-    ITEMS.forEach(function (it) { counting[it.key] = it.packed; });
+    counting = {}; countSrc = {};
+    ITEMS.forEach(function (it) { counting[it.key] = it.packed; countSrc[it.key] = "hand"; });
     countedAtEl.textContent = clock(countedAt);
     countPanel.classList.add("show");
     countBtn.textContent = "Cancel the count";
@@ -778,13 +794,41 @@
     countBtn.textContent = "Count the shelf";
   }
 
+  /* One photo of the shelf, and what it makes of it. Two boxes of samosas are
+     missing, which is exactly the sort of gap a count exists to find, and the
+     gulab jamun sits too far back to make out. */
+  function countFromPhoto() {
+    countReading.style.display = "block";
+    countRows.style.display = "none";
+    saveCount.disabled = true;
+    setTimeout(function () {
+      if (!counting) return;
+      ITEMS.forEach(function (it) {
+        if (it.key === "jamun") { countSrc[it.key] = "unseen"; return; }
+        counting[it.key] = Math.max(0, it.packed - (it.key === "samosa" ? 2 : 0));
+        countSrc[it.key] = "photo";
+      });
+      countReading.style.display = "none";
+      countRows.style.display = "";
+      saveCount.disabled = false;
+      renderCount();
+    }, 850);
+  }
+
+  function srcLine(key) {
+    if (countSrc[key] === "photo") return '<i class="csrc">From the photo</i>';
+    if (countSrc[key] === "unseen")
+      return '<i class="csrc unseen">Too far back to see. Left out of this check unless you count it.</i>';
+    return "";
+  }
+
   function renderCount() {
     countRows.innerHTML = "";
     ITEMS.forEach(function (it) {
       var row = document.createElement("div");
-      row.className = "countrow";
+      row.className = "countrow" + (countSrc[it.key] === "unseen" ? " unseen" : "");
       row.innerHTML =
-        '<span class="cn">' + it.name + '</span>' +
+        '<span class="cn">' + it.name + srcLine(it.key) + '</span>' +
         '<button class="cstep" type="button" data-key="' + it.key + '" data-dir="-1" ' +
           'aria-label="One less ' + it.name + ' counted">&minus;</button>' +
         '<span class="cval">' + counting[it.key] + '</span>' +
@@ -796,33 +840,40 @@
       b.addEventListener("click", function () {
         var k = b.dataset.key;
         counting[k] = Math.max(0, counting[k] + Number(b.dataset.dir));
+        countSrc[k] = "hand";   // a person just touched it, so it is counted now
         renderCount();
       });
     });
   }
 
   function saveTheCount() {
-    var gaps = [], extras = [], lost = 0;
+    var gaps = [], extras = [], skipped = [], lost = 0;
     ITEMS.forEach(function (it) {
+      /* An item nobody actually counted is left exactly as it was and named in
+         the report. Rolling it into the total either way would be a lie: mark
+         it present and you hide a theft, mark it missing and you invent one. */
+      if (countSrc[it.key] === "unseen") { skipped.push(it.name); return; }
       var real = counting[it.key], diff = it.packed - real;
       if (diff > 0) { gaps.push(diff + "x " + it.name); lost += diff * it.price; }
       if (diff < 0) extras.push(-diff + "x " + it.name + " more than expected");
       it.packed = real;
     });
+    var tail = skipped.length
+      ? ' <span class="when">Not counted, so not included: ' + skipped.join(", ") + '.</span>' : "";
     var since = clock(countedAt), now = new Date();
     countReport.className = "countreport show " + (gaps.length ? "bad" : "good");
     if (gaps.length) {
       countReport.innerHTML = '<b>Gone without paying since ' + since + ': ' + gaps.join(", ") + '.</b> ' +
         'That is ' + money(lost) + ' at menu price' + (extras.length ? ", and " + extras.join(", ") : "") + '.' +
         '<span class="when">Look at ' + since + ' to ' + clock(now) + ', and nothing before it. ' +
-        'Counted by ' + who + ' at ' + clock(now) + '.</span>';
+        'Counted by ' + who + ' at ' + clock(now) + '.</span>' + tail;
     } else if (extras.length) {
       countReport.innerHTML = '<b>Nothing missing.</b> ' + extras.join(", ") +
         ', so something went out without being tapped.<span class="when">Counted by ' + who + ' at ' +
-        clock(now) + '.</span>';
+        clock(now) + '.</span>' + tail;
     } else {
       countReport.innerHTML = '<b>Everything matched.</b> Every box that left this shelf since ' + since +
-        ' was paid for.<span class="when">Counted by ' + who + ' at ' + clock(now) + '.</span>';
+        ' was paid for.<span class="when">Counted by ' + who + ' at ' + clock(now) + '.</span>' + tail;
     }
     note("counted the shelf &middot; " + (gaps.length ? gaps.join(", ") + " unaccounted" : "everything matched"),
       "count");
@@ -852,6 +903,7 @@
     renderDraft();
   });
   countBtn.addEventListener("click", openCount);
+  countPhotoBtn.addEventListener("click", countFromPhoto);
   saveCount.addEventListener("click", saveTheCount);
   renderWho();
   renderShelf();
