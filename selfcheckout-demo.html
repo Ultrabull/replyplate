@@ -95,6 +95,48 @@
   .whochip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:7px 15px;
     font:700 13px inherit;color:var(--ink);cursor:pointer;min-height:44px}
   .whochip[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+  /* ── the fresh batch photo ───────────────────────────────────────────────
+     A tray of twenty is twenty taps, which is where a habit dies. One photo
+     fills the list instead. Counting boxes in a picture is a guess though,
+     because boxes hide behind boxes, so the tick and the correction are not
+     ceremony here: they are the part that makes the number true. */
+  .refillbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;
+    padding-bottom:12px;border-bottom:1px dashed var(--line)}
+  .photobtn{flex:1;min-width:190px;background:var(--accent2);border:1px solid var(--accent2);
+    border-radius:10px;padding:11px 14px;font:700 13.5px inherit;color:#fff;cursor:pointer;min-height:46px}
+  .orhand{font-size:12px;color:var(--muted)}
+  .refill{display:none;margin-bottom:14px}
+  .refill.show{display:block}
+  .trayshot{background:linear-gradient(150deg,#2a2521,#3d352d);border-radius:12px;padding:18px 16px}
+  .tray{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:250px;margin:0 auto}
+  .tray span{background:#e8dcc4;border-radius:4px;height:34px;display:block;
+    box-shadow:0 2px 5px rgba(0,0,0,.3)}
+  .tray span.b{background:#d9c9a6}
+  .traycap{text-align:center;color:#cbbfa8;font-size:10.5px;margin-top:10px;letter-spacing:.04em}
+  .readnote{font-size:12px;color:var(--muted);line-height:1.5;margin:10px 0 12px;text-align:center}
+  .reading{text-align:center;padding:16px 0;font-size:13.5px;color:var(--accent2);font-weight:700}
+  .dline{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+  .dline:first-of-type{border-top:none}
+  .dline .dn{flex:1;min-width:0}
+  .dline .dn b{display:block;font-size:14px}
+  .dline .dn span{display:block;font-size:11px;color:var(--muted)}
+  .dline.done .dn b{color:var(--good)}
+  .dline.unsure{background:var(--warnwash);margin:0 -8px;padding:8px;border-radius:8px;border-top:none}
+  .dline.unsure .dn span{color:var(--warn);font-weight:700}
+  .dqty{font-variant-numeric:tabular-nums;font-weight:800;font-size:14px;min-width:22px;text-align:center}
+  .tickbtn,.qadj{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
+    background:var(--soft);font:700 17px inherit;color:var(--ink);cursor:pointer;transition:transform .1s}
+  .tickbtn{color:var(--muted)}
+  .tickbtn[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:#fff}
+  .tickbtn:active,.qadj:active{transform:scale(.92)}
+  .dactions{display:flex;gap:8px;margin-top:12px}
+  .dactions button{border-radius:10px;padding:12px;font:700 14px inherit;cursor:pointer;min-height:48px}
+  .tickall{flex:0 0 auto;background:var(--soft);border:1px solid var(--line);color:var(--ink);padding:12px 14px}
+  .putout{flex:1;background:var(--accent);border:none;color:#fff}
+  .putout:disabled{opacity:.4;cursor:default}
+  .dcancel{display:block;width:100%;margin-top:8px;background:none;border:none;font:600 13px inherit;
+    color:var(--muted);cursor:pointer;min-height:44px}
+
   .shelfhint{font-size:12.5px;color:var(--muted);line-height:1.45;margin-bottom:12px}
   .shelfhint b{color:var(--ink)}
   .logrow .lwho{font-weight:800;color:var(--accent2)}
@@ -270,6 +312,31 @@
             <span class="wholab">Who's on?</span>
             <div class="whochips" id="whoChips"></div>
           </div>
+          <div class="refillbar" id="refillBar">
+            <button class="photobtn" id="photoBtn" type="button">Photo of the fresh batch</button>
+            <span class="orhand">or tap + below</span>
+          </div>
+
+          <div class="refill" id="refillPanel">
+            <div class="trayshot">
+              <div class="tray" aria-hidden="true">
+                <span></span><span class="b"></span><span></span><span class="b"></span>
+                <span class="b"></span><span></span><span class="b"></span><span></span>
+                <span></span><span class="b"></span><span></span><span class="b"></span>
+              </div>
+              <p class="traycap">The tray, just out of the kitchen</p>
+            </div>
+            <p class="readnote">A stand-in for your camera. Counting boxes in a picture is a guess, because
+              boxes hide behind boxes, so check every number before you tick it.</p>
+            <div class="reading" id="reading">Counting the tray&hellip;</div>
+            <div id="refillLines"></div>
+            <div class="dactions" id="dActions">
+              <button class="tickall" id="tickAll" type="button">Tick all</button>
+              <button class="putout" id="putOut" type="button" disabled>Put out</button>
+            </div>
+            <button class="dcancel" id="cancelRefill" type="button">Cancel, I will tap them in</button>
+          </div>
+
           <p class="shelfhint">Tap <b>&minus;</b> when you sell one over the counter, <b>+</b> when you put a
             fresh one out. One tap each, and it goes down under your name.</p>
           <div id="shelfList"></div>
@@ -334,8 +401,9 @@
       </div>
       <div class="note">
         <b>The kitchen tops it up</b>
-        <p>A fresh batch comes out, someone taps the shelf item once per one added. Get low and it says so, and
-          it says "make more," not "reorder" — nothing here is bought in.</p>
+        <p>A fresh batch comes out and one photo fills the list in, or you tap them in by hand. Either way you
+          tick each line as it goes on the shelf. Get low and it says so, and it says "make more," not
+          "reorder", because nothing here is bought in.</p>
       </div>
       <div class="note">
         <b>Count at the shift change</b>
@@ -417,6 +485,11 @@
   var orderCode = document.getElementById("orderCode");
   var activityLog = document.getElementById("activityLog");
   var whoChips = document.getElementById("whoChips");
+  var refillBar = document.getElementById("refillBar"), refillPanel = document.getElementById("refillPanel");
+  var photoBtn = document.getElementById("photoBtn"), readingEl = document.getElementById("reading");
+  var refillLines = document.getElementById("refillLines"), dActions = document.getElementById("dActions");
+  var tickAll = document.getElementById("tickAll"), putOut = document.getElementById("putOut");
+  var cancelRefill = document.getElementById("cancelRefill");
   var countBtn = document.getElementById("countBtn");
   var countPanel = document.getElementById("countPanel");
   var countRows = document.getElementById("countRows");
@@ -453,6 +526,98 @@
         '<span class="lx ' + e.kind + '"><span class="lwho' + (auto ? " auto" : "") + '">' + e.by +
         '</span> &middot; ' + e.text + '</span></div>';
     }).join("");
+  }
+
+  /* What the camera made of the tray. Three counts it is confident about and
+     one it is not, because a box behind a box is a box it cannot see. Showing
+     that honestly is the point: a demo where the picture is always right would
+     teach an owner to stop checking, and the first hidden box would then
+     become a shortage the count goes hunting for next week. */
+  var SEEN = [
+    { key:"samosa",  qty:6, sure:true  },
+    { key:"biryani", qty:4, sure:true  },
+    { key:"naan",    qty:8, sure:true  },
+    { key:"jamun",   qty:0, sure:false }
+  ];
+  var draft = null;
+
+  function openRefill() {
+    draft = SEEN.map(function (l) { return { key:l.key, qty:l.qty, sure:l.sure, ticked:false }; });
+    refillPanel.classList.add("show");
+    refillBar.style.display = "none";
+    readingEl.style.display = "block";
+    refillLines.innerHTML = "";
+    dActions.style.display = "none";
+    /* A beat before the numbers land. Not decoration: reading a picture takes
+       a moment, and answering instantly would set an expectation the real
+       thing cannot meet. */
+    setTimeout(function () {
+      if (!draft) return;
+      readingEl.style.display = "none";
+      dActions.style.display = "flex";
+      renderDraft();
+    }, 850);
+  }
+
+  function closeRefill() {
+    draft = null;
+    refillPanel.classList.remove("show");
+    refillBar.style.display = "";
+  }
+
+  function renderDraft() {
+    refillLines.innerHTML = "";
+    draft.forEach(function (l, i) {
+      var it = ITEMS.find(function (x) { return x.key === l.key; });
+      var row = document.createElement("div");
+      row.className = "dline" + (l.ticked ? " done" : "") + (l.sure ? "" : " unsure");
+      row.innerHTML =
+        '<button class="tickbtn" type="button" data-tick="' + i + '" aria-pressed="' + l.ticked + '" ' +
+          'aria-label="' + (l.ticked ? "Untick" : "Tick") + ' ' + it.name + ' as put out">&#10003;</button>' +
+        '<span class="dn"><b>' + it.name + '</b><span>' +
+          (l.sure ? "Counted from the picture" : "Hidden behind the others. Count these yourself.") +
+        '</span></span>' +
+        '<button class="qadj" type="button" data-adj="' + i + '" data-dir="-1" ' +
+          'aria-label="One fewer ' + it.name + '">&minus;</button>' +
+        '<span class="dqty">' + l.qty + '</span>' +
+        '<button class="qadj" type="button" data-adj="' + i + '" data-dir="1" ' +
+          'aria-label="One more ' + it.name + '">+</button>';
+      refillLines.appendChild(row);
+    });
+    refillLines.querySelectorAll("[data-tick]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var l = draft[Number(b.dataset.tick)];
+        l.ticked = !l.ticked; renderDraft();
+      });
+    });
+    refillLines.querySelectorAll("[data-adj]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var l = draft[Number(b.dataset.adj)];
+        l.qty = Math.max(0, l.qty + Number(b.dataset.dir));
+        renderDraft();
+      });
+    });
+    var n = draft.filter(function (l) { return l.ticked && l.qty > 0; }).length;
+    putOut.disabled = n === 0;
+    putOut.textContent = n ? "Put out the " + n + " you ticked" : "Tick what you put out";
+  }
+
+  /* Only ticked lines land, and only at the number a person left them at. An
+     unticked line is a tray nobody has emptied onto the shelf yet. */
+  function putItOut() {
+    var done = draft.filter(function (l) { return l.ticked && l.qty > 0; });
+    var keys = [];
+    done.forEach(function (l) {
+      var it = ITEMS.find(function (x) { return x.key === l.key; });
+      it.packed += l.qty;
+      note(l.qty + "x " + it.name + " put out on the shelf, off a photo", "in");
+      keys.push(it.key);
+    });
+    closeRefill();
+    lastSold = keys;      // reuse the row flash: these are the rows that moved
+    renderShelf();
+    lastSold = [];
+    renderOrder();
   }
 
   function restock(key) {
@@ -679,6 +844,13 @@
   }
 
   payBtn.addEventListener("click", pay);
+  photoBtn.addEventListener("click", openRefill);
+  cancelRefill.addEventListener("click", closeRefill);
+  putOut.addEventListener("click", putItOut);
+  tickAll.addEventListener("click", function () {
+    draft.forEach(function (l) { if (l.qty > 0) l.ticked = true; });
+    renderDraft();
+  });
   countBtn.addEventListener("click", openCount);
   saveCount.addEventListener("click", saveTheCount);
   renderWho();
