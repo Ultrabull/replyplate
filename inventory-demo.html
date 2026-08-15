@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Stock, without the counting | ReplyPlate</title>
-<meta name="description" content="A working preview: staff tap when stock is taken or a delivery arrives, and the owner sees it change, with a nudge when something runs low." />
+<title>Stock, in both places | ReplyPlate</title>
+<meta name="description" content="A working preview: one helper taps as stock arrives, moves to the kitchen, or gets used, and the owner can see what is in the kitchen and what is still at the unit." />
 <!-- This is a preview built to show one owner an idea, not a shipped feature.
      It is deliberately not linked from the site's own navigation or footer:
      send the link directly, the way you would a private page, and nowhere on
@@ -38,10 +38,7 @@
     letter-spacing:-.5px;margin:10px 0 12px}
   .sub{color:var(--muted);font-size:16.5px;max-width:60ch;margin:0 auto}
   /* This is not part of the $199 and must never read like it is: it sits right
-     under the hero, before anything interactive, so nobody scrolls past it.
-     A full pill (border-radius:999px) reads fine for a short badge, but this
-     is a full sentence and wraps on a phone, where a stretched pill looks
-     strained rather than clean. A smaller radius keeps it a badge, not a pill. */
+     under the hero, before anything interactive, so nobody scrolls past it. */
   .addon{display:inline-block;max-width:440px;margin-top:18px;background:var(--soft);
     border:1px solid var(--line);border-radius:12px;padding:10px 18px;font-size:13.5px;
     color:var(--ink);line-height:1.5}
@@ -52,7 +49,12 @@
     color:var(--muted);margin-bottom:12px}
   .stitle + .stsub{margin-top:-8px;margin-bottom:16px;color:var(--muted);font-size:14.5px}
 
-  /* how it works: four short steps, read before a single button is tapped */
+  /* the question this whole page exists to answer, stated before anything else */
+  .theq{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:12px;padding:18px 20px;margin-bottom:22px}
+  .theq b{display:block;font-size:16px;margin-bottom:6px}
+  .theq p{color:var(--muted);font-size:14.5px;line-height:1.55}
+
   .howsteps{list-style:none;counter-reset:hows;display:grid;gap:16px}
   .howsteps li{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;
     font-size:15.5px;line-height:1.55}
@@ -61,7 +63,7 @@
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
   .howsteps b{color:var(--ink)}
 
-  /* the staff card: a QR to tap, and the two things a scan can do */
+  /* the staff card: a QR to tap, and the three things a scan can do */
   .staffcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
   .qrrow{display:flex;gap:18px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
   .qr{flex:0 0 auto;width:76px;height:76px;border-radius:10px;background:var(--ink);position:relative}
@@ -69,12 +71,14 @@
   .qrnote{flex:1;min-width:180px;font-size:13.5px;color:var(--muted)}
   .qrnote b{color:var(--ink)}
 
-  .modes{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-  .modebtn{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 16px;
-    font:600 13.5px inherit;color:var(--ink);cursor:pointer;min-height:40px}
+  .modes{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .modebtn{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 15px;
+    font:600 13.5px inherit;color:var(--ink);cursor:pointer;min-height:44px}
   .modebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modehint{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
 
-  .itemrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .itemrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);
+    transition:background .2s}
   .itemrow:first-of-type{border-top:none}
   .itemrow .nm{flex:1;min-width:0}
   .itemrow .nm b{display:block;font-size:15px}
@@ -95,14 +99,10 @@
   .stepbtn:disabled{opacity:.35;cursor:default}
   .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:66px;text-align:center;font-size:13.5px}
 
-  .arrow{text-align:center;color:var(--muted);font-size:13px;padding:6px 0 2px;
-    letter-spacing:.14em;text-transform:uppercase;font-weight:700}
-  .arrow span{display:block;font-size:22px;color:var(--accent2);line-height:1.4}
-
-  /* the owner card: what he sees, live */
+  /* the owner card: both places at once, which is the whole point */
   .ownercard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
   .ownerhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-    border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:16px}
+    border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:10px}
   .ownerhead h3{font-size:19px}
   .ownerhead span{font-size:13px;color:var(--muted)}
   .stockrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);
@@ -113,26 +113,34 @@
      gone again within a second. */
   @keyframes flashChanged{0%{background:var(--soft)}100%{background:transparent}}
   .stockrow.flash{animation:flashChanged .9s ease-out}
-  .itemrow{transition:background .2s}
   .itemrow.flash{animation:flashChanged .9s ease-out}
   .stockrow:first-of-type{border-top:none}
   .stockrow .nm{flex:1;min-width:0}
   .stockrow .nm b{display:block;font-size:15px}
-  .stockrow .lvl{font-variant-numeric:tabular-nums;font-weight:800;font-size:18px;white-space:nowrap}
-  .stockrow.low{background:var(--warnwash);margin:0 -14px;padding:13px 14px;border-radius:10px}
-  .stockrow.low .lvl{color:var(--warn)}
   .stockrow .nm span.cover{display:block;font-size:12.5px;color:var(--muted);margin-top:1px;font-weight:600}
+  /* Two numbers per row, one per place. The whole product is the difference
+     between them, so they sit side by side and each goes red on its own. */
+  .places{display:flex;gap:6px;flex:0 0 auto}
+  .pl{min-width:58px;text-align:right}
+  .pl b{display:block;font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;white-space:nowrap}
+  .pl i{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted);font-weight:700;margin-top:1px}
+  .pl.warn b{color:var(--warn)}
+  .stockrow.low{background:var(--warnwash);margin:0 -14px;padding:13px 14px;border-radius:10px}
   .stockrow.low .nm span.cover{color:var(--warn)}
   .nudge{display:none;background:var(--warnwash);border:1px solid #eeccc0;border-radius:10px;
-    padding:12px 14px;margin-top:6px;font-size:13.5px;color:var(--warn);line-height:1.5}
+    padding:12px 14px;margin-top:10px;font-size:13.5px;color:var(--warn);line-height:1.55}
   .nudge.show{display:block}
   .nudge b{font-weight:800}
+  .nudge .go{color:var(--good);font-weight:800}
 
   /* ── counting: the checkpoint that turns a shortage into a time window ── */
   .countwrap{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
-  .countbtn{width:100%;background:var(--soft);border:1px solid var(--line);border-radius:10px;
-    padding:12px;font:700 14.5px inherit;color:var(--ink);cursor:pointer;min-height:48px}
+  .countbtns{display:flex;gap:8px;flex-wrap:wrap}
+  .countbtn{flex:1;min-width:130px;background:var(--soft);border:1px solid var(--line);border-radius:10px;
+    padding:12px;font:700 14px inherit;color:var(--ink);cursor:pointer;min-height:48px}
   .countbtn:active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .countbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
   .countpanel{display:none;margin-top:12px}
   .countpanel.show{display:block}
   .counthead{font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.5}
@@ -161,6 +169,8 @@
   .logrow .lt{flex:0 0 auto;font-variant-numeric:tabular-nums;font-weight:800;color:var(--accent2);
     font-size:13px;min-width:60px}
   .logrow .lx{flex:1;min-width:0}
+  .logrow .lx.move{color:var(--accent2);font-weight:600}
+  .logrow .lx.count{font-weight:700}
   .logempty{padding:16px 0;color:var(--muted);font-size:14px;line-height:1.55}
 
   .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
@@ -192,28 +202,37 @@
 
   <div class="hero">
     <div class="kicker">A working preview, not a finished feature</div>
-    <h1>Stock, without the counting</h1>
-    <p class="sub">A code by the walk-in. Tap it when something is taken, or when a delivery comes in. The kitchen
-      below is set up the way yours would be, with your own ingredients.</p>
+    <h1>Stock, in both places</h1>
+    <p class="sub">Your stock lives in two places: the kitchen, and wherever you keep the rest. One helper taps
+      as it arrives, as it goes to the kitchen, and as it gets used. You see both piles from your phone.</p>
     <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
   </div>
 
   <section>
-    <p class="stitle">How it works, in four taps</p>
+    <div class="theq">
+      <b>The question this answers</b>
+      <p>The kitchen is nearly out of rice. Do you buy more, or is there a sack sitting at the unit already?
+        You cannot walk past a storage unit the way you walk past your own walk-in. Get it wrong and you either
+        waste a trip or order twice.</p>
+    </div>
+
+    <p class="stitle">How it works, in three buttons</p>
     <ol class="howsteps">
-      <li><span><b>Something comes in.</b> A sack of basmati rice arrives. Someone taps "+1 bag," once.</span></li>
-      <li><span><b>Something goes out.</b> A cook takes chicken for tonight's orders. They tap "&minus;5 lb."</span></li>
-      <li><span><b>Nobody counts the shelf.</b> No walking round the kitchen with a clipboard. The number just adds
-        itself up from those taps, all day.</span></li>
-      <li><span><b>A nudge before it runs out.</b> When something gets low, you are told, with the amount to
-        reorder.</span></li>
+      <li><span><b>A delivery arrives.</b> Ten sacks of rice land at the unit. Your helper taps
+        "+1 bag" ten times, or once per sack as it comes off the van.</span></li>
+      <li><span><b>Some goes to the kitchen.</b> They carry two sacks over and tap the arrow twice. The unit
+        goes down by two, the kitchen goes up by two. Nothing is lost between them.</span></li>
+      <li><span><b>The kitchen uses it.</b> A cook opens a sack, someone taps "&minus;1 bag." That is the one
+        tap that needs a habit, and it is one person's job, not everybody's.</span></li>
+      <li><span><b>You get told which problem you have.</b> Low in the kitchen but fine at the unit means send
+        someone. Low in both means order. Two different sentences, so you never guess.</span></li>
     </ol>
   </section>
 
   <section>
     <div class="grid2">
       <div>
-        <p class="stitle">What staff do, back of house</p>
+        <p class="stitle">What the helper does</p>
         <div class="staffcard">
           <div class="qrrow">
             <div class="qr" aria-hidden="true">
@@ -233,33 +252,39 @@
                 </g>
               </svg>
             </div>
-            <p class="qrnote">A drawing of the code, not a real one you can scan. On the wall, this is one sticker
-              by the walk-in fridge. <b>Tapping the buttons below does what scanning it would.</b></p>
+            <p class="qrnote">A drawing of the code, not a real one you can scan. On the wall this is two
+              stickers: one at the unit, one by the walk-in. <b>Tapping below does what scanning would.</b></p>
           </div>
 
           <div class="modes">
-            <button class="modebtn" id="modeTake" type="button" aria-pressed="true">Something was taken</button>
-            <button class="modebtn" id="modeDeliver" type="button" aria-pressed="false">A delivery arrived</button>
+            <button class="modebtn" id="modeDeliver" type="button" aria-pressed="true">Delivery arrived</button>
+            <button class="modebtn" id="modeMove" type="button" aria-pressed="false">Take to kitchen</button>
+            <button class="modebtn" id="modeUse" type="button" aria-pressed="false">Kitchen used it</button>
           </div>
+          <p class="modehint" id="modeHint"></p>
 
           <div id="itemList"></div>
         </div>
       </div>
 
       <div>
-        <p class="stitle">What the owner sees, right away</p>
+        <p class="stitle">What you see, right away</p>
         <div class="ownercard">
           <div class="ownerhead">
-            <h3>Current stock</h3>
+            <h3>Where everything is</h3>
             <span id="ownerWhen">Updated just now</span>
           </div>
           <div id="ownerList"></div>
           <div class="nudge" id="nudgeBox"></div>
 
           <div class="countwrap">
-            <button class="countbtn" id="countBtn" type="button">Count the walk-in</button>
+            <div class="countbtns">
+              <button class="countbtn" id="countKitchen" type="button" aria-pressed="false">Count the kitchen</button>
+              <button class="countbtn" id="countStore" type="button" aria-pressed="false">Count the unit</button>
+            </div>
             <div class="countpanel" id="countPanel">
-              <p class="counthead">Set what is <b>really</b> there. Last counted <span id="countedAt"></span>.</p>
+              <p class="counthead">Set what is <b>really</b> in <span id="countPlace">the kitchen</span>.
+                Last counted <span id="countedAt"></span>.</p>
               <div id="countRows"></div>
               <button class="savebtn" id="saveCount" type="button">Save this count</button>
             </div>
@@ -272,8 +297,8 @@
 
   <section>
     <p class="stitle">Today's log</p>
-    <p class="stsub">Every tap, with the time on it. This is the part that makes "when did the chicken go" a
-      question with an answer.</p>
+    <p class="stsub">Every tap, with the time on it, and which way the stock went. This is the part that makes
+      "when did the chicken go" a question with an answer.</p>
     <div class="logcard"><div id="activityLog"></div></div>
   </section>
 
@@ -281,24 +306,35 @@
     <p class="stitle">What this is, plainly</p>
     <div class="notes">
       <div class="note">
-        <b>A nudge, not an order</b>
-        <p>When something crosses the line you set, you are told, and told the amount to bring it back. Nothing is
-          ordered for you. You still make the call.</p>
+        <b>One person, not everybody</b>
+        <p>This only works because the helper who moves stock is the one who taps. Asking a cook mid-service to
+          log a pound of chicken never survives a busy Friday. Asking the person already carrying the box is a
+          different question.</p>
+      </div>
+      <div class="note">
+        <b>Send someone, or order</b>
+        <p>Two low states, two different sentences. Anything that just says "low" makes you go and look, which
+          is the work you were trying to avoid.</p>
+      </div>
+      <div class="note">
+        <b>Count each place on its own</b>
+        <p>You can only count what you are standing in front of. So the kitchen and the unit are counted
+          separately, and each keeps its own clock for when it was last checked.</p>
       </div>
       <div class="note">
         <b>Only as true as the last tap</b>
-        <p>If somebody takes stock without tapping, the number is wrong until somebody counts. That is what the
-          count button is for, and the gap it finds is exactly the stock that left untapped.</p>
+        <p>Miss a tap and the number drifts until someone counts. That is what the count is for, and the gap it
+          finds is exactly the stock that moved without anyone saying so.</p>
       </div>
       <div class="note">
-        <b>Count at the shift change, not at month end</b>
-        <p>A count resets the clock. Count once a month and a missing sack could be any of thirty days. Count when
-          the shift changes and it narrows to four hours, which is a searchable amount of camera footage.</p>
+        <b>A nudge, not an order</b>
+        <p>When something crosses the line you set, you are told, and told the amount to bring it back. Nothing
+          is ordered for you. You still make the call.</p>
       </div>
       <div class="note">
-        <b>Your ingredients, your amounts</b>
-        <p>Rice, paneer, ghee, whatever is actually in your kitchen. You choose what goes on the list, and what
-          counts as low, for each one.</p>
+        <b>Your places, your amounts</b>
+        <p>A garage, a second unit, a cousin's cold room, whatever you actually use. You choose what goes on the
+          list and what counts as low, for each place.</p>
       </div>
     </div>
   </section>
@@ -315,158 +351,210 @@
   <a href="./chat-demo.html">A demo restaurant</a> &bull;
   <a href="./details.html">Costs and questions</a>
   <br>The stock numbers on this page reset every time you load it. Nothing here is saved anywhere.
-  <br><span style="opacity:.55">Build 2026-08-14c</span>
+  <br><span style="opacity:.55">Build 2026-08-15</span>
 </div></footer>
 
 <script>
 (function () {
-  /* Six items from a real Indian kitchen, each with its own unit and its own
-     step, because rice moves in bigger amounts than paneer does. Threshold is
-     where a row turns red; refill is the amount the nudge asks for. Every
-     number here is a stand-in an owner would set for their own kitchen —
-     picked so paneer crosses the line in three taps and the others take a
-     few more, so there is always a fast one and a slower one to try. */
-  /* perDay is how much this kitchen gets through in an average day. In the
-     real thing it is worked out from the timestamps on the taps themselves,
-     over the last week or two. Here it is a stand-in, like every other number
-     on this page. It is what turns "low" into "you have about a day left,"
-     which is the difference between a warning and a decision. */
+  /* Six items from a real Indian kitchen, each held in two places at once.
+     "store" is the unit, garage, lock-up, wherever the bulk sits. "kitchen"
+     is what is actually to hand. They are separate numbers because they are
+     separate piles, and the difference between them is the entire product:
+     an owner can see their own walk-in, but cannot see a unit across town.
+
+     kLow is where the kitchen turns red, which means "fetch more." sLow is
+     where the unit turns red, which means "buy more." Those are different
+     decisions, so they are different thresholds. perDay is roughly what the
+     kitchen gets through in a day, worked out in the real thing from the
+     timestamps on the taps, and used here to turn "low" into "about a day." */
   var ITEMS = [
-    { key: "rice",    name: "Basmati rice",  unit: "bag", step: 1, stock: 8,  threshold: 2,  refill: 10, perDay: 1  },
-    { key: "onion",   name: "Onions",        unit: "lb",  step: 5, stock: 30, threshold: 10, refill: 25, perDay: 12 },
-    { key: "tomato",  name: "Tomatoes",      unit: "lb",  step: 5, stock: 20, threshold: 8,  refill: 20, perDay: 8  },
-    { key: "chicken", name: "Chicken",       unit: "lb",  step: 5, stock: 25, threshold: 10, refill: 25, perDay: 10 },
-    { key: "paneer",  name: "Paneer",        unit: "lb",  step: 2, stock: 10, threshold: 4,  refill: 10, perDay: 3  },
-    { key: "oil",     name: "Cooking oil",   unit: "gal", step: 1, stock: 5,  threshold: 2,  refill: 5,  perDay: 1  }
+    { key:"rice",    name:"Basmati rice", unit:"bag", step:1, store:8,  kitchen:3,  kLow:1,  sLow:2,  refill:10, perDay:1  },
+    { key:"onion",   name:"Onions",       unit:"lb",  step:5, store:40, kitchen:20, kLow:10, sLow:15, refill:50, perDay:12 },
+    { key:"tomato",  name:"Tomatoes",     unit:"lb",  step:5, store:25, kitchen:15, kLow:8,  sLow:10, refill:25, perDay:8  },
+    { key:"chicken", name:"Chicken",      unit:"lb",  step:5, store:30, kitchen:20, kLow:10, sLow:15, refill:30, perDay:10 },
+    { key:"paneer",  name:"Paneer",       unit:"lb",  step:2, store:6,  kitchen:6,  kLow:2,  sLow:2,  refill:10, perDay:3  },
+    { key:"oil",     name:"Cooking oil",  unit:"gal", step:1, store:4,  kitchen:2,  kLow:1,  sLow:2,  refill:5,  perDay:1  }
   ];
-  var mode = "take";
-  /* Every tap, with the time it happened, newest first. This is the whole
-     point of stamping a time on things: without it, "when did the chicken
-     go" has no answer at all, and a camera has no window to search. */
-  var log = [];
-  /* The last time a human physically counted. Seeded three hours back so the
-     page opens mid-shift with a believable window behind it. Anything missing
-     is missing since this moment, and nothing earlier -- that is what makes a
-     shortage answerable instead of a shrug. */
-  var countedAt = new Date(Date.now() - 3 * 60 * 60 * 1000);
-  var counting = null;   // key -> number a human is entering, while the panel is open
+
+  var MODES = {
+    deliver: { label: "Delivery arrived", sign: "+",
+      hint: "Stock landing at the unit. Nothing reaches the kitchen yet." },
+    move:    { label: "Take to kitchen",  sign: "&rarr;",
+      hint: "Moves it from the unit to the kitchen. The total does not change, only where it is." },
+    use:     { label: "Kitchen used it",  sign: "&minus;",
+      hint: "Gone for good. This is the only tap that needs a habit." }
+  };
+  var mode = "deliver";
+
   /* The key of whatever was just tapped, so both cards can flash that one row
      and nothing else. Cleared straight after render reads it, so switching
      mode or reloading never replays an old flash. */
   var lastChanged = null;
+  var log = [];
+  /* Each place keeps its own clock, because you count them at different times:
+     the kitchen on your way past, the unit when you happen to drive over.
+     Seeded a few hours back so the page opens mid-shift with a believable
+     window behind it. */
+  var countedAt = { kitchen: new Date(Date.now() - 3 * 60 * 60 * 1000),
+                    store:   new Date(Date.now() - 26 * 60 * 60 * 1000) };
+  var countingPlace = null, counting = null;
 
   var itemList = document.getElementById("itemList");
   var ownerList = document.getElementById("ownerList");
   var ownerWhen = document.getElementById("ownerWhen");
   var nudgeBox = document.getElementById("nudgeBox");
-  var modeTake = document.getElementById("modeTake");
-  var modeDeliver = document.getElementById("modeDeliver");
+  var modeHint = document.getElementById("modeHint");
   var activityLog = document.getElementById("activityLog");
-  var countBtn = document.getElementById("countBtn");
+  var countKitchen = document.getElementById("countKitchen");
+  var countStore = document.getElementById("countStore");
   var countPanel = document.getElementById("countPanel");
   var countRows = document.getElementById("countRows");
+  var countPlaceEl = document.getElementById("countPlace");
   var countedAtEl = document.getElementById("countedAt");
   var saveCount = document.getElementById("saveCount");
   var countReport = document.getElementById("countReport");
+  var MODEBTN = { deliver: document.getElementById("modeDeliver"),
+                  move:    document.getElementById("modeMove"),
+                  use:     document.getElementById("modeUse") };
 
   function fmt(n, unit) {
     var num = Math.round(n * 10) / 10;
     if (unit === "bag") return num + " " + (num === 1 ? "bag" : "bags");
     return num + " " + unit;
   }
+  function placeName(p) { return p === "kitchen" ? "the kitchen" : "the unit"; }
 
   function clock(d) {
     var h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? "pm" : "am";
     h = h % 12; if (h === 0) h = 12;
     return h + ":" + (m < 10 ? "0" + m : m) + ap;
   }
-
-  /* How long what is on the shelf actually lasts, at this kitchen's own pace.
-     "Onions are low" tells an owner nothing they can act on; "about a day
-     left" tells them whether to call the supplier this afternoon. */
-  function cover(it) {
-    if (it.stock <= 0) return "none";
-    var d = it.stock / it.perDay;
-    if (d < 1) return "less than a day";
-    var r = Math.round(d);
-    return "about " + r + (r === 1 ? " day" : " days");
+  /* A count from yesterday should not read as a time this morning: "26 hours
+     ago" quietly becomes "1:14pm," which looks like it happened today. */
+  function stamp(d) {
+    var sameDay = d.toDateString() === new Date().toDateString();
+    return sameDay ? clock(d) : clock(d) + " yesterday";
   }
 
-  function note(text) {
-    log.unshift({ at: new Date(), text: text });   // newest first, the way anyone reads a log
+  /* Days of cover counts both piles, because stock at the unit is still yours:
+     the kitchen running dry is a fetching problem, not a buying one. */
+  function cover(it) {
+    var total = it.store + it.kitchen;
+    if (total <= 0) return "none left anywhere";
+    var d = total / it.perDay;
+    if (d < 1) return "less than a day left";
+    var r = Math.round(d);
+    return "about " + r + (r === 1 ? " day" : " days") + " left";
+  }
+
+  function note(text, kind) {
+    log.unshift({ at: new Date(), text: text, kind: kind || "" });
     renderLog();
   }
 
   function renderLog() {
     if (!log.length) {
-      activityLog.innerHTML = '<p class="logempty">Nothing yet today. Tap something above and it lands here, ' +
-        'with the time on it.</p>';
+      activityLog.innerHTML = '<p class="logempty">Nothing yet today. Tap something on the left and it lands ' +
+        'here, with the time on it and which way it went.</p>';
       return;
     }
     activityLog.innerHTML = log.map(function (e) {
       return '<div class="logrow"><span class="lt">' + clock(e.at) + '</span>' +
-        '<span class="lx">' + e.text + '</span></div>';
+        '<span class="lx ' + e.kind + '">' + e.text + '</span></div>';
     }).join("");
   }
 
-  function adjust(key, dir) {
+  /* One tap moves one step, and never more than there actually is: a helper
+     cannot carry two sacks to the kitchen when one is left at the unit, and
+     the screen should not pretend otherwise. */
+  function tap(key) {
     var it = ITEMS.find(function (i) { return i.key === key; });
     if (!it) return;
-    /* Taking stock cannot go negative: an empty shelf reads as zero, not a
-       minus number, because a tap cannot remove more than is physically
-       there. A tap against an empty shelf changes nothing, so it should not
-       leave a line in the log claiming it did. */
-    var before = it.stock;
-    it.stock = Math.max(0, it.stock + dir * it.step);
-    if (it.stock === before) return;
-    note(it.name + " &middot; " + fmt(Math.abs(it.stock - before), it.unit) +
-      (dir < 0 ? " taken" : " delivered"));
+    var n = it.step;
+    if (mode === "deliver") {
+      it.store += n;
+      note(it.name + " &middot; " + fmt(n, it.unit) + " delivered to the unit", "");
+    } else if (mode === "move") {
+      n = Math.min(n, it.store);
+      if (n <= 0) return;
+      it.store -= n; it.kitchen += n;
+      note(it.name + " &middot; " + fmt(n, it.unit) + " taken to the kitchen", "move");
+    } else {
+      n = Math.min(n, it.kitchen);
+      if (n <= 0) return;
+      it.kitchen -= n;
+      note(it.name + " &middot; " + fmt(n, it.unit) + " used in the kitchen", "");
+    }
     lastChanged = key;
     render();
   }
 
+  function sourceLine(it) {
+    if (mode === "use") return fmt(it.kitchen, it.unit) + " in the kitchen";
+    return fmt(it.store, it.unit) + " at the unit";
+  }
+
   function renderStaff() {
+    modeHint.innerHTML = MODES[mode].hint;
     itemList.innerHTML = "";
     ITEMS.forEach(function (it) {
       var row = document.createElement("div");
       row.className = "itemrow" + (it.key === lastChanged ? " flash" : "");
-      var dir = mode === "take" ? -1 : 1;
       var stepLabel = fmt(it.step, it.unit);
+      var label = mode === "deliver" ? "Log " + stepLabel + " of " + it.name + " delivered to the unit"
+                : mode === "move"    ? "Move " + stepLabel + " of " + it.name + " to the kitchen"
+                :                      "Log " + stepLabel + " of " + it.name + " used in the kitchen";
       row.innerHTML =
-        '<span class="nm"><b>' + it.name + '</b><span>' + fmt(it.stock, it.unit) + ' on hand</span></span>' +
+        '<span class="nm"><b>' + it.name + '</b><span>' + sourceLine(it) + '</span></span>' +
         '<span class="stepper">' +
-        '<button class="stepbtn" type="button" data-key="' + it.key + '" aria-label="' +
-          (mode === "take" ? "Log " + stepLabel + " taken" : "Log " + stepLabel + " delivered") + '">' +
-          (mode === "take" ? "&minus;" : "+") + '</button>' +
+        '<button class="stepbtn" type="button" data-key="' + it.key + '" aria-label="' + label + '">' +
+          MODES[mode].sign + '</button>' +
         '<span class="amt">' + stepLabel + '</span></span>';
       var btn = row.querySelector(".stepbtn");
-      if (mode === "take" && it.stock <= 0) btn.disabled = true;
-      btn.addEventListener("click", function () { adjust(it.key, dir); });
+      if (mode === "move" && it.store <= 0) btn.disabled = true;
+      if (mode === "use" && it.kitchen <= 0) btn.disabled = true;
+      btn.addEventListener("click", function () { tap(it.key); });
       itemList.appendChild(row);
     });
   }
 
+  /* The two sentences the whole thing exists to produce. "Low" on its own
+     sends the owner to go and look, which is the work being avoided. */
+  function nudgeFor(it) {
+    var kLow = it.kitchen <= it.kLow, sLow = it.store <= it.sLow;
+    if (kLow && it.store > 0)
+      return '<b>' + it.name + ': ' + fmt(it.kitchen, it.unit) + ' left in the kitchen.</b> The unit has ' +
+        fmt(it.store, it.unit) + '. <span class="go">Send someone.</span>';
+    if (kLow)
+      return '<b>' + it.name + ': ' + fmt(it.kitchen, it.unit) + ' in the kitchen and none at the unit.</b> ' +
+        'Order ' + fmt(it.refill, it.unit) + '.';
+    if (sLow)
+      return '<b>' + it.name + ': the unit is down to ' + fmt(it.store, it.unit) + '.</b> Order ' +
+        fmt(it.refill, it.unit) + ' before the kitchen needs it.';
+    return null;
+  }
+
   function renderOwner() {
     ownerList.innerHTML = "";
-    var low = [];
+    var lines = [];
     ITEMS.forEach(function (it) {
-      var isLow = it.stock <= it.threshold;
-      if (isLow) low.push(it);
+      var kLow = it.kitchen <= it.kLow, sLow = it.store <= it.sLow;
+      var msg = nudgeFor(it);
+      if (msg) lines.push(msg);
       var row = document.createElement("div");
-      row.className = "stockrow" + (isLow ? " low" : "") + (it.key === lastChanged ? " flash" : "");
+      row.className = "stockrow" + (kLow || sLow ? " low" : "") + (it.key === lastChanged ? " flash" : "");
       row.innerHTML =
-        '<span class="nm"><b>' + it.name + '</b><span class="cover">' + cover(it) + ' left</span></span>' +
-        '<span class="lvl">' + fmt(it.stock, it.unit) + '</span>';
+        '<span class="nm"><b>' + it.name + '</b><span class="cover">' + cover(it) + '</span></span>' +
+        '<span class="places">' +
+          '<span class="pl' + (sLow ? " warn" : "") + '"><b>' + fmt(it.store, it.unit) + '</b><i>unit</i></span>' +
+          '<span class="pl' + (kLow ? " warn" : "") + '"><b>' + fmt(it.kitchen, it.unit) + '</b><i>kitchen</i></span>' +
+        '</span>';
       ownerList.appendChild(row);
     });
     lastChanged = null;   // read by both cards above; spent once render is done
-    if (low.length) {
+    if (lines.length) {
       nudgeBox.classList.add("show");
-      nudgeBox.innerHTML = low.map(function (it) {
-        var tail = it.stock <= 0 ? "None left at all." : "That is " + cover(it) + " at your usual pace.";
-        return '<b>' + it.name + ' is low: ' + fmt(it.stock, it.unit) + ' left.</b> Order ' +
-          fmt(it.refill, it.unit) + ' to refill. ' + tail;
-      }).join("<br>");
+      nudgeBox.innerHTML = lines.join("<br>");
     } else {
       nudgeBox.classList.remove("show");
       nudgeBox.innerHTML = "";
@@ -475,27 +563,30 @@
   }
 
   /* ── counting: the one thing that catches what the taps missed ──────────
-     Every number above is only as good as the last tap. A count is where a
-     human overrules it, and the gap between the two is the interesting part:
-     that is stock that left without anyone tapping. Because a count also
-     resets the clock, the next gap is pinned to a known window instead of
-     "sometime this month." Count at the shift change and the window is four
-     hours, which is a searchable amount of camera footage. */
-  function openCount() {
-    if (countPanel.classList.contains("show")) { closeCount(); return; }
+     You can only count what you are standing in front of, so each place is
+     counted on its own and keeps its own clock. The gap between what was
+     counted and what the taps predicted is stock that moved without anyone
+     saying so, and because the count resets that place's clock, the next gap
+     is pinned to a known window instead of "sometime this month." */
+  function openCount(place) {
+    if (countPanel.classList.contains("show") && countingPlace === place) { closeCount(); return; }
+    countingPlace = place;
     counting = {};
-    ITEMS.forEach(function (it) { counting[it.key] = it.stock; });
-    countedAtEl.textContent = clock(countedAt);
+    ITEMS.forEach(function (it) { counting[it.key] = it[place]; });
+    countPlaceEl.textContent = placeName(place);
+    countedAtEl.textContent = stamp(countedAt[place]);
     countPanel.classList.add("show");
-    countBtn.textContent = "Cancel the count";
     countReport.classList.remove("show");
+    countKitchen.setAttribute("aria-pressed", String(place === "kitchen"));
+    countStore.setAttribute("aria-pressed", String(place === "store"));
     renderCount();
   }
 
   function closeCount() {
-    counting = null;
+    countingPlace = null; counting = null;
     countPanel.classList.remove("show");
-    countBtn.textContent = "Count the walk-in";
+    countKitchen.setAttribute("aria-pressed", "false");
+    countStore.setAttribute("aria-pressed", "false");
   }
 
   function renderCount() {
@@ -522,42 +613,47 @@
   }
 
   function saveTheCount() {
-    var gaps = [], extras = [];
+    var place = countingPlace, gaps = [], extras = [];
     ITEMS.forEach(function (it) {
-      var real = counting[it.key], diff = it.stock - real;
+      var real = counting[it.key], diff = it[place] - real;
       if (diff > 0) gaps.push(it.name + " " + fmt(diff, it.unit) + " short");
       if (diff < 0) extras.push(it.name + " " + fmt(-diff, it.unit) + " more than expected");
-      it.stock = real;
+      it[place] = real;
     });
-    var since = clock(countedAt), now = new Date();
+    var since = stamp(countedAt[place]), now = new Date();
+    var where = placeName(place).replace("the ", "");
     countReport.className = "countreport show " + (gaps.length ? "bad" : "good");
     if (gaps.length || extras.length) {
-      countReport.innerHTML = '<b>Since ' + since + ':</b> ' + gaps.concat(extras).join(", ") +
-        '. Everything else matched.' +
+      countReport.innerHTML = '<b>In the ' + where + ', since ' + since + ':</b> ' +
+        gaps.concat(extras).join(", ") + '. Everything else matched.' +
         '<span class="when">That is the window to look at, and nothing before it. ' +
         'New count saved ' + clock(now) + '.</span>';
     } else {
-      countReport.innerHTML = '<b>Everything matched.</b> Nothing has left this kitchen since ' + since +
+      countReport.innerHTML = '<b>The ' + where + ' matched.</b> Nothing has moved out of it since ' + since +
         ' without a tap.<span class="when">New count saved ' + clock(now) + '.</span>';
     }
-    note("Counted by hand &middot; " +
-      (gaps.length ? gaps.length + (gaps.length === 1 ? " item" : " items") + " short" : "everything matched"));
-    countedAt = now;
+    note("Counted the " + where + " by hand &middot; " +
+      (gaps.length ? gaps.length + (gaps.length === 1 ? " item" : " items") + " short" : "everything matched"),
+      "count");
+    countedAt[place] = now;
     closeCount();
     render();
   }
 
   function render() { renderStaff(); renderOwner(); }
 
-  modeTake.addEventListener("click", function () {
-    mode = "take"; modeTake.setAttribute("aria-pressed", "true"); modeDeliver.setAttribute("aria-pressed", "false");
+  function setMode(m) {
+    mode = m;
+    Object.keys(MODEBTN).forEach(function (k) {
+      MODEBTN[k].setAttribute("aria-pressed", String(k === m));
+    });
     renderStaff();
+  }
+  Object.keys(MODEBTN).forEach(function (k) {
+    MODEBTN[k].addEventListener("click", function () { setMode(k); });
   });
-  modeDeliver.addEventListener("click", function () {
-    mode = "deliver"; modeDeliver.setAttribute("aria-pressed", "true"); modeTake.setAttribute("aria-pressed", "false");
-    renderStaff();
-  });
-  countBtn.addEventListener("click", openCount);
+  countKitchen.addEventListener("click", function () { openCount("kitchen"); });
+  countStore.addEventListener("click", function () { openCount("store"); });
   saveCount.addEventListener("click", saveTheCount);
 
   render();
