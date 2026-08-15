@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Stock, in both places | ReplyPlate</title>
-<meta name="description" content="A working preview: one helper taps as stock arrives, moves to the kitchen, or gets used, and the owner can see what is in the kitchen and what is still at the unit." />
+<meta name="description" content="A working preview: one helper taps as stock arrives, moves to the kitchen, or gets used. You open your phone and read one line: what needs fetching, and what needs buying." />
 <!-- This is a preview built to show one owner an idea, not a shipped feature.
      It is deliberately not linked from the site's own navigation or footer:
      send the link directly, the way you would a private page, and nowhere on
@@ -12,13 +12,13 @@
 <meta name="robots" content="noindex" />
 <style>
   :root{
-    /* A warmer, richer palette than the site's usual cream-and-brick: a
-       turmeric gold carries the brand colour, and red is spent on nothing
-       except the low-stock warning, so the one colour that means "look at
-       this" never has to compete with the colour used everywhere else. */
+    /* Red is spent on nothing except "this costs you money," and green on
+       nothing except "this is just a trip." Those two are the only decisions
+       on the page, so no other colour is allowed to compete with them. */
     --ink:#241a10; --muted:#7c6a52; --bg:#fdf8ef; --card:#fffdf9; --line:#ecdec2;
-    --soft:#f8ecd4; --accent:#c1791a; --accent2:#8a4a1f; --good:#3f7d52;
-    --warn:#a52f22; --warnwash:#fbe9e0;
+    --soft:#f8ecd4; --accent:#c1791a; --accent2:#8a4a1f;
+    --good:#3f7d52; --goodwash:#eaf3ec; --goodline:#cfe3d5;
+    --warn:#a52f22; --warnwash:#fbe9e0; --warnline:#eeccc0;
     --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --serif:Georgia,"Times New Roman",serif;
   }
@@ -32,146 +32,135 @@
   .brand{font-weight:800;letter-spacing:-.2px;text-decoration:none;color:var(--ink)}
   .nav a.back{font-size:14.5px;text-decoration:none}
 
-  .hero{padding:44px 0 30px;text-align:center}
+  .hero{padding:44px 0 26px;text-align:center}
   .kicker{font-size:11.5px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2)}
   h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;
     letter-spacing:-.5px;margin:10px 0 12px}
-  .sub{color:var(--muted);font-size:16.5px;max-width:60ch;margin:0 auto}
-  /* This is not part of the $199 and must never read like it is: it sits right
-     under the hero, before anything interactive, so nobody scrolls past it. */
+  .sub{color:var(--muted);font-size:16.5px;max-width:56ch;margin:0 auto}
   .addon{display:inline-block;max-width:440px;margin-top:18px;background:var(--soft);
     border:1px solid var(--line);border-radius:12px;padding:10px 18px;font-size:13.5px;
     color:var(--ink);line-height:1.5}
   .addon b{color:var(--accent)}
 
-  section{padding:26px 0}
+  section{padding:22px 0}
   .stitle{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
     color:var(--muted);margin-bottom:12px}
-  .stitle + .stsub{margin-top:-8px;margin-bottom:16px;color:var(--muted);font-size:14.5px}
 
-  /* the question this whole page exists to answer, stated before anything else */
-  .theq{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
-    border-radius:12px;padding:18px 20px;margin-bottom:22px}
-  .theq b{display:block;font-size:16px;margin-bottom:6px}
-  .theq p{color:var(--muted);font-size:14.5px;line-height:1.55}
+  /* ── the answer, before any data ────────────────────────────────────────
+     An owner should be able to read one line and put the phone away. The
+     numbers are underneath for the times they want them, not above, because
+     a table of twelve figures is not an answer to anything. */
+  .verdict{border-radius:16px;padding:20px 22px;margin-bottom:12px;border:1px solid}
+  .verdict.good{background:var(--goodwash);border-color:var(--goodline)}
+  .verdict.work{background:var(--card);border-color:var(--warnline)}
+  .verdict > b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(21px,4vw,26px);
+    line-height:1.2;letter-spacing:-.3px}
+  .verdict.good > b{color:var(--good)}
+  .verdict > p{color:var(--muted);font-size:14.5px;margin-top:5px}
+  .todo{display:grid;gap:9px;margin-top:14px}
+  .job{background:var(--bg);border-radius:11px;padding:12px 14px;border-left:3px solid}
+  .job.fetch{border-left-color:var(--good)}
+  .job.buy{border-left-color:var(--warn)}
+  .jtop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .jtop b{font-size:15.5px}
+  .jdo{font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 11px;white-space:nowrap}
+  .job.fetch .jdo{background:var(--goodwash);color:var(--good)}
+  .job.buy .jdo{background:var(--warnwash);color:var(--warn)}
+  .jwhy{display:block;font-size:13.5px;color:var(--muted);margin-top:4px;line-height:1.5}
 
-  .howsteps{list-style:none;counter-reset:hows;display:grid;gap:16px}
-  .howsteps li{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;
-    font-size:15.5px;line-height:1.55}
-  .howsteps li::before{counter-increment:hows;content:counter(hows);
-    width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:0 0 auto}
-  .howsteps b{color:var(--ink)}
+  /* ── the two cards ─────────────────────────────────────────────────────── */
+  .grid2{display:grid;gap:16px;grid-template-columns:1fr}
+  @media (min-width:820px){.grid2{grid-template-columns:1fr 1fr;align-items:start}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .cardtop{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:12px}
 
-  /* the staff card: a QR to tap, and the three things a scan can do */
-  .staffcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
-  .qrrow{display:flex;gap:18px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
-  .qr{flex:0 0 auto;width:76px;height:76px;border-radius:10px;background:var(--ink);position:relative}
-  .qr svg{width:100%;height:100%;display:block}
-  .qrnote{flex:1;min-width:180px;font-size:13.5px;color:var(--muted)}
-  .qrnote b{color:var(--ink)}
-
-  .modes{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-  .modebtn{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:9px 15px;
-    font:600 13.5px inherit;color:var(--ink);cursor:pointer;min-height:44px}
+  .modes{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  .modebtn{flex:1;min-width:96px;background:var(--soft);border:1px solid var(--line);border-radius:10px;
+    padding:8px 10px;font:700 13px inherit;color:var(--ink);cursor:pointer;min-height:44px}
   .modebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-  .modehint{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+  .modehint{font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.45}
 
-  .itemrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);
+  .itemrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);
     transition:background .2s}
   .itemrow:first-of-type{border-top:none}
   .itemrow .nm{flex:1;min-width:0}
-  .itemrow .nm b{display:block;font-size:15px}
-  .itemrow .nm span{display:block;font-size:13.5px;color:var(--muted);margin-top:1px;
-    font-variant-numeric:tabular-nums;font-weight:600}
-  .stepper{display:flex;align-items:center;gap:10px;flex:0 0 auto}
-  /* 44x44 is Apple's own stated minimum tappable size. The first version of
-     this button was 38x38: small enough that a real finger, moving fast on a
-     phone, could miss it and land on nothing. That reads exactly like "the
-     numbers aren't moving," when the numbers were never touched at all. */
-  .stepbtn{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--soft);
-    font:700 20px inherit;color:var(--ink);cursor:pointer;transition:transform .1s,background .15s}
-  .stepbtn:hover{border-color:var(--accent)}
+  .itemrow .nm b{display:block;font-size:14.5px}
+  .itemrow .nm span{display:block;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;
+    font-weight:600}
+  /* 44x44 is Apple's own stated minimum tappable size. An earlier version used
+     38x38: small enough that a real finger, moving fast, could miss it and land
+     on nothing, which reads exactly like "the numbers aren't moving." */
+  .stepbtn{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
+    background:var(--soft);font:700 19px inherit;color:var(--ink);cursor:pointer;
+    transition:transform .1s,background .15s}
   /* :hover barely applies on a touchscreen, so it was the only feedback a tap
-     had, which means it had none. :active fires the instant a finger presses
-     down, before anything else on the page has had time to update. */
+     had, which means it had none. :active fires the instant a finger presses. */
   .stepbtn:active{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(.92)}
   .stepbtn:disabled{opacity:.35;cursor:default}
-  .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:66px;text-align:center;font-size:13.5px}
+  .amt{font-variant-numeric:tabular-nums;font-weight:700;min-width:56px;text-align:center;font-size:13px}
 
-  /* the owner card: both places at once, which is the whole point */
-  .ownercard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
-  .ownerhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-    border-bottom:2px solid var(--accent);padding-bottom:12px;margin-bottom:10px}
-  .ownerhead h3{font-size:19px}
-  .ownerhead span{font-size:13px;color:var(--muted)}
-  .stockrow{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);
-    transition:background .25s;border-radius:8px}
-  /* Fires on every change, low or not, so the eye catches it even when a row
-     never crosses into the red. Keyframes rather than a CSS transition: a
-     transition only animates between two states you hold, and this state is
-     gone again within a second. */
   @keyframes flashChanged{0%{background:var(--soft)}100%{background:transparent}}
-  .stockrow.flash{animation:flashChanged .9s ease-out}
-  .itemrow.flash{animation:flashChanged .9s ease-out}
+  .itemrow.flash,.stockrow.flash{animation:flashChanged .9s ease-out}
+
+  .stockrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);
+    border-radius:8px;transition:background .25s}
   .stockrow:first-of-type{border-top:none}
-  .stockrow .nm{flex:1;min-width:0}
-  .stockrow .nm b{display:block;font-size:15px}
-  .stockrow .nm span.cover{display:block;font-size:12.5px;color:var(--muted);margin-top:1px;font-weight:600}
-  /* Two numbers per row, one per place. The whole product is the difference
-     between them, so they sit side by side and each goes red on its own. */
+  .stockrow .nm{flex:1;min-width:0;font-size:14.5px;font-weight:650}
   .places{display:flex;gap:6px;flex:0 0 auto}
-  .pl{min-width:58px;text-align:right}
-  .pl b{display:block;font-variant-numeric:tabular-nums;font-weight:800;font-size:15px;white-space:nowrap}
-  .pl i{display:block;font-style:normal;font-size:10px;text-transform:uppercase;letter-spacing:.05em;
-    color:var(--muted);font-weight:700;margin-top:1px}
+  .pl{min-width:56px;text-align:right}
+  .pl b{display:block;font-variant-numeric:tabular-nums;font-weight:800;font-size:14.5px;white-space:nowrap}
+  .pl i{display:block;font-style:normal;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--muted);font-weight:700}
   .pl.warn b{color:var(--warn)}
-  .stockrow.low{background:var(--warnwash);margin:0 -14px;padding:13px 14px;border-radius:10px}
-  .stockrow.low .nm span.cover{color:var(--warn)}
-  .nudge{display:none;background:var(--warnwash);border:1px solid #eeccc0;border-radius:10px;
-    padding:12px 14px;margin-top:10px;font-size:13.5px;color:var(--warn);line-height:1.55}
-  .nudge.show{display:block}
-  .nudge b{font-weight:800}
-  .nudge .go{color:var(--good);font-weight:800}
 
-  /* ── counting: the checkpoint that turns a shortage into a time window ── */
-  .countwrap{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
-  .countbtns{display:flex;gap:8px;flex-wrap:wrap}
-  .countbtn{flex:1;min-width:130px;background:var(--soft);border:1px solid var(--line);border-radius:10px;
-    padding:12px;font:700 14px inherit;color:var(--ink);cursor:pointer;min-height:48px}
-  .countbtn:active{background:var(--accent);border-color:var(--accent);color:#fff}
-  .countbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-  .countpanel{display:none;margin-top:12px}
+  /* ── counting: one button, and the panel stays shut until asked for ───── */
+  .countwrap{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+  .countbtn{width:100%;background:none;border:none;padding:10px;font:700 13.5px inherit;
+    color:var(--accent);cursor:pointer;min-height:44px;text-align:center}
+  .countpanel{display:none;margin-top:4px}
   .countpanel.show{display:block}
-  .counthead{font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.5}
-  .counthead b{color:var(--ink)}
-  .countrow{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}
+  .places2{display:flex;gap:6px;margin-bottom:10px}
+  .placebtn{flex:1;background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:8px;
+    font:700 13px inherit;color:var(--ink);cursor:pointer;min-height:44px}
+  .placebtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .counthead{font-size:12.5px;color:var(--muted);margin-bottom:6px;line-height:1.45}
+  .countrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
   .countrow:first-of-type{border-top:none}
-  .countrow .cn{flex:1;min-width:0;font-size:14px;font-weight:600}
+  .countrow .cn{flex:1;min-width:0;font-size:13.5px;font-weight:600}
   .cstep{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
-    background:var(--soft);font:700 18px inherit;color:var(--ink);cursor:pointer;transition:transform .1s}
-  .cstep:active{background:var(--accent);border-color:var(--accent);color:#fff;transform:scale(.92)}
-  .cval{font-variant-numeric:tabular-nums;font-weight:800;font-size:13.5px;min-width:58px;text-align:center}
-  .savebtn{width:100%;margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;
-    padding:13px;font:700 15px inherit;cursor:pointer;min-height:48px}
-  .countreport{display:none;margin-top:12px;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.55}
+    background:var(--soft);font:700 17px inherit;color:var(--ink);cursor:pointer}
+  .cstep:active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .cval{font-variant-numeric:tabular-nums;font-weight:800;font-size:13px;min-width:54px;text-align:center}
+  .savebtn{width:100%;margin-top:10px;background:var(--accent);color:#fff;border:none;border-radius:10px;
+    padding:12px;font:700 14.5px inherit;cursor:pointer;min-height:48px}
+  .countreport{display:none;margin-top:10px;border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.5}
   .countreport.show{display:block}
-  .countreport.good{background:#eaf3ec;border:1px solid #cfe3d5;color:var(--good)}
-  .countreport.bad{background:var(--warnwash);border:1px solid #eeccc0;color:var(--warn)}
+  .countreport.good{background:var(--goodwash);border:1px solid var(--goodline);color:var(--good)}
+  .countreport.bad{background:var(--warnwash);border:1px solid var(--warnline);color:var(--warn)}
   .countreport b{font-weight:800}
-  .countreport .when{display:block;margin-top:6px;color:var(--muted);font-weight:600;font-size:12.5px}
+  .countreport .when{display:block;margin-top:5px;color:var(--muted);font-weight:600;font-size:12px}
 
-  /* ── the log: the timestamps, made visible, so "when" is never a guess ── */
-  .logcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 18px}
-  .logrow{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-top:1px solid var(--line);
-    font-size:14.5px}
+  /* ── the log, shut by default: proof it is recording, not daily reading ─ */
+  .logtoggle{display:block;margin:0 auto;background:none;border:none;font:700 13.5px inherit;
+    color:var(--accent);cursor:pointer;min-height:44px;padding:10px 16px}
+  .logcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 18px;
+    margin-top:8px}
+  .logrow{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid var(--line);
+    font-size:14px}
   .logrow:first-of-type{border-top:none}
   .logrow .lt{flex:0 0 auto;font-variant-numeric:tabular-nums;font-weight:800;color:var(--accent2);
-    font-size:13px;min-width:60px}
+    font-size:12.5px;min-width:58px}
   .logrow .lx{flex:1;min-width:0}
-  .logrow .lx.move{color:var(--accent2);font-weight:600}
-  .logrow .lx.count{font-weight:700}
-  .logempty{padding:16px 0;color:var(--muted);font-size:14px;line-height:1.55}
+  .logempty{padding:14px 0;color:var(--muted);font-size:13.5px;line-height:1.5}
+
+  .howsteps{list-style:none;counter-reset:hows;display:grid;gap:14px}
+  .howsteps li{display:grid;grid-template-columns:32px 1fr;gap:13px;align-items:start;
+    font-size:15.5px;line-height:1.55}
+  .howsteps li::before{counter-increment:hows;content:counter(hows);
+    width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13.5px;flex:0 0 auto}
+  .howsteps b{color:var(--ink)}
 
   .note{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .note b{display:block;margin-bottom:5px;font-size:15px}
@@ -179,16 +168,12 @@
   .notes{display:grid;gap:12px;grid-template-columns:1fr}
   @media (min-width:760px){.notes{grid-template-columns:repeat(3,1fr)}}
 
-  .cta{text-align:center;padding:34px 0 46px}
+  .cta{text-align:center;padding:30px 0 46px}
   .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
-    padding:15px 26px;border-radius:10px;min-height:50px;line-height:20px;font-size:16px;border:none;
-    cursor:pointer;font:700 16px inherit}
+    padding:15px 26px;border-radius:10px;min-height:50px;line-height:20px;font-size:16px}
   .cta p{color:var(--muted);font-size:14px;margin-top:12px}
   footer{border-top:1px solid var(--line);background:var(--card);padding:22px 0;text-align:center;
     color:var(--muted);font-size:13.5px}
-
-  .grid2{display:grid;gap:20px;grid-template-columns:1fr}
-  @media (min-width:820px){.grid2{grid-template-columns:1fr 1fr;align-items:start}}
 </style>
 </head>
 <body>
@@ -204,136 +189,80 @@
     <div class="kicker">A working preview, not a finished feature</div>
     <h1>Stock, in both places</h1>
     <p class="sub">Your stock lives in two places: the kitchen, and wherever you keep the rest. One helper taps
-      as it arrives, as it goes to the kitchen, and as it gets used. You see both piles from your phone.</p>
+      as it moves. You open your phone and read one line.</p>
     <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
   </div>
 
   <section>
-    <div class="theq">
-      <b>The question this answers</b>
-      <p>The kitchen is nearly out of rice. Do you buy more, or is there a sack sitting at the unit already?
-        You cannot walk past a storage unit the way you walk past your own walk-in. Get it wrong and you either
-        waste a trip or order twice.</p>
+    <p class="stitle">What you would see, right now</p>
+    <div class="verdict" id="verdict"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <p class="cardtop">The helper, as stock moves</p>
+        <div class="modes">
+          <button class="modebtn" id="modeDeliver" type="button" aria-pressed="true">Delivery arrived</button>
+          <button class="modebtn" id="modeMove" type="button" aria-pressed="false">Take to kitchen</button>
+          <button class="modebtn" id="modeUse" type="button" aria-pressed="false">Kitchen used it</button>
+        </div>
+        <p class="modehint" id="modeHint"></p>
+        <div id="itemList"></div>
+      </div>
+
+      <div class="card">
+        <p class="cardtop">The numbers, if you want them</p>
+        <div id="ownerList"></div>
+        <div class="countwrap">
+          <button class="countbtn" id="countBtn" type="button" aria-expanded="false">Count the stock by hand</button>
+          <div class="countpanel" id="countPanel">
+            <div class="places2">
+              <button class="placebtn" id="placeKitchen" type="button" aria-pressed="true">The kitchen</button>
+              <button class="placebtn" id="placeStore" type="button" aria-pressed="false">The unit</button>
+            </div>
+            <p class="counthead">Set what is really in <span id="countPlace">the kitchen</span>. Last counted
+              <span id="countedAt"></span>.</p>
+            <div id="countRows"></div>
+            <button class="savebtn" id="saveCount" type="button">Save this count</button>
+          </div>
+          <div class="countreport" id="countReport"></div>
+        </div>
+      </div>
     </div>
 
-    <p class="stitle">How it works, in three buttons</p>
+    <div style="margin-top:14px">
+      <button class="logtoggle" id="logToggle" type="button" aria-expanded="false">Show today's log</button>
+      <div class="logcard" id="logCard" hidden><div id="activityLog"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="stitle">How it works</p>
     <ol class="howsteps">
-      <li><span><b>A delivery arrives.</b> Ten sacks of rice land at the unit. Your helper taps
-        "+1 bag" ten times, or once per sack as it comes off the van.</span></li>
-      <li><span><b>Some goes to the kitchen.</b> They carry two sacks over and tap the arrow twice. The unit
-        goes down by two, the kitchen goes up by two. Nothing is lost between them.</span></li>
-      <li><span><b>The kitchen uses it.</b> A cook opens a sack, someone taps "&minus;1 bag." That is the one
-        tap that needs a habit, and it is one person's job, not everybody's.</span></li>
-      <li><span><b>You get told which problem you have.</b> Low in the kitchen but fine at the unit means send
-        someone. Low in both means order. Two different sentences, so you never guess.</span></li>
+      <li><span><b>One sticker, two places.</b> One by the walk-in, one at the unit. The helper who moves the
+        stock is the only person who taps, so it is one person's habit, not everybody's.</span></li>
+      <li><span><b>Three buttons, nothing else.</b> A delivery came in. Some went to the kitchen. The kitchen
+        used it. That is the whole job.</span></li>
+      <li><span><b>You get told which problem you have.</b> Low in the kitchen with stock at the unit means
+        send someone, and costs nothing. Low in both means order. Never the same sentence for both.</span></li>
     </ol>
   </section>
 
   <section>
-    <div class="grid2">
-      <div>
-        <p class="stitle">What the helper does</p>
-        <div class="staffcard">
-          <div class="qrrow">
-            <div class="qr" aria-hidden="true">
-              <svg viewBox="0 0 76 76"><rect width="76" height="76" fill="#241a10"/>
-                <g fill="#fdf8ef">
-                  <rect x="8" y="8" width="18" height="18"/><rect x="50" y="8" width="18" height="18"/>
-                  <rect x="8" y="50" width="18" height="18"/>
-                  <rect x="13" y="13" width="8" height="8" fill="#241a10"/>
-                  <rect x="55" y="13" width="8" height="8" fill="#241a10"/>
-                  <rect x="13" y="55" width="8" height="8" fill="#241a10"/>
-                  <rect x="32" y="8" width="6" height="6"/><rect x="32" y="20" width="6" height="6"/>
-                  <rect x="44" y="32" width="6" height="6"/><rect x="32" y="32" width="6" height="6"/>
-                  <rect x="32" y="44" width="6" height="6"/><rect x="32" y="56" width="6" height="6"/>
-                  <rect x="44" y="56" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/>
-                  <rect x="56" y="56" width="6" height="6"/><rect x="8" y="32" width="6" height="6"/>
-                  <rect x="20" y="32" width="6" height="6"/><rect x="20" y="44" width="6" height="6"/>
-                </g>
-              </svg>
-            </div>
-            <p class="qrnote">A drawing of the code, not a real one you can scan. On the wall this is two
-              stickers: one at the unit, one by the walk-in. <b>Tapping below does what scanning would.</b></p>
-          </div>
-
-          <div class="modes">
-            <button class="modebtn" id="modeDeliver" type="button" aria-pressed="true">Delivery arrived</button>
-            <button class="modebtn" id="modeMove" type="button" aria-pressed="false">Take to kitchen</button>
-            <button class="modebtn" id="modeUse" type="button" aria-pressed="false">Kitchen used it</button>
-          </div>
-          <p class="modehint" id="modeHint"></p>
-
-          <div id="itemList"></div>
-        </div>
-      </div>
-
-      <div>
-        <p class="stitle">What you see, right away</p>
-        <div class="ownercard">
-          <div class="ownerhead">
-            <h3>Where everything is</h3>
-            <span id="ownerWhen">Updated just now</span>
-          </div>
-          <div id="ownerList"></div>
-          <div class="nudge" id="nudgeBox"></div>
-
-          <div class="countwrap">
-            <div class="countbtns">
-              <button class="countbtn" id="countKitchen" type="button" aria-pressed="false">Count the kitchen</button>
-              <button class="countbtn" id="countStore" type="button" aria-pressed="false">Count the unit</button>
-            </div>
-            <div class="countpanel" id="countPanel">
-              <p class="counthead">Set what is <b>really</b> in <span id="countPlace">the kitchen</span>.
-                Last counted <span id="countedAt"></span>.</p>
-              <div id="countRows"></div>
-              <button class="savebtn" id="saveCount" type="button">Save this count</button>
-            </div>
-            <div class="countreport" id="countReport"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <p class="stitle">Today's log</p>
-    <p class="stsub">Every tap, with the time on it, and which way the stock went. This is the part that makes
-      "when did the chicken go" a question with an answer.</p>
-    <div class="logcard"><div id="activityLog"></div></div>
-  </section>
-
-  <section>
-    <p class="stitle">What this is, plainly</p>
+    <p class="stitle">Worth knowing</p>
     <div class="notes">
       <div class="note">
-        <b>One person, not everybody</b>
-        <p>This only works because the helper who moves stock is the one who taps. Asking a cook mid-service to
-          log a pound of chicken never survives a busy Friday. Asking the person already carrying the box is a
-          different question.</p>
-      </div>
-      <div class="note">
-        <b>Send someone, or order</b>
-        <p>Two low states, two different sentences. Anything that just says "low" makes you go and look, which
-          is the work you were trying to avoid.</p>
-      </div>
-      <div class="note">
-        <b>Count each place on its own</b>
-        <p>You can only count what you are standing in front of. So the kitchen and the unit are counted
-          separately, and each keeps its own clock for when it was last checked.</p>
+        <b>A nudge, not an order</b>
+        <p>You are told what crossed the line you set, and the amount to bring it back. Nothing is ordered for
+          you. You still make the call.</p>
       </div>
       <div class="note">
         <b>Only as true as the last tap</b>
-        <p>Miss a tap and the number drifts until someone counts. That is what the count is for, and the gap it
-          finds is exactly the stock that moved without anyone saying so.</p>
-      </div>
-      <div class="note">
-        <b>A nudge, not an order</b>
-        <p>When something crosses the line you set, you are told, and told the amount to bring it back. Nothing
-          is ordered for you. You still make the call.</p>
+        <p>Miss a tap and the number drifts until somebody counts. That is what the count is for, and the gap
+          it finds is exactly the stock that moved without anyone saying so.</p>
       </div>
       <div class="note">
         <b>Your places, your amounts</b>
-        <p>A garage, a second unit, a cousin's cold room, whatever you actually use. You choose what goes on the
+        <p>A garage, a lock-up, a cousin's cold room, whatever you actually use. You choose what goes on the
           list and what counts as low, for each place.</p>
       </div>
     </div>
@@ -351,22 +280,21 @@
   <a href="./chat-demo.html">A demo restaurant</a> &bull;
   <a href="./details.html">Costs and questions</a>
   <br>The stock numbers on this page reset every time you load it. Nothing here is saved anywhere.
-  <br><span style="opacity:.55">Build 2026-08-15</span>
+  <br><span style="opacity:.55">Build 2026-08-15c</span>
 </div></footer>
 
 <script>
 (function () {
-  /* Six items from a real Indian kitchen, each held in two places at once.
-     "store" is the unit, garage, lock-up, wherever the bulk sits. "kitchen"
-     is what is actually to hand. They are separate numbers because they are
-     separate piles, and the difference between them is the entire product:
-     an owner can see their own walk-in, but cannot see a unit across town.
+  /* Six items held in two places at once. "store" is the unit, garage or
+     lock-up where the bulk sits; "kitchen" is what is to hand. They are
+     separate numbers because they are separate piles, and the difference is
+     the whole product: an owner can see their own walk-in but not a unit
+     across town.
 
-     kLow is where the kitchen turns red, which means "fetch more." sLow is
-     where the unit turns red, which means "buy more." Those are different
-     decisions, so they are different thresholds. perDay is roughly what the
-     kitchen gets through in a day, worked out in the real thing from the
-     timestamps on the taps, and used here to turn "low" into "about a day." */
+     kLow is where the kitchen needs fetching. sLow is where the unit needs
+     buying. Different decisions, so different thresholds. perDay is roughly
+     what the kitchen gets through in a day, and only ever surfaces inside a
+     job line, where it turns "low" into "about a day left." */
   var ITEMS = [
     { key:"rice",    name:"Basmati rice", unit:"bag", step:1, store:8,  kitchen:3,  kLow:1,  sLow:2,  refill:10, perDay:1  },
     { key:"onion",   name:"Onions",       unit:"lb",  step:5, store:40, kitchen:20, kLow:10, sLow:15, refill:50, perDay:12 },
@@ -377,45 +305,28 @@
   ];
 
   var MODES = {
-    deliver: { label: "Delivery arrived", sign: "+",
-      hint: "Stock landing at the unit. Nothing reaches the kitchen yet." },
-    move:    { label: "Take to kitchen",  sign: "&rarr;",
-      hint: "Moves it from the unit to the kitchen. The total does not change, only where it is." },
-    use:     { label: "Kitchen used it",  sign: "&minus;",
-      hint: "Gone for good. This is the only tap that needs a habit." }
+    deliver: { sign:"+",        hint:"Stock landing at the unit. Nothing reaches the kitchen yet." },
+    move:    { sign:"&rarr;",   hint:"Moves it from the unit to the kitchen. The total does not change, only where it is." },
+    use:     { sign:"&minus;",  hint:"Gone for good. This is the only tap that needs a habit." }
   };
   var mode = "deliver";
-
-  /* The key of whatever was just tapped, so both cards can flash that one row
-     and nothing else. Cleared straight after render reads it, so switching
-     mode or reloading never replays an old flash. */
   var lastChanged = null;
   var log = [];
   /* Each place keeps its own clock, because you count them at different times:
-     the kitchen on your way past, the unit when you happen to drive over.
-     Seeded a few hours back so the page opens mid-shift with a believable
-     window behind it. */
+     the kitchen on your way past, the unit when you happen to drive over. */
   var countedAt = { kitchen: new Date(Date.now() - 3 * 60 * 60 * 1000),
                     store:   new Date(Date.now() - 26 * 60 * 60 * 1000) };
-  var countingPlace = null, counting = null;
+  var countingPlace = "kitchen", counting = null;
 
-  var itemList = document.getElementById("itemList");
-  var ownerList = document.getElementById("ownerList");
-  var ownerWhen = document.getElementById("ownerWhen");
-  var nudgeBox = document.getElementById("nudgeBox");
-  var modeHint = document.getElementById("modeHint");
-  var activityLog = document.getElementById("activityLog");
-  var countKitchen = document.getElementById("countKitchen");
-  var countStore = document.getElementById("countStore");
-  var countPanel = document.getElementById("countPanel");
-  var countRows = document.getElementById("countRows");
-  var countPlaceEl = document.getElementById("countPlace");
-  var countedAtEl = document.getElementById("countedAt");
-  var saveCount = document.getElementById("saveCount");
-  var countReport = document.getElementById("countReport");
-  var MODEBTN = { deliver: document.getElementById("modeDeliver"),
-                  move:    document.getElementById("modeMove"),
-                  use:     document.getElementById("modeUse") };
+  var $ = function (id) { return document.getElementById(id); };
+  var verdict = $("verdict"), itemList = $("itemList"), ownerList = $("ownerList");
+  var modeHint = $("modeHint"), activityLog = $("activityLog");
+  var logToggle = $("logToggle"), logCard = $("logCard");
+  var countBtn = $("countBtn"), countPanel = $("countPanel"), countRows = $("countRows");
+  var countPlaceEl = $("countPlace"), countedAtEl = $("countedAt");
+  var placeKitchen = $("placeKitchen"), placeStore = $("placeStore");
+  var saveCount = $("saveCount"), countReport = $("countReport");
+  var MODEBTN = { deliver: $("modeDeliver"), move: $("modeMove"), use: $("modeUse") };
 
   function fmt(n, unit) {
     var num = Math.round(n * 10) / 10;
@@ -423,35 +334,28 @@
     return num + " " + unit;
   }
   function placeName(p) { return p === "kitchen" ? "the kitchen" : "the unit"; }
-
   function clock(d) {
     var h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? "pm" : "am";
     h = h % 12; if (h === 0) h = 12;
     return h + ":" + (m < 10 ? "0" + m : m) + ap;
   }
-  /* A count from yesterday should not read as a time this morning: "26 hours
+  /* A count from yesterday must not read as a time this morning: "26 hours
      ago" quietly becomes "1:14pm," which looks like it happened today. */
   function stamp(d) {
-    var sameDay = d.toDateString() === new Date().toDateString();
-    return sameDay ? clock(d) : clock(d) + " yesterday";
+    return d.toDateString() === new Date().toDateString() ? clock(d) : clock(d) + " yesterday";
   }
-
-  /* Days of cover counts both piles, because stock at the unit is still yours:
-     the kitchen running dry is a fetching problem, not a buying one. */
   function cover(it) {
-    var total = it.store + it.kitchen;
-    if (total <= 0) return "none left anywhere";
-    var d = total / it.perDay;
-    if (d < 1) return "less than a day left";
+    if (it.kitchen <= 0) return "nothing";
+    var d = it.kitchen / it.perDay;
+    if (d < 1) return "less than a day";
     var r = Math.round(d);
-    return "about " + r + (r === 1 ? " day" : " days") + " left";
+    return "about " + r + (r === 1 ? " day" : " days");
   }
 
-  function note(text, kind) {
-    log.unshift({ at: new Date(), text: text, kind: kind || "" });
+  function note(text) {
+    log.unshift({ at: new Date(), text: text });
     renderLog();
   }
-
   function renderLog() {
     if (!log.length) {
       activityLog.innerHTML = '<p class="logempty">Nothing yet today. Tap something on the left and it lands ' +
@@ -460,56 +364,48 @@
     }
     activityLog.innerHTML = log.map(function (e) {
       return '<div class="logrow"><span class="lt">' + clock(e.at) + '</span>' +
-        '<span class="lx ' + e.kind + '">' + e.text + '</span></div>';
+        '<span class="lx">' + e.text + '</span></div>';
     }).join("");
   }
 
   /* One tap moves one step, and never more than there actually is: a helper
-     cannot carry two sacks to the kitchen when one is left at the unit, and
-     the screen should not pretend otherwise. */
+     cannot carry two sacks to the kitchen when one is left at the unit. */
   function tap(key) {
     var it = ITEMS.find(function (i) { return i.key === key; });
     if (!it) return;
     var n = it.step;
     if (mode === "deliver") {
       it.store += n;
-      note(it.name + " &middot; " + fmt(n, it.unit) + " delivered to the unit", "");
+      note(it.name + " &middot; " + fmt(n, it.unit) + " delivered to the unit");
     } else if (mode === "move") {
-      n = Math.min(n, it.store);
-      if (n <= 0) return;
+      n = Math.min(n, it.store); if (n <= 0) return;
       it.store -= n; it.kitchen += n;
-      note(it.name + " &middot; " + fmt(n, it.unit) + " taken to the kitchen", "move");
+      note(it.name + " &middot; " + fmt(n, it.unit) + " taken to the kitchen");
     } else {
-      n = Math.min(n, it.kitchen);
-      if (n <= 0) return;
+      n = Math.min(n, it.kitchen); if (n <= 0) return;
       it.kitchen -= n;
-      note(it.name + " &middot; " + fmt(n, it.unit) + " used in the kitchen", "");
+      note(it.name + " &middot; " + fmt(n, it.unit) + " used in the kitchen");
     }
     lastChanged = key;
     render();
   }
 
-  function sourceLine(it) {
-    if (mode === "use") return fmt(it.kitchen, it.unit) + " in the kitchen";
-    return fmt(it.store, it.unit) + " at the unit";
-  }
-
-  function renderStaff() {
+  function renderHelper() {
     modeHint.innerHTML = MODES[mode].hint;
     itemList.innerHTML = "";
     ITEMS.forEach(function (it) {
       var row = document.createElement("div");
       row.className = "itemrow" + (it.key === lastChanged ? " flash" : "");
-      var stepLabel = fmt(it.step, it.unit);
-      var label = mode === "deliver" ? "Log " + stepLabel + " of " + it.name + " delivered to the unit"
-                : mode === "move"    ? "Move " + stepLabel + " of " + it.name + " to the kitchen"
-                :                      "Log " + stepLabel + " of " + it.name + " used in the kitchen";
+      var step = fmt(it.step, it.unit);
+      var where = mode === "use" ? fmt(it.kitchen, it.unit) + " in the kitchen"
+                                 : fmt(it.store, it.unit) + " at the unit";
+      var label = mode === "deliver" ? "Log " + step + " of " + it.name + " delivered to the unit"
+                : mode === "move"    ? "Move " + step + " of " + it.name + " to the kitchen"
+                :                      "Log " + step + " of " + it.name + " used in the kitchen";
       row.innerHTML =
-        '<span class="nm"><b>' + it.name + '</b><span>' + sourceLine(it) + '</span></span>' +
-        '<span class="stepper">' +
-        '<button class="stepbtn" type="button" data-key="' + it.key + '" aria-label="' + label + '">' +
-          MODES[mode].sign + '</button>' +
-        '<span class="amt">' + stepLabel + '</span></span>';
+        '<span class="nm"><b>' + it.name + '</b><span>' + where + '</span></span>' +
+        '<button class="stepbtn" type="button" aria-label="' + label + '">' + MODES[mode].sign + '</button>' +
+        '<span class="amt">' + step + '</span>';
       var btn = row.querySelector(".stepbtn");
       if (mode === "move" && it.store <= 0) btn.disabled = true;
       if (mode === "use" && it.kitchen <= 0) btn.disabled = true;
@@ -518,77 +414,81 @@
     });
   }
 
-  /* The two sentences the whole thing exists to produce. "Low" on its own
-     sends the owner to go and look, which is the work being avoided. */
-  function nudgeFor(it) {
-    var kLow = it.kitchen <= it.kLow, sLow = it.store <= it.sLow;
-    if (kLow && it.store > 0)
-      return '<b>' + it.name + ': ' + fmt(it.kitchen, it.unit) + ' left in the kitchen.</b> The unit has ' +
-        fmt(it.store, it.unit) + '. <span class="go">Send someone.</span>';
-    if (kLow)
-      return '<b>' + it.name + ': ' + fmt(it.kitchen, it.unit) + ' in the kitchen and none at the unit.</b> ' +
-        'Order ' + fmt(it.refill, it.unit) + '.';
-    if (sLow)
-      return '<b>' + it.name + ': the unit is down to ' + fmt(it.store, it.unit) + '.</b> Order ' +
-        fmt(it.refill, it.unit) + ' before the kitchen needs it.';
-    return null;
-  }
-
-  function renderOwner() {
-    ownerList.innerHTML = "";
-    var lines = [];
+  /* The jobs, which are the only thing an owner has to read. Two kinds, and
+     they are never worded the same: one costs a walk, the other costs money. */
+  function jobs() {
+    var out = [];
     ITEMS.forEach(function (it) {
       var kLow = it.kitchen <= it.kLow, sLow = it.store <= it.sLow;
-      var msg = nudgeFor(it);
-      if (msg) lines.push(msg);
+      if (kLow && it.store > 0) {
+        out.push({ type:"fetch", name:it.name, act:"Send someone",
+          why: cover(it) + " left in the kitchen. The unit has " + fmt(it.store, it.unit) + "." });
+      } else if (kLow) {
+        out.push({ type:"buy", name:it.name, act:"Order " + fmt(it.refill, it.unit),
+          why: fmt(it.kitchen, it.unit) + " in the kitchen and none at the unit." });
+      } else if (sLow) {
+        out.push({ type:"buy", name:it.name, act:"Order " + fmt(it.refill, it.unit),
+          why: "The unit is down to " + fmt(it.store, it.unit) + ". The kitchen is still fine." });
+      }
+    });
+    return out;
+  }
+
+  function renderVerdict() {
+    var js = jobs();
+    if (!js.length) {
+      verdict.className = "verdict good";
+      verdict.innerHTML = '<b>Nothing needs you</b>' +
+        '<p>Every item is above the line you set, in both places. Updated ' + clock(new Date()) + '.</p>';
+      return;
+    }
+    verdict.className = "verdict work";
+    verdict.innerHTML = '<b>' + js.length + (js.length === 1 ? " thing needs you" : " things need you") + '</b>' +
+      '<div class="todo">' + js.map(function (j) {
+        return '<div class="job ' + j.type + '"><div class="jtop"><b>' + j.name + '</b>' +
+          '<span class="jdo">' + j.act + '</span></div><span class="jwhy">' + j.why + '</span></div>';
+      }).join("") + '</div>';
+  }
+
+  function renderNumbers() {
+    ownerList.innerHTML = "";
+    ITEMS.forEach(function (it) {
+      var kLow = it.kitchen <= it.kLow, sLow = it.store <= it.sLow;
       var row = document.createElement("div");
-      row.className = "stockrow" + (kLow || sLow ? " low" : "") + (it.key === lastChanged ? " flash" : "");
+      row.className = "stockrow" + (it.key === lastChanged ? " flash" : "");
       row.innerHTML =
-        '<span class="nm"><b>' + it.name + '</b><span class="cover">' + cover(it) + '</span></span>' +
-        '<span class="places">' +
+        '<span class="nm">' + it.name + '</span><span class="places">' +
           '<span class="pl' + (sLow ? " warn" : "") + '"><b>' + fmt(it.store, it.unit) + '</b><i>unit</i></span>' +
           '<span class="pl' + (kLow ? " warn" : "") + '"><b>' + fmt(it.kitchen, it.unit) + '</b><i>kitchen</i></span>' +
         '</span>';
       ownerList.appendChild(row);
     });
     lastChanged = null;   // read by both cards above; spent once render is done
-    if (lines.length) {
-      nudgeBox.classList.add("show");
-      nudgeBox.innerHTML = lines.join("<br>");
-    } else {
-      nudgeBox.classList.remove("show");
-      nudgeBox.innerHTML = "";
-    }
-    ownerWhen.textContent = "Updated " + clock(new Date());
   }
+
+  function render() { renderHelper(); renderVerdict(); renderNumbers(); }
 
   /* ── counting: the one thing that catches what the taps missed ──────────
      You can only count what you are standing in front of, so each place is
-     counted on its own and keeps its own clock. The gap between what was
-     counted and what the taps predicted is stock that moved without anyone
-     saying so, and because the count resets that place's clock, the next gap
-     is pinned to a known window instead of "sometime this month." */
+     counted on its own and keeps its own clock. Because a count resets that
+     clock, the next gap is pinned to a known window. */
   function openCount(place) {
-    if (countPanel.classList.contains("show") && countingPlace === place) { closeCount(); return; }
     countingPlace = place;
     counting = {};
     ITEMS.forEach(function (it) { counting[it.key] = it[place]; });
     countPlaceEl.textContent = placeName(place);
     countedAtEl.textContent = stamp(countedAt[place]);
-    countPanel.classList.add("show");
-    countReport.classList.remove("show");
-    countKitchen.setAttribute("aria-pressed", String(place === "kitchen"));
-    countStore.setAttribute("aria-pressed", String(place === "store"));
+    placeKitchen.setAttribute("aria-pressed", String(place === "kitchen"));
+    placeStore.setAttribute("aria-pressed", String(place === "store"));
     renderCount();
   }
-
-  function closeCount() {
-    countingPlace = null; counting = null;
-    countPanel.classList.remove("show");
-    countKitchen.setAttribute("aria-pressed", "false");
-    countStore.setAttribute("aria-pressed", "false");
+  function togglePanel() {
+    var open = !countPanel.classList.contains("show");
+    countPanel.classList.toggle("show", open);
+    countBtn.setAttribute("aria-expanded", String(open));
+    countBtn.textContent = open ? "Never mind" : "Count the stock by hand";
+    if (open) { countReport.classList.remove("show"); openCount(countingPlace); }
   }
-
   function renderCount() {
     countRows.innerHTML = "";
     ITEMS.forEach(function (it) {
@@ -611,7 +511,6 @@
       });
     });
   }
-
   function saveTheCount() {
     var place = countingPlace, gaps = [], extras = [];
     ITEMS.forEach(function (it) {
@@ -620,41 +519,45 @@
       if (diff < 0) extras.push(it.name + " " + fmt(-diff, it.unit) + " more than expected");
       it[place] = real;
     });
-    var since = stamp(countedAt[place]), now = new Date();
-    var where = placeName(place).replace("the ", "");
+    var since = stamp(countedAt[place]), now = new Date(), where = placeName(place).replace("the ", "");
     countReport.className = "countreport show " + (gaps.length ? "bad" : "good");
     if (gaps.length || extras.length) {
       countReport.innerHTML = '<b>In the ' + where + ', since ' + since + ':</b> ' +
         gaps.concat(extras).join(", ") + '. Everything else matched.' +
-        '<span class="when">That is the window to look at, and nothing before it. ' +
-        'New count saved ' + clock(now) + '.</span>';
+        '<span class="when">That is the window to look at, and nothing before it. Saved ' + clock(now) + '.</span>';
     } else {
       countReport.innerHTML = '<b>The ' + where + ' matched.</b> Nothing has moved out of it since ' + since +
-        ' without a tap.<span class="when">New count saved ' + clock(now) + '.</span>';
+        ' without a tap.<span class="when">Saved ' + clock(now) + '.</span>';
     }
     note("Counted the " + where + " by hand &middot; " +
-      (gaps.length ? gaps.length + (gaps.length === 1 ? " item" : " items") + " short" : "everything matched"),
-      "count");
+      (gaps.length ? gaps.length + (gaps.length === 1 ? " item" : " items") + " short" : "everything matched"));
     countedAt[place] = now;
-    closeCount();
+    countPanel.classList.remove("show");
+    countBtn.setAttribute("aria-expanded", "false");
+    countBtn.textContent = "Count the stock by hand";
     render();
   }
-
-  function render() { renderStaff(); renderOwner(); }
 
   function setMode(m) {
     mode = m;
     Object.keys(MODEBTN).forEach(function (k) {
       MODEBTN[k].setAttribute("aria-pressed", String(k === m));
     });
-    renderStaff();
+    renderHelper();
   }
   Object.keys(MODEBTN).forEach(function (k) {
     MODEBTN[k].addEventListener("click", function () { setMode(k); });
   });
-  countKitchen.addEventListener("click", function () { openCount("kitchen"); });
-  countStore.addEventListener("click", function () { openCount("store"); });
+  countBtn.addEventListener("click", togglePanel);
+  placeKitchen.addEventListener("click", function () { openCount("kitchen"); });
+  placeStore.addEventListener("click", function () { openCount("store"); });
   saveCount.addEventListener("click", saveTheCount);
+  logToggle.addEventListener("click", function () {
+    var open = logCard.hidden;
+    logCard.hidden = !open;
+    logToggle.setAttribute("aria-expanded", String(open));
+    logToggle.textContent = open ? "Hide today's log" : "Show today's log";
+  });
 
   render();
   renderLog();
