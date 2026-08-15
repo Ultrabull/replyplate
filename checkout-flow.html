@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>From shelf to bag, screen by screen | ReplyPlate</title>
-<meta name="description" content="The self checkout flow, screen by screen: pick it up, scan at the counter, ring up what you took, pay, and staff check it against their own screen before bagging." />
+<meta name="description" content="The self checkout flow, screen by screen: pick it up, scan at the counter, ring up what you took, and pay. Then either staff check it and bag it, or the customer bags it themselves." />
 <!-- Same rule as the other two previews: built to show one owner an idea, not
      a shipped feature. Not linked from the site's own navigation or footer,
      and kept out of search. Send the link directly. -->
@@ -38,6 +38,14 @@
   .addon b{color:var(--accent)}
 
   section{padding:12px 0 26px}
+
+  /* ── who bags it: the one decision that changes the flow ───────────────── */
+  .modeswitch{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+  .modeswitch button{background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:10px 18px;font:700 14px inherit;color:var(--ink);cursor:pointer;min-height:44px}
+  .modeswitch button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modeline{text-align:center;color:var(--muted);font-size:13.5px;max-width:52ch;margin:0 auto 20px;
+    line-height:1.5}
 
   /* ── the step rail ─────────────────────────────────────────────────────── */
   .rail{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
@@ -190,6 +198,21 @@
   .notes{display:grid;gap:12px;grid-template-columns:1fr;margin-top:26px}
   @media (min-width:760px){.notes{grid-template-columns:repeat(2,1fr)}}
 
+  /* ── the trade the owner is actually making ────────────────────────────── */
+  .tradeoff{margin-top:30px}
+  .trades{display:grid;gap:12px;grid-template-columns:1fr}
+  @media (min-width:700px){.trades{grid-template-columns:1fr 1fr}}
+  .trade{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .trade.picked{border-color:var(--accent);box-shadow:0 4px 16px rgba(193,121,26,.13)}
+  .trade b{display:block;font-size:15.5px;margin-bottom:9px}
+  .trade b em{font-style:normal;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--accent2);font-weight:800;margin-left:7px;vertical-align:1px}
+  .trade ul{list-style:none;display:grid;gap:7px}
+  .trade li{font-size:14px;color:var(--muted);line-height:1.5;padding-left:17px;position:relative}
+  .trade li::before{content:"·";position:absolute;left:5px;font-weight:800;color:var(--accent)}
+  .trade li.cost::before{content:"!";font-size:11px;color:var(--warn);left:6px}
+  .tradenote{margin-top:12px;font-size:13px;color:var(--muted);line-height:1.55}
+
   .cta{text-align:center;padding:30px 0 46px}
   .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
     padding:15px 26px;border-radius:10px;min-height:50px;line-height:20px;font-size:16px}
@@ -211,12 +234,18 @@
     <div class="kicker">A working preview, not a finished feature</div>
     <h1>From shelf to bag, screen by screen</h1>
     <p class="sub">They pick the food up first, scan at the counter, ring up what is in their hands, and pay.
-      Your staff check it against their own screen, then bag it. Pick something on screen two and it carries
-      all the way through.</p>
+      Then either your staff check it and bag it, or they bag it themselves. That part is your call, and the
+      switch below shows both. Hot counter or chilled cabinet, it works the same.</p>
     <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
   </div>
 
   <section>
+    <div class="modeswitch">
+      <button type="button" id="modeStaff" aria-pressed="true">Staff bag it</button>
+      <button type="button" id="modeSelf" aria-pressed="false">Customer bags it</button>
+    </div>
+    <p class="modeline" id="modeLine"></p>
+
     <div class="rail" id="rail"></div>
 
     <div class="stage">
@@ -295,10 +324,11 @@
               <div class="paid">
                 <div class="tick" aria-hidden="true">&#10003;</div>
                 <div class="code" id="flowCode">K-482</div>
-                <div class="codehint">Say this at the counter</div>
+                <div class="codehint" id="codeHint">Say this at the counter</div>
                 <h4 id="flowPaidAmt">$0.00 paid</h4>
                 <div class="grab"><i>What you paid for</i><span id="flowGrab"></span></div>
-                <p>Nothing to show, scan or hold up. The counter already has this order on their screen.</p>
+                <p id="codeFoot">Nothing to show, scan or hold up. The counter already has this order on
+                  their screen.</p>
               </div>
             </div>
 
@@ -326,8 +356,42 @@
       </div>
     </div>
 
+    <div class="tradeoff">
+      <p class="stitle">Which one should you pick?</p>
+      <div class="trades">
+        <div class="trade" id="tradeStaff">
+          <b>Staff bag it <em id="tradeStaffTag"></em></b>
+          <ul>
+            <li>Loss is close to nothing, because everything passes a person</li>
+            <li>They can add cutlery, sauces, napkins, a bag that actually holds</li>
+            <li class="cost">Somebody has to be at that counter</li>
+            <li class="cost">A queue can build in the busy half hour, which is the thing you were avoiding</li>
+          </ul>
+        </div>
+        <div class="trade" id="tradeSelf">
+          <b>Customer bags it <em id="tradeSelfTag"></em></b>
+          <ul>
+            <li>Nobody has to be there at all. That is the whole point</li>
+            <li>No queue, ever, however busy it gets</li>
+            <li>Suits a chilled cabinet especially well, where nothing needs handling</li>
+            <li class="cost">You accept losing some. Roughly 2% to 4% with a visible camera and a sign</li>
+          </ul>
+        </div>
+      </div>
+      <p class="tradenote">Those loss figures come from micro-markets running this same open-shelf model, and
+        are an estimate rather than a promise. With no camera and no sign it runs up to 10%. On a $1 samosa
+        that is pennies. On a $10 box it is not, which is the real reason to keep the expensive things behind
+        the counter whichever way you go.</p>
+    </div>
+
     <div class="notes">
       <div class="note">
+        <b>Hot counter or chilled cabinet</b>
+        <p>Nothing here cares which. A chilled cabinet is arguably the easier one: cold food sits longer, so a
+          slow hour costs you nothing, and there is no reason for anyone to touch it before the customer
+          does.</p>
+      </div>
+      <div class="note" id="noteStaff">
         <b>Your staff never look at the customer's phone</b>
         <p>The order is on the counter screen because Stripe said it was paid, not because someone held up a
           screen. A screenshot of a friend's confirmation gets nobody anything, and staff never have to judge
@@ -391,34 +455,62 @@
     { code:"T-054", at:"2:11pm", amount:8.98,  items:["2 × Garlic naan","1 × Samosas"],             done:false }
   ];
 
-  var STEPS = [
-    { tab:"Pick it up", who:"customer", title:"They take what they want first",
+  /* Who bags it is the owner's call, not a fact about the product, and it is
+     the only decision that changes the flow: staff bagging costs a person at
+     the counter and loses almost nothing, self bagging costs nothing and
+     loses a few percent. Both are real ways to run this, so both are here. */
+  var SCREENS = [
+    { id:"scan", el:0, tab:"Pick it up", who:"customer", title:"They take what they want first",
       body:"No screen for this bit. They walk the shelf, pick up the boxes they want, and carry them to the " +
            "counter. Hot food gets chosen the way food should be, by looking at it.",
       watch:"This is the sign on the counter, not on the shelf. Their phone offers the link the same way it " +
             "does for a restaurant menu, and the address is printed underneath for the phones that will not " +
             "read a code." },
-    { tab:"Ring up", who:"customer", title:"They add what is in their hands",
+    { id:"ring", el:1, tab:"Ring up", who:"customer", title:"They add what is in their hands",
       body:"Prices and portions, and they tap in what they picked up. Try adding a third gulab jamun when the " +
            "shelf only thinks there are two. It lets you, because you are holding it.",
       watch:"Garlic naan shows a note saying the shelf thinks it is out, but it can still be added and paid " +
             "for. A count that refuses money for food already in someone's hands is worse than no count." },
-    { tab:"Pay", who:"customer", title:"Stripe's own page, not yours",
+    { id:"pay", el:2, tab:"Pay", who:"customer", title:"Stripe's own page, not yours",
       body:"They tap Pay and land on Stripe, at Stripe's address, with Apple Pay already offered. This is the " +
            "page millions of people have paid on before.",
       watch:"This is a drawing of that page, and none of the boxes work. On the real thing the card details go " +
             "to Stripe and nowhere else. Your website never sees them, and neither do I." },
-    { tab:"Say the code", who:"customer", title:"They get a number, not a barcode",
+    { id:"codeStaff", el:3, tab:"Say the code", who:"customer", title:"They get a number, not a barcode",
+      hint:"Say this at the counter",
+      foot:"Nothing to show, scan or hold up. The counter already has this order on their screen.",
       body:"Four characters they can read out at the counter. Nothing to hold up to a scanner, nothing for a " +
            "member of staff to squint at.",
       watch:"It does not matter if someone screenshots this. The next screen is why: staff work from their own " +
             "list, never from a customer's phone." },
-    { tab:"Staff bag it", who:"staff", title:"The counter checks its own screen",
+    { id:"codeSelf", el:3, tab:"Bag it", who:"customer", title:"They bag it and walk out",
+      hint:"Your receipt reference",
+      foot:"Bags are next to the shelf. Take one, pack it, and go. Nobody to wait for.",
+      body:"Nobody is at the counter, so nobody checks. They pack their own bag and leave. This is the version " +
+           "you pick when saving the wage matters more than the few percent that walks.",
+      watch:"The code is now just a reference for the receipt, not something anyone will ask for. Keep the " +
+            "camera and the sign: those two things are what hold the loss down to a few percent." },
+    { id:"staff", el:4, tab:"Staff bag it", who:"staff", title:"The counter checks its own screen",
       body:"Their order is already sitting there, marked paid, because Stripe said so. Staff match the code, " +
            "glance at the items against what is on the counter, and tap Bagged. It leaves the list.",
       watch:"This is the restaurant's device, not the customer's. That single fact is the whole security model: " +
             "there is nothing for a customer to fake, because nothing they show is ever the evidence." }
   ];
+
+  var STAFF_FLOW = ["scan","ring","pay","codeStaff","staff"];
+  var SELF_FLOW  = ["scan","ring","pay","codeSelf"];
+  var MODELINE = {
+    staff: "Someone checks each order against the counter screen before handing it over. Almost nothing " +
+           "walks, but a person has to be there.",
+    self:  "Nobody is at the counter. They pay, bag it themselves and leave, and you accept losing a few " +
+           "percent in exchange for the wage."
+  };
+  var bagMode = "staff";
+  function steps() {
+    return (bagMode === "staff" ? STAFF_FLOW : SELF_FLOW).map(function (id) {
+      return SCREENS.find(function (s) { return s.id === id; });
+    });
+  }
 
   var cart = {}, step = 0, code = null, myOrder = null;
 
@@ -438,6 +530,16 @@
   var flowGrab = document.getElementById("flowGrab");
   var staffQueue = document.getElementById("staffQueue");
   var staffSub = document.getElementById("staffSub");
+  var codeHint = document.getElementById("codeHint");
+  var codeFoot = document.getElementById("codeFoot");
+  var modeStaff = document.getElementById("modeStaff");
+  var modeSelf = document.getElementById("modeSelf");
+  var modeLine = document.getElementById("modeLine");
+  var noteStaff = document.getElementById("noteStaff");
+  var tradeStaff = document.getElementById("tradeStaff");
+  var tradeSelf = document.getElementById("tradeSelf");
+  var tradeStaffTag = document.getElementById("tradeStaffTag");
+  var tradeSelfTag = document.getElementById("tradeSelfTag");
   var capNum = document.getElementById("capNum");
   var capTitle = document.getElementById("capTitle");
   var capBody = document.getElementById("capBody");
@@ -507,7 +609,7 @@
 
   function renderRail() {
     rail.innerHTML = "";
-    STEPS.forEach(function (s, i) {
+    steps().forEach(function (s, i) {
       var b = document.createElement("button");
       b.type = "button";
       b.className = (i < step ? "done" : "") + (s.who === "staff" ? " staffstep" : "");
@@ -555,28 +657,34 @@
   }
 
   function go(i) {
+    var flow = steps();
     if (i > 1 && count() === 0) i = 1;
-    step = Math.max(0, Math.min(STEPS.length - 1, i));
+    step = Math.max(0, Math.min(flow.length - 1, i));
     if (step >= 3 && !code) {
       code = newCode();
       flowCode.textContent = code;
       myOrder = { code: code, at: nowLabel(), amount: total(), items: lines(), done: false };
     }
     if (step < 3) { code = null; myOrder = null; }
-    if (step === 4) renderStaff();
+    var s = flow[step];
+    if (s.id === "staff") renderStaff();
+    /* Screens are addressed by which DOM node they use, not by their position
+       in the flow: both code screens share one node and differ only in copy,
+       so the self-bagging flow is genuinely four screens rather than five
+       with one hidden. */
     document.querySelectorAll(".sc").forEach(function (el) {
-      el.classList.toggle("on", Number(el.dataset.step) === step);
+      el.classList.toggle("on", Number(el.dataset.step) === s.el);
     });
-    var s = STEPS[step];
+    if (s.hint) { codeHint.textContent = s.hint; codeFoot.textContent = s.foot; }
     phone.classList.toggle("staff", s.who === "staff");
     whose.classList.toggle("staff", s.who === "staff");
     whose.textContent = s.who === "staff" ? "Your staff's screen, at the counter" : "The customer's own phone";
-    capNum.textContent = "Screen " + (step + 1) + " of " + STEPS.length;
+    capNum.textContent = "Screen " + (step + 1) + " of " + flow.length;
     capTitle.textContent = s.title;
     capBody.textContent = s.body;
     capWatch.textContent = s.watch;
     prevBtn.disabled = step === 0;
-    nextBtn.textContent = step === STEPS.length - 1 ? "Start again" : "Next";
+    nextBtn.textContent = step === flow.length - 1 ? "Start again" : "Next";
     nextBtn.disabled = step === 1 && count() === 0;
     renderRail();
   }
@@ -587,9 +695,27 @@
     return h + ":" + (m < 10 ? "0" + m : m) + ap;
   }
 
+  function setMode(m) {
+    bagMode = m;
+    modeStaff.setAttribute("aria-pressed", String(m === "staff"));
+    modeSelf.setAttribute("aria-pressed", String(m === "self"));
+    modeLine.textContent = MODELINE[m];
+    noteStaff.style.display = m === "staff" ? "" : "none";
+    tradeStaff.classList.toggle("picked", m === "staff");
+    tradeSelf.classList.toggle("picked", m === "self");
+    tradeStaffTag.textContent = m === "staff" ? "Showing" : "";
+    tradeSelfTag.textContent = m === "self" ? "Showing" : "";
+    /* Switching mode mid-flow must never strand anyone past the end of the
+       shorter one, and the staff screen is meaningless once nobody is there
+       to bag anything. */
+    go(Math.min(step, steps().length - 1));
+  }
+  modeStaff.addEventListener("click", function () { setMode("staff"); });
+  modeSelf.addEventListener("click", function () { setMode("self"); });
+
   prevBtn.addEventListener("click", function () { go(step - 1); });
   nextBtn.addEventListener("click", function () {
-    if (step === STEPS.length - 1) {
+    if (step === steps().length - 1) {
       cart = {}; code = null; myOrder = null;
       WAITING.forEach(function (o) { o.done = false; });
       renderMenu(); syncTotals(); go(0); return;
@@ -601,6 +727,7 @@
 
   renderMenu();
   syncTotals();
+  setMode("staff");
   go(0);
 })();
 </script>
