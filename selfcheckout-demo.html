@@ -76,10 +76,29 @@
   .shelfrow.low .left{color:var(--warn)}
   @keyframes flashSold{0%{background:var(--warnwash)}100%{background:transparent}}
   .shelfrow.flash{animation:flashSold 1s ease-out}
-  .addbtn{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
+  .addbtn,.sellbtn{width:44px;height:44px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);
     background:var(--soft);font:700 20px inherit;color:var(--ink);cursor:pointer;
     transition:transform .1s,background .15s}
   .addbtn:active{background:var(--good);border-color:var(--good);color:#fff;transform:scale(.92)}
+  .sellbtn:active{background:var(--warn);border-color:var(--warn);color:#fff;transform:scale(.92)}
+  .sellbtn:disabled{opacity:.3;cursor:default}
+
+  /* ── who is tapping ──────────────────────────────────────────────────────
+     Picked once, not once per action. Asking for a name on every tap would
+     turn a one-tap job into a two-tap job, and a two-tap job in a busy shop
+     is a job that stops getting done. This is closer to clocking in: say who
+     you are when you pick the phone up, and everything after is yours. */
+  .whorow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;
+    padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .wholab{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+  .whochips{display:flex;gap:6px;flex-wrap:wrap}
+  .whochip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:7px 15px;
+    font:700 13px inherit;color:var(--ink);cursor:pointer;min-height:44px}
+  .whochip[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+  .shelfhint{font-size:12.5px;color:var(--muted);line-height:1.45;margin-bottom:12px}
+  .shelfhint b{color:var(--ink)}
+  .logrow .lwho{font-weight:800;color:var(--accent2)}
+  .logrow .lwho.auto{color:var(--good)}
   .lownudge{display:none;background:var(--warnwash);border:1px solid #eeccc0;border-radius:10px;
     padding:12px 14px;margin-top:14px;font-size:13.5px;color:var(--warn);line-height:1.5}
   .lownudge.show{display:block}
@@ -247,6 +266,12 @@
         <div class="shelfcard">
           <div class="camnote">📷 <span><b>A visible camera watches this shelf.</b> That alone is most of the
             deterrent — nothing here needs to be smart.</span></div>
+          <div class="whorow">
+            <span class="wholab">Who's on?</span>
+            <div class="whochips" id="whoChips"></div>
+          </div>
+          <p class="shelfhint">Tap <b>&minus;</b> when you sell one over the counter, <b>+</b> when you put a
+            fresh one out. One tap each, and it goes down under your name.</p>
           <div id="shelfList"></div>
           <div class="lownudge" id="lowNudge"></div>
 
@@ -374,6 +399,13 @@
   var countedAt = new Date(Date.now() - 3 * 60 * 60 * 1000);
   var counting = null;   // key -> number a human is entering, while the panel is open
 
+  /* Whoever picked the phone up. In the real thing this is remembered per
+     device, so most shifts nobody touches it at all. A sale that came through
+     self checkout has no name, because no member of staff was involved, and
+     that difference is worth seeing in the log. */
+  var STAFF = ["Priya", "Arun", "Meena", "Sam"];
+  var who = STAFF[0];
+
   var shelfList = document.getElementById("shelfList");
   var lowNudge = document.getElementById("lowNudge");
   var orderList = document.getElementById("orderList");
@@ -384,6 +416,7 @@
   var confirmSum = document.getElementById("confirmSum");
   var orderCode = document.getElementById("orderCode");
   var activityLog = document.getElementById("activityLog");
+  var whoChips = document.getElementById("whoChips");
   var countBtn = document.getElementById("countBtn");
   var countPanel = document.getElementById("countPanel");
   var countRows = document.getElementById("countRows");
@@ -400,8 +433,11 @@
     return h + ":" + (m < 10 ? "0" + m : m) + ap;
   }
 
-  function note(text, kind) {
-    log.unshift({ at: new Date(), text: text, kind: kind || "" });
+  /* by defaults to the person currently on. Passing "Self checkout" marks the
+     lines no member of staff touched, which is the whole point of showing a
+     name at all: an owner can tell counter trade from self serve at a glance. */
+  function note(text, kind, by) {
+    log.unshift({ at: new Date(), text: text, kind: kind || "", by: by || who });
     renderLog();
   }
 
@@ -412,8 +448,10 @@
       return;
     }
     activityLog.innerHTML = log.map(function (e) {
+      var auto = e.by === "Self checkout";
       return '<div class="logrow"><span class="lt">' + clock(e.at) + '</span>' +
-        '<span class="lx ' + e.kind + '">' + e.text + '</span></div>';
+        '<span class="lx ' + e.kind + '"><span class="lwho' + (auto ? " auto" : "") + '">' + e.by +
+        '</span> &middot; ' + e.text + '</span></div>';
     }).join("");
   }
 
@@ -429,6 +467,21 @@
     renderShelf(key);
   }
 
+  /* Food sold over the counter rather than through the checkout: a phone
+     order, a regular who would rather hand over cash, anything a member of
+     staff handled. Without this the shelf count drifts every time somebody
+     serves a customer the old way, and the drift looks exactly like theft. */
+  function sellAtCounter(key) {
+    var it = ITEMS.find(function (i) { return i.key === key; });
+    if (!it || it.packed <= 0) return;
+    it.packed -= 1;
+    note("1x " + it.name + " sold over the counter", "out");
+    lastSold = [it.key];
+    renderShelf();
+    renderOrder();   // the customer side must not offer what was just sold
+    lastSold = [];
+  }
+
   function renderShelf(justRestocked) {
     shelfList.innerHTML = "";
     var low = [];
@@ -442,12 +495,17 @@
       row.innerHTML =
         '<span class="nm"><b>' + it.name + '</b><span>' + it.note + '</span></span>' +
         '<span class="left">' + (it.packed <= 0 ? "Sold out" : it.packed + " left") + '</span>' +
-        '<button class="addbtn" type="button" data-key="' + it.key + '" aria-label="Add one ' + it.name +
-          ' to the shelf">+</button>';
+        '<button class="sellbtn" type="button" data-key="' + it.key + '"' + (it.packed <= 0 ? " disabled" : "") +
+          ' aria-label="Log one ' + it.name + ' sold over the counter">&minus;</button>' +
+        '<button class="addbtn" type="button" data-key="' + it.key + '" aria-label="Put one more ' + it.name +
+          ' out on the shelf">+</button>';
       shelfList.appendChild(row);
     });
     shelfList.querySelectorAll(".addbtn").forEach(function (b) {
       b.addEventListener("click", function () { restock(b.dataset.key); });
+    });
+    shelfList.querySelectorAll(".sellbtn").forEach(function (b) {
+      b.addEventListener("click", function () { sellAtCounter(b.dataset.key); });
     });
     if (low.length) {
       lowNudge.classList.add("show");
@@ -523,7 +581,8 @@
     orderCode.textContent = "Order " + code;
     confirmSum.textContent = money(total) + " paid: " + lines.join(", ");
     confirmBox.classList.add("show");
-    note("Order " + code + " &middot; " + lines.join(", ") + " &middot; " + money(total) + " paid", "out");
+    note("Order " + code + " &middot; " + lines.join(", ") + " &middot; " + money(total) + " paid",
+      "out", "Self checkout");
     cart = {};
     renderShelf();   // reads lastSold to flash every row that just sold
     renderOrder();
@@ -591,24 +650,38 @@
       countReport.innerHTML = '<b>Gone without paying since ' + since + ': ' + gaps.join(", ") + '.</b> ' +
         'That is ' + money(lost) + ' at menu price' + (extras.length ? ", and " + extras.join(", ") : "") + '.' +
         '<span class="when">Look at ' + since + ' to ' + clock(now) + ', and nothing before it. ' +
-        'New count saved ' + clock(now) + '.</span>';
+        'Counted by ' + who + ' at ' + clock(now) + '.</span>';
     } else if (extras.length) {
       countReport.innerHTML = '<b>Nothing missing.</b> ' + extras.join(", ") +
-        ', so something went out without being tapped.<span class="when">New count saved ' + clock(now) + '.</span>';
+        ', so something went out without being tapped.<span class="when">Counted by ' + who + ' at ' +
+        clock(now) + '.</span>';
     } else {
       countReport.innerHTML = '<b>Everything matched.</b> Every box that left this shelf since ' + since +
-        ' was paid for.<span class="when">New count saved ' + clock(now) + '.</span>';
+        ' was paid for.<span class="when">Counted by ' + who + ' at ' + clock(now) + '.</span>';
     }
-    note("Counted by hand &middot; " + (gaps.length ? gaps.join(", ") + " unpaid" : "everything matched"), "count");
+    note("counted the shelf &middot; " + (gaps.length ? gaps.join(", ") + " unaccounted" : "everything matched"),
+      "count");
     countedAt = now;
     closeCount();
     renderShelf();
     renderOrder();
   }
 
+  function renderWho() {
+    whoChips.innerHTML = "";
+    STAFF.forEach(function (name) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "whochip"; b.textContent = name;
+      b.setAttribute("aria-pressed", String(name === who));
+      b.addEventListener("click", function () { who = name; renderWho(); });
+      whoChips.appendChild(b);
+    });
+  }
+
   payBtn.addEventListener("click", pay);
   countBtn.addEventListener("click", openCount);
   saveCount.addEventListener("click", saveTheCount);
+  renderWho();
   renderShelf();
   renderOrder();
   renderLog();
