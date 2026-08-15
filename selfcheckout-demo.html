@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Pay first, bag it yourself | ReplyPlate</title>
-<meta name="description" content="A working preview: a customer picks packed items, pays right there, and the shelf count drops itself. No app, no staff, no cart software to build." />
+<title>Pick it up, pay, we bag it | ReplyPlate</title>
+<meta name="description" content="A working preview: a customer picks packed food off the shelf, pays on their own phone, and staff check it against their own screen before bagging. The shelf count drops itself." />
 <!-- Same rule as the stock preview: built to show one owner an idea, not a
      shipped feature. Not linked from the site's own navigation or footer, and
      kept out of search. Send the link directly. -->
@@ -189,23 +189,23 @@
 
   <div class="hero">
     <div class="kicker">A working preview, not a finished feature</div>
-    <h1>Pay first, bag it yourself</h1>
-    <p class="sub">Food is already made and sitting out. A customer scans, picks what they want, pays right there,
-      and takes it. Nobody has to be behind a counter for it to happen.</p>
+    <h1>Pick it up, pay, we bag it</h1>
+    <p class="sub">Food is already made and sitting out. A customer picks what they want, scans at the counter,
+      pays on their own phone, and your staff check it against their screen before bagging it.</p>
     <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
   </div>
 
   <section>
-    <p class="stitle">How it works, in four taps</p>
+    <p class="stitle">How it works, start to finish</p>
     <ol class="howsteps">
-      <li><span><b>Scan the code, pick what's yours.</b> Everything packed and on the shelf right now, with a
-        real price.</span></li>
-      <li><span><b>Pay right there.</b> No app to download. It is Stripe's own checkout page, the same one that
-        takes your subscription.</span></li>
-      <li><span><b>You're told exactly what to grab.</b> The confirmation names it, so you're not guessing which
-        bag is yours.</span></li>
-      <li><span><b>The shelf count drops itself.</b> Nobody has to tap it separately. The sale is what moves the
-        number.</span></li>
+      <li><span><b>They pick it up first.</b> Packed and out on the shelf, with a price on it. They take what
+        they want, the same as in any shop.</span></li>
+      <li><span><b>They scan at the counter.</b> Their own phone, no app, and they tap in what is in their
+        hands.</span></li>
+      <li><span><b>They pay right there.</b> Stripe's own checkout page, the same one that takes your
+        subscription. The shelf count drops itself from that sale, with nobody tapping it.</span></li>
+      <li><span><b>Your staff check, then bag it.</b> The order is already on the counter screen, marked paid.
+        Staff match the code and hand it over.</span></li>
     </ol>
   </section>
 
@@ -275,10 +275,10 @@
             <div class="tick">✅</div>
             <span class="ordercode" id="orderCode"></span>
             <b id="confirmSum"></b>
-            <p>Match this to the shelf and take it. You're not booked, held, or waiting on anyone — you're
-              done.</p>
-            <p class="qrcaption">A short code, not a QR — there's nothing here yet to scan it. Stripe emails the
-              same order as a proper receipt.</p>
+            <p>Say this code at the counter. Staff check it against their own screen, then bag it for you.</p>
+            <p class="qrcaption">A short code, not a QR, because nothing here scans anything. Stripe emails the
+              receipt separately, and the counter already has the order, so there is nothing to hold up as
+              proof.</p>
           </div>
         </div>
       </div>
@@ -296,9 +296,10 @@
     <p class="stitle">What this is, plainly</p>
     <div class="notes">
       <div class="note">
-        <b>Pay comes first, always</b>
-        <p>The layout has to make paying the only way to know what to grab. That one rule does more work against
-          misuse than anything electronic.</p>
+        <b>Staff see it before it leaves</b>
+        <p>The order lands on the counter screen the moment Stripe says it is paid. Staff match the code, glance
+          at what is on the counter, and bag it. Nobody has to judge whether a phone is showing something real.
+          <a href="./checkout-flow.html">See that screen</a>.</p>
       </div>
       <div class="note">
         <b>The shelf counts itself, mostly</b>

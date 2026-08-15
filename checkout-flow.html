@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>What the customer actually sees | ReplyPlate</title>
-<meta name="description" content="The self checkout flow, screen by screen: the sign, the menu, the payment page, the confirmation, the receipt. Tap through it the way a customer would." />
+<title>From shelf to bag, screen by screen | ReplyPlate</title>
+<meta name="description" content="The self checkout flow, screen by screen: pick it up, scan at the counter, ring up what you took, pay, and staff check it against their own screen before bagging." />
 <!-- Same rule as the other two previews: built to show one owner an idea, not
      a shipped feature. Not linked from the site's own navigation or footer,
      and kept out of search. Send the link directly. -->
@@ -39,58 +39,66 @@
 
   section{padding:12px 0 26px}
 
-  /* ── the step rail: five dots you can jump between ─────────────────────── */
-  .rail{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
-  .rail button{background:none;border:none;cursor:pointer;font:700 11px inherit;color:var(--muted);
-    padding:8px 6px;min-height:44px;display:flex;flex-direction:column;align-items:center;gap:6px;
-    text-transform:uppercase;letter-spacing:.06em;width:62px}
+  /* ── the step rail ─────────────────────────────────────────────────────── */
+  .rail{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+  .rail button{background:none;border:none;cursor:pointer;font:700 10.5px inherit;color:var(--muted);
+    padding:8px 4px;min-height:44px;display:flex;flex-direction:column;align-items:center;gap:6px;
+    text-transform:uppercase;letter-spacing:.05em;width:66px;line-height:1.2}
   .rail .dot{width:26px;height:26px;border-radius:50%;background:var(--soft);border:1px solid var(--line);
     display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--muted)}
   .rail button[aria-current="true"]{color:var(--accent2)}
   .rail button[aria-current="true"] .dot{background:var(--accent);border-color:var(--accent);color:#fff}
   .rail button.done .dot{background:var(--goodwash);border-color:#cfe3d5;color:var(--good)}
+  /* The last screen is the restaurant's device, not the customer's. Marking it
+     in the rail stops an owner assuming their customer sees it. */
+  .rail button.staffstep .dot{border-style:dashed}
 
   /* ── the phone ─────────────────────────────────────────────────────────── */
   .stage{display:grid;gap:22px;grid-template-columns:1fr;align-items:start}
   @media (min-width:820px){.stage{grid-template-columns:340px 1fr}}
   .phone{width:100%;max-width:330px;margin:0 auto;background:#241a10;border-radius:36px;padding:9px;
-    box-shadow:0 18px 44px rgba(36,26,16,.20)}
+    box-shadow:0 18px 44px rgba(36,26,16,.20);transition:background .25s}
+  .phone.staff{background:#2f3d34}
+  .whose{max-width:330px;margin:0 auto 10px;text-align:center;font-size:11px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .whose.staff{color:var(--good)}
   .screen{background:#fff;border-radius:28px;height:552px;overflow:hidden;position:relative;
     display:flex;flex-direction:column}
   .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:98px;height:19px;
-    background:#241a10;border-radius:0 0 13px 13px;z-index:6}
+    background:#241a10;border-radius:0 0 13px 13px;z-index:6;transition:background .25s}
+  .phone.staff .notch{background:#2f3d34}
   .sc{display:none;flex:1;min-height:0;flex-direction:column}
   .sc.on{display:flex}
   .sbody{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
   .sfoot{flex:0 0 auto;border-top:1px solid #eee;padding:12px 14px 16px;background:#fff}
 
-  /* screen 1: the camera pointed at the counter sign */
+  /* screen 1: the camera, pointed at the sign on the counter */
   .cam{flex:1;background:linear-gradient(160deg,#2a2521,#3d352d 60%,#241f1b);position:relative;
     display:flex;align-items:center;justify-content:center;padding:24px}
-  .sign{background:#fffdf9;border-radius:12px;padding:16px 14px;text-align:center;width:186px;
+  .sign{background:#fffdf9;border-radius:12px;padding:16px 14px;text-align:center;width:190px;
     box-shadow:0 8px 22px rgba(0,0,0,.35);transform:rotate(-1.4deg)}
   .sign .sh{font-family:var(--serif);font-size:15px;line-height:1.25;margin-bottom:9px}
-  .sign svg{width:84px;height:84px;display:block;margin:0 auto 9px}
-  .sign .ss{font-size:10.5px;color:var(--muted);line-height:1.4;font-weight:600}
+  .sign svg{width:82px;height:82px;display:block;margin:0 auto 9px}
+  .sign .ss{font-size:10.5px;color:var(--muted);line-height:1.45;font-weight:600}
   .qrbanner{position:absolute;left:12px;right:12px;bottom:14px;background:#f5c518;border-radius:11px;
     padding:9px 12px;display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:700;color:#241a10}
   .qrbanner .lk{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 
-  /* screen 2: the menu on their own phone */
+  /* screen 2: ringing up what is already in their hands */
   .shead{padding:26px 14px 10px;border-bottom:1px solid #eee;text-align:center;flex:0 0 auto}
   .shead b{display:block;font-family:var(--serif);font-size:17px;font-weight:400}
   .shead span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px}
   .mrow{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid #f2f2f2}
+  .mrow.picked{background:#fdf8ef}
   .mrow .mn{flex:1;min-width:0}
   .mrow .mn b{display:block;font-size:13.5px}
   .mrow .mn span{display:block;font-size:11.5px;color:var(--muted)}
+  .mrow .mn i{display:block;font-style:normal;font-size:10.5px;color:var(--warn);font-weight:700;margin-top:1px}
   .mq{display:flex;align-items:center;gap:5px;flex:0 0 auto}
   .qb{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--soft);
     font:700 15px inherit;color:var(--ink);cursor:pointer;line-height:1}
   .qb:disabled{opacity:.3;cursor:default}
   .qn{font-variant-numeric:tabular-nums;font-weight:800;font-size:13px;min-width:14px;text-align:center}
-  .gone{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);
-    background:var(--warnwash);border-radius:999px;padding:4px 8px}
   .totrow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;font-size:13px}
   .totrow b{font-size:18px;font-variant-numeric:tabular-nums}
   .pbtn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:9px;padding:12px;
@@ -122,14 +130,17 @@
   .powered{text-align:center;font-size:10px;color:#9ca3af;margin-top:12px;padding-bottom:4px}
   .powered b{color:#635bff}
 
-  /* screen 4: paid */
+  /* screen 4: the code to say at the counter */
   .paid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:26px 20px;background:var(--goodwash)}
-  .paid .tick{width:52px;height:52px;border-radius:50%;background:var(--good);color:#fff;
-    display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px}
-  .paid .code{background:#fff;border:1px solid #cfe3d5;border-radius:999px;padding:5px 15px;
-    font-weight:800;font-size:14px;color:var(--good);letter-spacing:.05em;margin-bottom:12px}
-  .paid h4{font-size:17px;font-weight:700;margin-bottom:9px}
+    text-align:center;padding:24px 20px;background:var(--goodwash)}
+  .paid .tick{width:46px;height:46px;border-radius:50%;background:var(--good);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:23px;margin-bottom:12px}
+  .paid .code{background:#fff;border:2px solid var(--good);border-radius:12px;padding:10px 22px;
+    font-weight:800;font-size:27px;color:var(--good);letter-spacing:.06em;margin-bottom:6px;
+    font-variant-numeric:tabular-nums}
+  .paid .codehint{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
+    font-weight:800;margin-bottom:14px}
+  .paid h4{font-size:15px;font-weight:700;margin-bottom:10px}
   .paid .grab{background:#fff;border-radius:10px;padding:11px 13px;width:100%;margin-bottom:12px;
     font-size:13px;text-align:left}
   .paid .grab i{display:block;font-style:normal;font-size:10px;text-transform:uppercase;
@@ -137,18 +148,25 @@
   .paid .grab span{display:block;padding:2px 0;font-weight:600}
   .paid p{font-size:12.5px;color:var(--muted);line-height:1.5}
 
-  /* screen 5: the receipt Stripe sends */
-  .mail{flex:1;overflow-y:auto;background:#f6f6f7}
-  .mailhead{background:#fff;padding:26px 14px 12px;border-bottom:1px solid #e6e6e6}
-  .mailhead .from{font-size:13px;font-weight:700}
-  .mailhead .subj{font-size:12.5px;color:var(--muted);margin-top:2px}
-  .mailbody{background:#fff;margin:10px;border-radius:10px;padding:16px 14px;border:1px solid #e6e6e6}
-  .mailbody .rh{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
-    font-weight:800;margin-bottom:9px}
-  .mailbody .rt{font-size:22px;font-weight:700;margin-bottom:14px;font-variant-numeric:tabular-nums}
-  .mailbody .rl{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;
-    border-top:1px solid #f0f0f0}
-  .mailbody .rf{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5}
+  /* screen 5: the counter's own screen, which is where the truth lives */
+  .stafftop{background:#2f3d34;color:#fff;padding:26px 14px 12px;flex:0 0 auto}
+  .stafftop b{display:block;font-size:15px}
+  .stafftop span{display:block;font-size:11.5px;opacity:.75;margin-top:2px}
+  .queue{flex:1;min-height:0;overflow-y:auto;background:#f4f5f4;padding:10px}
+  .ocard{background:#fff;border:1px solid #e2e5e3;border-radius:11px;padding:12px;margin-bottom:9px}
+  .ocard.next{border-color:var(--good);border-width:2px;box-shadow:0 4px 14px rgba(63,125,82,.13)}
+  .ocard.gone{opacity:.5}
+  .ohead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:7px}
+  .ocode{font-weight:800;font-size:17px;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+  .opaid{font-size:11px;font-weight:800;color:var(--good);background:var(--goodwash);border-radius:999px;
+    padding:3px 9px;white-space:nowrap}
+  .oitems{font-size:12.5px;color:#4b5563;line-height:1.5;margin-bottom:9px}
+  .oitems span{display:block}
+  .ometa{font-size:11px;color:#9ca3af;margin-bottom:9px}
+  .obtn{width:100%;background:var(--good);color:#fff;border:none;border-radius:8px;padding:10px;
+    font:700 13.5px inherit;cursor:pointer;min-height:44px}
+  .obtn:disabled{background:#dfe3e0;color:#8a938d;cursor:default}
+  .odone{text-align:center;font-size:12px;font-weight:700;color:var(--good);padding:6px 0}
 
   /* ── the caption beside the phone ──────────────────────────────────────── */
   .caption{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
@@ -170,7 +188,7 @@
   .note b{display:block;margin-bottom:5px;font-size:15px}
   .note p{color:var(--muted);font-size:14px;line-height:1.55}
   .notes{display:grid;gap:12px;grid-template-columns:1fr;margin-top:26px}
-  @media (min-width:760px){.notes{grid-template-columns:repeat(3,1fr)}}
+  @media (min-width:760px){.notes{grid-template-columns:repeat(2,1fr)}}
 
   .cta{text-align:center;padding:30px 0 46px}
   .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;
@@ -191,9 +209,10 @@
 
   <div class="hero">
     <div class="kicker">A working preview, not a finished feature</div>
-    <h1>What the customer actually sees</h1>
-    <p class="sub">Five screens, in the order they happen. Pick some food on screen two and it carries all the
-      way through, the way it would for a real customer.</p>
+    <h1>From shelf to bag, screen by screen</h1>
+    <p class="sub">They pick the food up first, scan at the counter, ring up what is in their hands, and pay.
+      Your staff check it against their own screen, then bag it. Pick something on screen two and it carries
+      all the way through.</p>
     <div class="addon">This is not part of the <b>$199</b>. It would be a separate add-on, priced on its own.</div>
   </div>
 
@@ -201,103 +220,95 @@
     <div class="rail" id="rail"></div>
 
     <div class="stage">
-      <div class="phone">
-        <div class="screen">
-          <div class="notch" aria-hidden="true"></div>
+      <div>
+        <p class="whose" id="whose">The customer's own phone</p>
+        <div class="phone" id="phone">
+          <div class="screen">
+            <div class="notch" aria-hidden="true"></div>
 
-          <!-- 1 ── their camera, pointed at the sign on your counter ──────── -->
-          <div class="sc" data-step="0">
-            <div class="cam">
-              <div class="sign">
-                <div class="sh">Pay first,<br>then take it</div>
-                <svg viewBox="0 0 76 76" aria-hidden="true"><rect width="76" height="76" fill="#241a10"/>
-                  <g fill="#fffdf9">
-                    <rect x="8" y="8" width="18" height="18"/><rect x="50" y="8" width="18" height="18"/>
-                    <rect x="8" y="50" width="18" height="18"/>
-                    <rect x="13" y="13" width="8" height="8" fill="#241a10"/>
-                    <rect x="55" y="13" width="8" height="8" fill="#241a10"/>
-                    <rect x="13" y="55" width="8" height="8" fill="#241a10"/>
-                    <rect x="32" y="8" width="6" height="6"/><rect x="32" y="20" width="6" height="6"/>
-                    <rect x="44" y="32" width="6" height="6"/><rect x="32" y="32" width="6" height="6"/>
-                    <rect x="32" y="44" width="6" height="6"/><rect x="32" y="56" width="6" height="6"/>
-                    <rect x="44" y="56" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/>
-                    <rect x="56" y="56" width="6" height="6"/><rect x="8" y="32" width="6" height="6"/>
-                    <rect x="20" y="32" width="6" height="6"/><rect x="20" y="44" width="6" height="6"/>
-                  </g>
-                </svg>
-                <div class="ss">Point your camera here.<br>No app to download.</div>
-              </div>
-              <div class="qrbanner">&#9635; <span class="lk">order.spiceroute.example</span> &rsaquo;</div>
-            </div>
-          </div>
-
-          <!-- 2 ── the menu, on their own phone ──────────────────────────── -->
-          <div class="sc" data-step="1">
-            <div class="shead"><b>Spice Route Kitchen</b><span>On the shelf right now</span></div>
-            <div class="sbody" id="flowMenu"></div>
-            <div class="sfoot">
-              <div class="totrow"><span id="flowCount">Nothing picked</span><b id="flowTotal"></b></div>
-              <button class="pbtn" id="flowPay" type="button" disabled>Pay</button>
-            </div>
-          </div>
-
-          <!-- 3 ── a drawing of Stripe's own hosted checkout page ─────────── -->
-          <div class="sc" data-step="2">
-            <div class="stripe">
-              <div class="biz">Spice Route Kitchen</div>
-              <div class="amt" id="stripeAmt">$0.00</div>
-              <div class="lines" id="stripeLines"></div>
-              <!-- Spelled out rather than the Apple logo character: that glyph
-                   only exists in Apple's own fonts, and renders as an empty
-                   box on the Android and Windows browsers an owner may well
-                   be looking at this page from. -->
-              <div class="applepay">Apple&nbsp;Pay</div>
-              <div class="ordiv">Or pay with card</div>
-              <div class="fld"><label>Email</label><div class="box">you@example.com</div></div>
-              <div class="fld"><label>Card information</label>
-                <div class="box">1234 1234 1234 1234
-                  <span class="cards" aria-hidden="true">
-                    <i style="background:#1a1f71"></i><i style="background:#eb001b"></i><i style="background:#006fcf"></i>
-                  </span>
+            <!-- 1 ── they already have the food; now they scan ───────────── -->
+            <div class="sc" data-step="0">
+              <div class="cam">
+                <div class="sign">
+                  <div class="sh">Got everything?</div>
+                  <svg viewBox="0 0 76 76" aria-hidden="true"><rect width="76" height="76" fill="#241a10"/>
+                    <g fill="#fffdf9">
+                      <rect x="8" y="8" width="18" height="18"/><rect x="50" y="8" width="18" height="18"/>
+                      <rect x="8" y="50" width="18" height="18"/>
+                      <rect x="13" y="13" width="8" height="8" fill="#241a10"/>
+                      <rect x="55" y="13" width="8" height="8" fill="#241a10"/>
+                      <rect x="13" y="55" width="8" height="8" fill="#241a10"/>
+                      <rect x="32" y="8" width="6" height="6"/><rect x="32" y="20" width="6" height="6"/>
+                      <rect x="44" y="32" width="6" height="6"/><rect x="32" y="32" width="6" height="6"/>
+                      <rect x="32" y="44" width="6" height="6"/><rect x="32" y="56" width="6" height="6"/>
+                      <rect x="44" y="56" width="6" height="6"/><rect x="56" y="44" width="6" height="6"/>
+                      <rect x="56" y="56" width="6" height="6"/><rect x="8" y="32" width="6" height="6"/>
+                      <rect x="20" y="32" width="6" height="6"/><rect x="20" y="44" width="6" height="6"/>
+                    </g>
+                  </svg>
+                  <div class="ss">Scan to pay.<br>We will bag it for you.</div>
                 </div>
-              </div>
-              <div class="two">
-                <div class="fld"><label>Expiry</label><div class="box">MM / YY</div></div>
-                <div class="fld"><label>CVC</label><div class="box">CVC</div></div>
-              </div>
-              <button class="paynow" id="stripePay" type="button">Pay <span id="stripeBtnAmt"></span></button>
-              <div class="powered">Powered by <b>stripe</b> &nbsp;·&nbsp; Terms &nbsp;·&nbsp; Privacy</div>
-            </div>
-          </div>
-
-          <!-- 4 ── paid, and told exactly what to pick up ─────────────────── -->
-          <div class="sc" data-step="3">
-            <div class="paid">
-              <div class="tick" aria-hidden="true">&#10003;</div>
-              <div class="code" id="flowCode">Order K-482</div>
-              <h4 id="flowPaidAmt">$0.00 paid</h4>
-              <div class="grab"><i>Take from the shelf</i><span id="flowGrab"></span></div>
-              <p>That is it. Nobody to wait for, nothing to collect from a counter.</p>
-            </div>
-          </div>
-
-          <!-- 5 ── the receipt Stripe sends on its own ────────────────────── -->
-          <div class="sc" data-step="4">
-            <div class="mail">
-              <div class="mailhead">
-                <div class="from">Spice Route Kitchen</div>
-                <div class="subj">Your receipt &mdash; <span id="mailAmt">$0.00</span></div>
-              </div>
-              <div class="mailbody">
-                <div class="rh">Receipt</div>
-                <div class="rt" id="mailTotal">$0.00</div>
-                <div id="mailLines"></div>
-                <div class="rf">Paid by card. Questions about this charge? Reply to this email.<br>
-                  Receipt sent automatically by Stripe.</div>
+                <div class="qrbanner">&#9635; <span class="lk">order.spiceroute.example</span> &rsaquo;</div>
               </div>
             </div>
-          </div>
 
+            <!-- 2 ── ring up what is already in their hands ───────────────── -->
+            <div class="sc" data-step="1">
+              <div class="shead"><b>Spice Route Kitchen</b><span>Add what you picked up</span></div>
+              <div class="sbody" id="flowMenu"></div>
+              <div class="sfoot">
+                <div class="totrow"><span id="flowCount">Nothing added</span><b id="flowTotal"></b></div>
+                <button class="pbtn" id="flowPay" type="button" disabled>Pay</button>
+              </div>
+            </div>
+
+            <!-- 3 ── a drawing of Stripe's own hosted checkout page ───────── -->
+            <div class="sc" data-step="2">
+              <div class="stripe">
+                <div class="biz">Spice Route Kitchen</div>
+                <div class="amt" id="stripeAmt">$0.00</div>
+                <div class="lines" id="stripeLines"></div>
+                <!-- Spelled out rather than the Apple logo character: that glyph
+                     only exists in Apple's own fonts and renders as an empty box
+                     on the Android and Windows browsers an owner may be using. -->
+                <div class="applepay">Apple&nbsp;Pay</div>
+                <div class="ordiv">Or pay with card</div>
+                <div class="fld"><label>Email</label><div class="box">you@example.com</div></div>
+                <div class="fld"><label>Card information</label>
+                  <div class="box">1234 1234 1234 1234
+                    <span class="cards" aria-hidden="true">
+                      <i style="background:#1a1f71"></i><i style="background:#eb001b"></i><i style="background:#006fcf"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="two">
+                  <div class="fld"><label>Expiry</label><div class="box">MM / YY</div></div>
+                  <div class="fld"><label>CVC</label><div class="box">CVC</div></div>
+                </div>
+                <button class="paynow" id="stripePay" type="button">Pay <span id="stripeBtnAmt"></span></button>
+                <div class="powered">Powered by <b>stripe</b> &nbsp;·&nbsp; Terms &nbsp;·&nbsp; Privacy</div>
+              </div>
+            </div>
+
+            <!-- 4 ── the number they say out loud at the counter ──────────── -->
+            <div class="sc" data-step="3">
+              <div class="paid">
+                <div class="tick" aria-hidden="true">&#10003;</div>
+                <div class="code" id="flowCode">K-482</div>
+                <div class="codehint">Say this at the counter</div>
+                <h4 id="flowPaidAmt">$0.00 paid</h4>
+                <div class="grab"><i>What you paid for</i><span id="flowGrab"></span></div>
+                <p>Nothing to show, scan or hold up. The counter already has this order on their screen.</p>
+              </div>
+            </div>
+
+            <!-- 5 ── the counter's own device, where the truth actually is ── -->
+            <div class="sc" data-step="4">
+              <div class="stafftop"><b>Counter</b><span id="staffSub">Paid, waiting to be bagged</span></div>
+              <div class="queue" id="staffQueue"></div>
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -317,19 +328,26 @@
 
     <div class="notes">
       <div class="note">
+        <b>Your staff never look at the customer's phone</b>
+        <p>The order is on the counter screen because Stripe said it was paid, not because someone held up a
+          screen. A screenshot of a friend's confirmation gets nobody anything, and staff never have to judge
+          whether a phone is showing something real.</p>
+      </div>
+      <div class="note">
+        <b>The food in their hand wins</b>
+        <p>The list does not stop them adding a third samosa when the shelf thinks there are two. They are
+          holding it. Refusing the payment for something already in their hands is the one thing that would
+          make this worse than a till.</p>
+      </div>
+      <div class="note">
         <b>No app, ever</b>
-        <p>It opens in the browser their phone already has. Asking a customer to install something for a $9 lunch
-          is how you lose the sale.</p>
+        <p>It opens in the browser their phone already has. Asking a customer to install something for a $9
+          lunch is how you lose the sale.</p>
       </div>
       <div class="note">
         <b>The card never touches your site</b>
         <p>Screen three is Stripe's own page on Stripe's own address. Neither your website nor mine ever sees a
-          card number, which is the only reason this is safe to build at all.</p>
-      </div>
-      <div class="note">
-        <b>Paying is what unlocks knowing</b>
-        <p>The screen that tells them what to grab only appears after payment. That single ordering rule does
-          more against walkouts than any camera.</p>
+          card number, which is the only reason this is safe to build at all. Stripe emails the receipt too.</p>
       </div>
     </div>
   </section>
@@ -346,55 +364,67 @@
   <a href="./selfcheckout-demo.html">The shelf side of it</a> &bull;
   <a href="./inventory-demo.html">Stock tracking</a>
   <br>Nothing here charges a real card or saves anything. It resets every time you load it.
-  <br><span style="opacity:.55">Build 2026-08-15</span>
+  <br><span style="opacity:.55">Build 2026-08-15b</span>
 </div></footer>
 
 <script>
 (function () {
   /* The same six items as the shelf preview, so an owner shown both pages
-     never has to work out whether they are looking at the same shop. "left"
-     is what is physically on the shelf, and it caps what can be picked: a
-     menu that lets someone buy a seventh samosa when six exist is worse than
-     no menu at all. */
+     never has to work out whether they are looking at the same shop. "shelf"
+     is what the system thinks is out there, and it is shown only as a hint:
+     in this flow the customer is already holding the food, so the count is
+     never allowed to block a payment. */
   var ITEMS = [
-    { key:"samosa",  name:"Samosas",              note:"3 pack",   price:4.99, left:5 },
-    { key:"tikka",   name:"Chicken tikka masala", note:"16oz box", price:9.99, left:3 },
-    { key:"biryani", name:"Vegetable biryani",    note:"16oz box", price:8.99, left:4 },
-    { key:"lassi",   name:"Mango lassi",          note:"16oz cup", price:3.99, left:6 },
-    { key:"naan",    name:"Garlic naan",          note:"2 pack",   price:2.99, left:0 },
-    { key:"jamun",   name:"Gulab jamun",          note:"4 pcs",    price:4.99, left:2 }
+    { key:"samosa",  name:"Samosas",              note:"3 pack",   price:4.99, shelf:5 },
+    { key:"tikka",   name:"Chicken tikka masala", note:"16oz box", price:9.99, shelf:3 },
+    { key:"biryani", name:"Vegetable biryani",    note:"16oz box", price:8.99, shelf:4 },
+    { key:"lassi",   name:"Mango lassi",          note:"16oz cup", price:3.99, shelf:6 },
+    { key:"naan",    name:"Garlic naan",          note:"2 pack",   price:2.99, shelf:0 },
+    { key:"jamun",   name:"Gulab jamun",          note:"4 pcs",    price:4.99, shelf:2 }
+  ];
+
+  /* Two orders already waiting when the demo starts, so the counter screen
+     looks like a counter rather than an empty box, and so "which one is
+     mine" is a real question the highlight has to answer. */
+  var WAITING = [
+    { code:"B-317", at:"2:09pm", amount:12.98, items:["1 × Chicken tikka masala","1 × Mango lassi"], done:false },
+    { code:"T-054", at:"2:11pm", amount:8.98,  items:["2 × Garlic naan","1 × Samosas"],             done:false }
   ];
 
   var STEPS = [
-    { tab:"Scan", title:"They point their camera at your sign",
-      body:"One printed card by the shelf. Their phone spots the code and offers a link, the same way it does " +
-           "for a restaurant menu. Nothing gets installed.",
-      watch:"The web address is printed under the code as well. A few older phones will not read a code, and " +
-            "those people can type it instead of walking out." },
-    { tab:"Pick", title:"The menu is only what is really there",
-      body:"Prices, portion sizes, and a count that comes from the shelf itself. Garlic naan is greyed out " +
-           "because the last one went ten minutes ago. Try picking more gulab jamun than the two that exist.",
-      watch:"This is the same list the shelf page manages. Nobody keeps two menus in step by hand." },
-    { tab:"Pay", title:"Stripe's own page, not yours",
+    { tab:"Pick it up", who:"customer", title:"They take what they want first",
+      body:"No screen for this bit. They walk the shelf, pick up the boxes they want, and carry them to the " +
+           "counter. Hot food gets chosen the way food should be, by looking at it.",
+      watch:"This is the sign on the counter, not on the shelf. Their phone offers the link the same way it " +
+            "does for a restaurant menu, and the address is printed underneath for the phones that will not " +
+            "read a code." },
+    { tab:"Ring up", who:"customer", title:"They add what is in their hands",
+      body:"Prices and portions, and they tap in what they picked up. Try adding a third gulab jamun when the " +
+           "shelf only thinks there are two. It lets you, because you are holding it.",
+      watch:"Garlic naan shows a note saying the shelf thinks it is out, but it can still be added and paid " +
+            "for. A count that refuses money for food already in someone's hands is worse than no count." },
+    { tab:"Pay", who:"customer", title:"Stripe's own page, not yours",
       body:"They tap Pay and land on Stripe, at Stripe's address, with Apple Pay already offered. This is the " +
            "page millions of people have paid on before.",
       watch:"This is a drawing of that page, and none of the boxes work. On the real thing the card details go " +
             "to Stripe and nowhere else. Your website never sees them, and neither do I." },
-    { tab:"Take", title:"Now they are told what to grab",
-      body:"Paid, and only now does the screen name the food. They match it to the shelf, bag it, and leave. " +
-           "There is nobody to queue for.",
-      watch:"The code is for a person to read, not a machine to scan. If two customers are at the shelf at once " +
-            "it settles who has what." },
-    { tab:"Receipt", title:"Stripe emails the receipt, not you",
-      body:"It lands within seconds and it is itemised. That is the customer's proof and yours, which matters " +
-           "the day someone tells their bank they never bought anything.",
-      watch:"You do nothing to send this. It is also where a refund gets issued from, in two clicks, if you " +
-            "decide someone deserves one." }
+    { tab:"Say the code", who:"customer", title:"They get a number, not a barcode",
+      body:"Four characters they can read out at the counter. Nothing to hold up to a scanner, nothing for a " +
+           "member of staff to squint at.",
+      watch:"It does not matter if someone screenshots this. The next screen is why: staff work from their own " +
+            "list, never from a customer's phone." },
+    { tab:"Staff bag it", who:"staff", title:"The counter checks its own screen",
+      body:"Their order is already sitting there, marked paid, because Stripe said so. Staff match the code, " +
+           "glance at the items against what is on the counter, and tap Bagged. It leaves the list.",
+      watch:"This is the restaurant's device, not the customer's. That single fact is the whole security model: " +
+            "there is nothing for a customer to fake, because nothing they show is ever the evidence." }
   ];
 
-  var cart = {}, step = 0, code = null;
+  var cart = {}, step = 0, code = null, myOrder = null;
 
   var rail = document.getElementById("rail");
+  var phone = document.getElementById("phone");
+  var whose = document.getElementById("whose");
   var flowMenu = document.getElementById("flowMenu");
   var flowCount = document.getElementById("flowCount");
   var flowTotal = document.getElementById("flowTotal");
@@ -406,9 +436,8 @@
   var flowCode = document.getElementById("flowCode");
   var flowPaidAmt = document.getElementById("flowPaidAmt");
   var flowGrab = document.getElementById("flowGrab");
-  var mailAmt = document.getElementById("mailAmt");
-  var mailTotal = document.getElementById("mailTotal");
-  var mailLines = document.getElementById("mailLines");
+  var staffQueue = document.getElementById("staffQueue");
+  var staffSub = document.getElementById("staffSub");
   var capNum = document.getElementById("capNum");
   var capTitle = document.getElementById("capTitle");
   var capBody = document.getElementById("capBody");
@@ -418,36 +447,36 @@
 
   function money(n) { return "$" + n.toFixed(2); }
   function qty(k) { return cart[k] || 0; }
-  function total() {
-    return ITEMS.reduce(function (s, it) { return s + qty(it.key) * it.price; }, 0);
-  }
-  function count() {
-    return ITEMS.reduce(function (s, it) { return s + qty(it.key); }, 0);
-  }
+  function total() { return ITEMS.reduce(function (s, it) { return s + qty(it.key) * it.price; }, 0); }
+  function count() { return ITEMS.reduce(function (s, it) { return s + qty(it.key); }, 0); }
   function picked() { return ITEMS.filter(function (it) { return qty(it.key) > 0; }); }
+  function lines() {
+    return picked().map(function (it) { return qty(it.key) + " × " + it.name; });
+  }
 
   function renderMenu() {
     flowMenu.innerHTML = "";
     ITEMS.forEach(function (it) {
-      var q = qty(it.key), out = it.left <= 0;
+      var q = qty(it.key);
       var row = document.createElement("div");
-      row.className = "mrow";
+      row.className = "mrow" + (q > 0 ? " picked" : "");
+      /* No cap and no sold-out block. The shelf number is a hint about drift,
+         not a gate: they are standing there holding the thing. */
       row.innerHTML =
-        '<span class="mn"><b>' + it.name + '</b><span>' + it.note + ' &middot; ' + money(it.price) + '</span></span>' +
-        (out ? '<span class="gone">Sold out</span>'
-             : '<span class="mq">' +
-               '<button class="qb" type="button" data-k="' + it.key + '" data-d="-1" ' + (q <= 0 ? "disabled" : "") +
-                 ' aria-label="One fewer ' + it.name + '">&minus;</button>' +
-               '<span class="qn">' + q + '</span>' +
-               '<button class="qb" type="button" data-k="' + it.key + '" data-d="1" ' + (q >= it.left ? "disabled" : "") +
-                 ' aria-label="One more ' + it.name + '">+</button></span>');
+        '<span class="mn"><b>' + it.name + '</b><span>' + it.note + ' &middot; ' + money(it.price) + '</span>' +
+          (it.shelf <= 0 ? '<i>Shelf says none left</i>' : '') + '</span>' +
+        '<span class="mq">' +
+          '<button class="qb" type="button" data-k="' + it.key + '" data-d="-1" ' + (q <= 0 ? "disabled" : "") +
+            ' aria-label="One fewer ' + it.name + '">&minus;</button>' +
+          '<span class="qn">' + q + '</span>' +
+          '<button class="qb" type="button" data-k="' + it.key + '" data-d="1"' +
+            ' aria-label="One more ' + it.name + '">+</button></span>';
       flowMenu.appendChild(row);
     });
     flowMenu.querySelectorAll(".qb").forEach(function (b) {
       b.addEventListener("click", function () {
-        var it = ITEMS.find(function (i) { return i.key === b.dataset.k; });
-        var next = qty(it.key) + Number(b.dataset.d);
-        cart[it.key] = Math.max(0, Math.min(it.left, next));
+        var k = b.dataset.k;
+        cart[k] = Math.max(0, qty(k) + Number(b.dataset.d));
         renderMenu(); syncTotals();
       });
     });
@@ -455,34 +484,23 @@
 
   function syncTotals() {
     var c = count(), t = total();
-    flowCount.textContent = c ? c + (c === 1 ? " item" : " items") + " picked" : "Nothing picked";
+    flowCount.textContent = c ? c + (c === 1 ? " item" : " items") + " added" : "Nothing added";
     flowTotal.textContent = c ? money(t) : "";
     flowPay.disabled = c === 0;
     flowPay.textContent = c ? "Pay " + money(t) : "Pay";
     stripeAmt.textContent = money(t);
     stripeBtnAmt.textContent = money(t);
-    var rows = picked().map(function (it) {
-      return { l: qty(it.key) + " × " + it.name, r: money(qty(it.key) * it.price) };
-    });
-    stripeLines.innerHTML = rows.map(function (r) {
-      return '<div class="li"><span>' + r.l + '</span><span>' + r.r + '</span></div>';
-    }).join("");
-    mailLines.innerHTML = rows.map(function (r) {
-      return '<div class="rl"><span>' + r.l + '</span><span>' + r.r + '</span></div>';
+    stripeLines.innerHTML = picked().map(function (it) {
+      return '<div class="li"><span>' + qty(it.key) + " × " + it.name + '</span><span>' +
+        money(qty(it.key) * it.price) + '</span></div>';
     }).join("");
     flowPaidAmt.textContent = money(t) + " paid";
-    mailAmt.textContent = money(t);
-    mailTotal.textContent = money(t);
-    flowGrab.innerHTML = picked().map(function (it) {
-      return '<span>' + qty(it.key) + " × " + it.name + '</span>';
-    }).join("") || '<span>Nothing picked</span>';
-    /* The step rail must not let anyone jump to a "paid" screen with an empty
-       basket: an owner tapping straight to screen four and seeing $0.00 paid
-       learns the wrong thing about what their customer will see. The Next
-       button is part of that gate, so it has to be re-checked here and not
-       only in go(): picking the first item is exactly the moment it should
-       come back to life, and go() does not run when you tap a stepper. */
+    flowGrab.innerHTML = lines().map(function (l) { return '<span>' + l + '</span>'; }).join("")
+      || '<span>Nothing added</span>';
     renderRail();
+    /* The Next button is part of the same gate as the rail, and go() does not
+       run when you tap a stepper, so picking the first item has to re-check it
+       here or the flow dead-ends on screen two. */
     nextBtn.disabled = step === 1 && c === 0;
     if (step > 1 && c === 0) go(1);
   }
@@ -492,7 +510,7 @@
     STEPS.forEach(function (s, i) {
       var b = document.createElement("button");
       b.type = "button";
-      b.className = i < step ? "done" : "";
+      b.className = (i < step ? "done" : "") + (s.who === "staff" ? " staffstep" : "");
       b.setAttribute("aria-current", String(i === step));
       b.innerHTML = '<span class="dot">' + (i + 1) + '</span>' + s.tab;
       b.disabled = i > 1 && count() === 0;
@@ -501,23 +519,58 @@
     });
   }
 
-  /* A fresh code per purchase, generated the moment they land on the paid
-     screen. Letters that cannot be confused when read aloud across a counter:
-     no I, no O. */
+  /* Letters that cannot be confused when said out loud across a counter: no I,
+     no O. The code exists to be spoken, so that matters more than it looking
+     random. */
   function newCode() {
     var L = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     return L[Math.floor(Math.random() * L.length)] + "-" + Math.floor(100 + Math.random() * 900);
   }
 
+  function renderStaff() {
+    var all = (myOrder ? [myOrder] : []).concat(WAITING);
+    var left = all.filter(function (o) { return !o.done; }).length;
+    staffSub.textContent = left
+      ? left + (left === 1 ? " order" : " orders") + " paid, waiting to be bagged"
+      : "Nothing waiting. All bagged.";
+    staffQueue.innerHTML = "";
+    all.forEach(function (o, i) {
+      var card = document.createElement("div");
+      card.className = "ocard" + (o === myOrder && !o.done ? " next" : "") + (o.done ? " gone" : "");
+      card.innerHTML =
+        '<div class="ohead"><span class="ocode">' + o.code + '</span>' +
+          '<span class="opaid">' + money(o.amount) + ' paid</span></div>' +
+        '<div class="oitems">' + o.items.map(function (l) { return '<span>' + l + '</span>'; }).join("") + '</div>' +
+        '<div class="ometa">Paid ' + o.at + ' &middot; card</div>' +
+        (o.done ? '<div class="odone">&#10003; Bagged and handed over</div>'
+                : '<button class="obtn" type="button" data-i="' + i + '">Bagged &amp; handed over</button>');
+      staffQueue.appendChild(card);
+    });
+    staffQueue.querySelectorAll(".obtn").forEach(function (b) {
+      b.addEventListener("click", function () {
+        all[Number(b.dataset.i)].done = true;
+        renderStaff();
+      });
+    });
+  }
+
   function go(i) {
     if (i > 1 && count() === 0) i = 1;
     step = Math.max(0, Math.min(STEPS.length - 1, i));
-    if (step === 3 && !code) { code = newCode(); flowCode.textContent = "Order " + code; }
-    if (step < 3) code = null;
+    if (step >= 3 && !code) {
+      code = newCode();
+      flowCode.textContent = code;
+      myOrder = { code: code, at: nowLabel(), amount: total(), items: lines(), done: false };
+    }
+    if (step < 3) { code = null; myOrder = null; }
+    if (step === 4) renderStaff();
     document.querySelectorAll(".sc").forEach(function (el) {
       el.classList.toggle("on", Number(el.dataset.step) === step);
     });
     var s = STEPS[step];
+    phone.classList.toggle("staff", s.who === "staff");
+    whose.classList.toggle("staff", s.who === "staff");
+    whose.textContent = s.who === "staff" ? "Your staff's screen, at the counter" : "The customer's own phone";
     capNum.textContent = "Screen " + (step + 1) + " of " + STEPS.length;
     capTitle.textContent = s.title;
     capBody.textContent = s.body;
@@ -528,9 +581,19 @@
     renderRail();
   }
 
+  function nowLabel() {
+    var d = new Date(), h = d.getHours(), m = d.getMinutes(), ap = h >= 12 ? "pm" : "am";
+    h = h % 12; if (h === 0) h = 12;
+    return h + ":" + (m < 10 ? "0" + m : m) + ap;
+  }
+
   prevBtn.addEventListener("click", function () { go(step - 1); });
   nextBtn.addEventListener("click", function () {
-    if (step === STEPS.length - 1) { cart = {}; code = null; renderMenu(); syncTotals(); go(0); return; }
+    if (step === STEPS.length - 1) {
+      cart = {}; code = null; myOrder = null;
+      WAITING.forEach(function (o) { o.done = false; });
+      renderMenu(); syncTotals(); go(0); return;
+    }
     go(step + 1);
   });
   flowPay.addEventListener("click", function () { go(2); });
