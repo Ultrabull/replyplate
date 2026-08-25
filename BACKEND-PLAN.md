@@ -921,6 +921,33 @@ than a number that just appears. Occlusion is a physics problem, not a model
 problem: a box behind a box cannot be counted by any detector, which is why the
 demos show one item coming back uncounted rather than pretending otherwise.
 
+### Why it can count people but not stock
+
+This looks like a contradiction and it is worth having the answer written down,
+because a client will ask it. Four reasons, and the last one is the real one.
+
+1. **"Person" is the most solved class in computer vision.** Every detector ever
+   trained knows it. "Your samosa box" is in no pre-trained model, and differs
+   from the next restaurant's samosa box.
+2. **People stand apart; boxes stack.** A person in a room has air around them.
+   Boxes touch, overlap and hide each other.
+3. **People move, and movement helps.** Someone hidden at frame 1 walks into
+   view by frame 30, which is exactly what `ByteTrack` exploits. A box behind a
+   box stays behind it forever.
+4. **The accuracy bar is completely different.** A people count that is 90%
+   right is useful: "roughly 200 in, roughly 30 left without buying" still tells
+   you to staff Friday lunch differently. A stock count that is 90% right is
+   **worse than no count at all** — it manufactures a phantom shortage every
+   single day, and the whole purpose of the count is to be exact enough that a
+   real gap means something.
+
+So it is not that food is harder than people in general. It is that people
+analytics tolerates error and inventory reconciliation does not, and that stacked
+identical objects are the one thing a camera genuinely cannot resolve.
+
+Where a photo count *does* hold up: a single layer, front-facing, well lit — a
+fridge shelf laid out like a planogram. Depth is what breaks it, not food.
+
 ### What it costs
 
 Hosted inference is billed in credits: 1 credit = 500 seconds of processing, at
@@ -1102,3 +1129,101 @@ per-message.
    conversations will say whether the pain sits higher or lower.
 3. **Rate of usable finds per hour by hand**, before assuming a tool would be
    faster. If it is 20/hour, the entire client ceiling is five hours of work.
+
+---
+
+## 13. Answering the phone
+
+The strongest add-on discussed so far, and the first one with a **real cost of
+goods**, which changes how it has to be priced.
+
+### Why it beats everything else on the list
+
+The four things an owner actually loses sleep over are, in order: not enough
+customers, cannot find staff, delivery apps taking 30%, rent. A phone that rings
+through service and nobody can answer hits the **first two at once** — a missed
+call is a missed order, and answering it is a job nobody is free to do.
+
+Compare: stock tracking is a number-nine problem. This is a number-one problem
+that also happens to be a staffing problem.
+
+It also fits the shape of the business better than anything camera-based:
+
+- **No hardware.** It is a phone number.
+- **Set up from a laptop, anywhere**, which is the whole operating model.
+- **The inputs already exist** — hours, address, menu and parking come out of
+  `start.html` on day one.
+
+### Scope it narrowly: answer questions, take a message. Do not take orders.
+
+Most calls are: are you open, where do I park, do you do vegan, can I book six
+on Friday. Those are safe and they are the bulk.
+
+Orders are where it breaks — allergies, substitutions, spelling a name. And the
+asymmetry matters:
+
+> A late review reply hurts nobody. A wrong phone order makes a customer angry
+> at **the restaurant**, not at you.
+
+Take the message, text it to the restaurant, let a human call back for anything
+that involves food actually being made.
+
+### The cost, which is the whole problem
+
+Retell's headline is $0.07/min but that covers their layer only; all-in with
+speech and telephony it runs **$0.13–$0.31/min**. Assume $0.20.
+
+A small independent doing 15 calls a day at ~90 seconds is roughly **675
+minutes a month, or about $135 in raw cost**. That is not a rounding error, and
+unlike every other line in this business it **rises when the client does well**.
+
+So:
+
+- **Never bundle it into a flat price.** The busiest client would be the one
+  losing you money.
+- **Meter it.** Base plus included minutes plus a rate over.
+- A workable shape: **$300 setup, $249/mo including 800 minutes, $0.40/min
+  after.** At 800 minutes the cost is ~$160, so the base carries a thin margin
+  and the overage is where it earns. Treat those numbers as a starting point,
+  not a quote.
+
+### The three price shapes, and why mixing them kills you
+
+| Shape | Use for | Examples |
+|---|---|---|
+| **Flat monthly** | Work that costs you nothing extra per client | The $199, stock tracking |
+| **Monthly + usage** | Anything where *your* cost scales with *their* volume | Phone answering |
+| **One-off** | Delivered work with nothing to maintain | Website, photo shoot |
+
+Everything sold so far is shape one or three, which is why a flat price has
+worked. Phone answering is the first shape-two product, and shape two put into a
+shape-one price is the classic way a small service business quietly goes broke.
+
+### Compliance
+
+Inbound is the easy case: someone ringing the restaurant chose to call, so the
+TCPA consent machinery aimed at robocalls does not apply. Two things still do.
+
+1. **Say it is an AI, immediately.** Texas SB 140 requires disclosure inside 30
+   seconds; California, Utah and Colorado have bot-disclosure laws.
+2. **Say the call is recorded**, because these platforms record by default and
+   California, Florida and Illinois are all-party-consent states with criminal
+   penalties attached.
+
+Both are satisfied by one sentence: *"Hi, this is Spice Route's automated
+assistant. This call is recorded."* Then carry on. Write it into the opening line
+of every agent and never ship one without it.
+
+**Outbound is a different legal world** and is not in scope. The same reasoning
+that killed diner SMS in §6 applies.
+
+### Verify before quoting anyone
+
+1. **Real call volume at one real client, for a month.** Every number above rests
+   on 15 calls a day and 90 seconds, both invented. Ask a client to count, or
+   read their phone bill.
+2. **What share of calls are answerable without touching an order.** If it is
+   50% rather than 80%, the narrow scope does not remove enough pain to sell.
+3. **The all-in per-minute rate on a real account**, not the headline.
+4. **Whether it can hand off to a human mid-call** cleanly, because the first
+   time it cannot will be the story the owner tells everyone.
