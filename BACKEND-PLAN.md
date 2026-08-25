@@ -960,6 +960,45 @@ answers the same question a day later for nothing.
 text, it works today, and it removes the most taps. Ship that alone and the
 photo features are already worth having.
 
+### The other thing the same camera could do
+
+Counting food is the small use. The same detector pointed at the room counts
+**people**, and that answers a question an owner actually loses sleep over:
+how many customers walked out without buying, and when.
+
+`supervision` already ships the parts: a person detector into `ByteTrack` for
+IDs across frames, a `LineZone` on the doorway for entries and exits, and
+`PolygonZone` per area for dwell time. Out of that:
+
+- **Footfall by hour**, against Stripe's transaction count = a conversion rate.
+- **Walk-outs** — came in, stood in the queue zone, left with no sale attached.
+- **Queue length over time**, which is the staffing number.
+- **Dead zones** — a shelf or board nobody stops at.
+
+The line that sells it is one sentence: *"You lost 14 customers last Friday
+between 12:30 and 1:10, because the queue hit eight people."* That is a
+number-one problem (more customers), where stock counting is a number-nine one.
+
+**On identity, the distinction is real and worth holding to.** A person detector
+draws a box around a body. It never computes face geometry and never matches
+anyone between visits, and that is exactly what keeps it outside the biometric
+statutes — Illinois BIPA being the one with teeth. Plain counting that never
+builds an identity template sits outside it. Bolt face recognition on to spot
+repeat customers or known shoplifters and you are squarely inside it, with
+per-person statutory damages. **Do not ever add that**, however much a client
+asks. Architect the promise in: process the frame, keep the numbers, discard the
+frame. Then it is true by construction rather than by policy.
+
+**The catch is the same one as always: hardware in the shop.** A camera and
+something to run inference on, per client, maintained by you. The one opening
+worth watching for is that most restaurants already have security cameras, and
+`supervision` reads an RTSP stream — so a client with existing cameras is the
+pilot to look for, because it removes the install entirely.
+
+Sequenced honestly: this is the strongest thing on the roadmap and the last
+thing to build. Ship the delivery note first. Price this separately and well
+above $99, because it is worth more and costs more to run.
+
 ### Verify before committing
 
 1. **How many labelled images the container detector actually needs.** No
