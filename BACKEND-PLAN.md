@@ -1154,19 +1154,43 @@ It also fits the shape of the business better than anything camera-based:
 - **The inputs already exist** — hours, address, menu and parking come out of
   `start.html` on day one.
 
-### Scope it narrowly: answer questions, take a message. Do not take orders.
+### Exactly what the service is
 
-Most calls are: are you open, where do I park, do you do vegan, can I book six
-on Friday. Those are safe and they are the bulk.
+Six things, and nothing else. Write this on the invoice.
 
-Orders are where it breaks — allergies, substitutions, spelling a name. And the
-asymmetry matters:
+1. **Answers every call, day and night.** Nobody has to be free.
+2. **Answers the questions people actually ring for** — hours, address, parking,
+   do you do vegan, are you open Christmas Day, is there a wait.
+3. **Texts the ordering link to anyone who wants to order.** This is the load
+   bearing one, see below.
+4. **Takes a message** and sends it straight to the restaurant.
+5. **Transfers to a human** for anything it should not handle: complaints,
+   catering, a large booking.
+6. **A weekly note of what people asked**, which is a genuinely new thing to
+   know — the questions callers repeat are usually a sign the website or the
+   listing is missing something.
 
-> A late review reply hurts nobody. A wrong phone order makes a customer angry
-> at **the restaurant**, not at you.
+**It does not take food orders over the phone.** Allergies, substitutions and
+spelling a name are where it breaks, and the asymmetry is brutal: a late review
+reply hurts nobody, a wrong phone order makes the customer angry at **the
+restaurant**, not at you.
 
-Take the message, text it to the restaurant, let a human call back for anything
-that involves food actually being made.
+### Why the ordering link is the whole answer to "but they lose the order"
+
+Refusing to take orders sounds like it hands the sale back to nobody. It does
+not, because the caller gets a text with the ordering page **while they are
+still on the phone**. They tap it and order themselves, correctly, with their
+own thumbs on the allergy notes.
+
+Slang.ai does exactly this and charges $399 for it. The difference is that
+**their link points at whatever ordering the restaurant already had, and yours
+points at a page you built and already maintain** as part of the $199. The
+ordering link, its taps, and the monthly report that counts them are already in
+the product. This bolts the phone onto a thing that exists.
+
+That also makes it measurable in a way the competitors' version is not: taps on
+that link are already tracked, so "the phone sent 40 people to the ordering page
+last month" is a real number rather than a claim.
 
 ### The cost, which is the whole problem
 
@@ -1219,6 +1243,41 @@ At $199 + $299 the client gets review replies, social posts, the ordering link,
 the monthly report **and** the phone, for $498. That comparison is the pitch, and
 it is checkable.
 
+### Feature by feature, honestly
+
+| | Slang.ai | Loman | Yours |
+|---|---|---|---|
+| Answers 24/7 | yes | yes | yes |
+| Answers questions | yes | yes | yes |
+| Texts the ordering link | yes | yes | **yes, to a page you built** |
+| Transfers to a human | yes | yes | yes |
+| Takes a message | yes | yes | yes |
+| Books into OpenTable / SevenRooms | **yes** | no | **no** |
+| Pushes orders into Toast / Square | partial | **yes** | **no** |
+| Also does reviews, posts, ordering page | no | no | **yes** |
+| Price | $399+ | $200–400 | $299 |
+
+**You lose on two features and you will not win them.** Reservation-platform
+integrations and POS order injection are partnership work, not code, and they
+are not reachable for one person.
+
+So do not compete on features. The honest position is: *the only one that also
+answers your reviews, posts to your social, runs your ordering page and then
+picks up the phone, for less than the phone alone costs elsewhere.*
+
+**Who you should turn away**, and saying it out loud is what makes the rest
+credible:
+
+- A place whose business **is** phone orders straight into a Toast kitchen
+  screen. Loman is the better product. Say so.
+- A reservation-led restaurant living inside OpenTable. Slang is the better
+  product. Say so.
+- Anything multi-location. Not your market for any of this.
+
+What is left — an independent takeaway or quick-service place whose phone rings
+all through service with questions, and who already pays you $199 — is a real
+segment and it is the one already in front of you.
+
 ### The three price shapes, and why mixing them kills you
 
 | Shape | Use for | Examples |
@@ -1260,3 +1319,7 @@ that killed diner SMS in §6 applies.
 3. **The all-in per-minute rate on a real account**, not the headline.
 4. **Whether it can hand off to a human mid-call** cleanly, because the first
    time it cannot will be the story the owner tells everyone.
+5. **Whether the texted ordering link actually converts.** The whole
+   no-orders-on-the-phone position rests on it. If callers get the text and do
+   not order, the position collapses and the honest move is to stop selling
+   this rather than to start taking orders badly.
