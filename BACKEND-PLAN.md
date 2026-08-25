@@ -855,3 +855,123 @@ The only genuine wall is **per-client 10DLC registration if you ever launch dine
 SMS** — at ~500 clients that is ~$30k one-time plus ~$5k/mo and a dedicated KYC
 pipeline. That is the strongest argument for keeping diner outreach on email
 permanently.
+
+---
+
+## 11. The vision stack, if the photo features ship
+
+The stock and self-checkout previews (`inventory-demo.html`,
+`selfcheckout-demo.html`) offer a photo in three places: a delivery note, a
+fresh batch going out, and a count. Only the first of those is a text problem.
+The other two are object detection, and this section is what that would
+actually take. Nothing here is built.
+
+### The three pieces
+
+| Piece | What it is | What it does here |
+|---|---|---|
+| **Roboflow** | The platform | Upload photos, draw boxes, train, host the model |
+| **RF-DETR** | The model architecture | Finds the objects. Apache 2.0 for Nano–Large |
+| **supervision** | A Python library | Turns raw boxes into an answer: counts, zones, tracking |
+
+RF-DETR is Roboflow's real-time detector, accepted at ICLR 2026. RF-DETR-2XL
+reports 60.1 AP on COCO — the first real-time model past 60 — and RF-DETR-L
+reports 56.5 AP at 6.8 ms on a T4 with TensorRT FP16. The published range across
+sizes is 2.3–17.2 ms. Those numbers are video-rate, which matters for what we
+are **not** going to build (below). Core sizes are Apache 2.0; XL and 2XL need
+`rfdetr[plus]` under PML 1.0.
+
+### The trap: a stock model does not know your food
+
+A pre-trained detector knows COCO classes. It knows "pizza" and "bowl." It does
+not know *this* restaurant's samosa box from *this* restaurant's biryani box,
+and no amount of prompting fixes that, because the two are the same brown
+container with a different sticker.
+
+The naive plan is therefore: photograph each client's packed containers, label a
+few hundred images per dish, fine-tune, deploy. **Do not do this.** It is a
+per-client training job, it has to be redone whenever they change supplier or
+packaging, and at $99/mo per client it never pays for itself. It is also the
+exact shape of work a one-person business cannot absorb.
+
+### The move that makes it economic
+
+**Train one model to detect "a packed food container." Let the shelf say which
+dish it is.**
+
+Every item already has its own place on the shelf — that is how the count
+preview is written, and it was chosen for exactly this reason. So the model
+never has to answer "what dish is this," only "how many containers are in this
+rectangle." That is:
+
+- **One model, trained once, reused across every client.** Containers look
+  broadly alike across restaurants in a way dishes do not.
+- **Robust to a menu change.** New dish, same box, no retraining.
+- **The identity comes from the layout**, which the owner sets up once and which
+  is a thing they can see and correct.
+
+`supervision` is the piece that does this: `sv.PolygonZone` counts detections
+inside a defined polygon, and accepts specific box anchors that must fall inside
+the zone before a detection counts. One polygon per shelf slot, drawn once
+during setup. `sv.ByteTrack` is for video only — it assigns IDs across frames so
+the same object is not counted twice — and is not needed for a still photo.
+
+This is also why every photo in the previews ends in a list a human ticks rather
+than a number that just appears. Occlusion is a physics problem, not a model
+problem: a box behind a box cannot be counted by any detector, which is why the
+demos show one item coming back uncounted rather than pretending otherwise.
+
+### What it costs
+
+Hosted inference is billed in credits: 1 credit = 500 seconds of processing, at
+`(100ms + processing time) / 500,000ms`. A single still is a few hundred
+milliseconds, so **100 photos a day across all clients is roughly 2–3
+credits/month** — nowhere near any plan's allowance.
+
+The cost is the plan, not the calls:
+
+- **Public/free** — $60/mo in credits, but every dataset and model must be
+  open-sourced on Roboflow Universe. Fine for a container detector; check before
+  uploading anything client-identifiable.
+- **Core** — $79/mo billed annually, $99/mo monthly. Includes 50 credits/mo
+  annual, 15 monthly. Extra credits $4 prepaid, $6 overage.
+
+**One account serves every client**, because the model is shared and the call
+volume is trivial. So this is a fixed ~$79/mo against the whole add-on line, not
+a per-client cost. That is the only reason the $99/client price survives it.
+
+The alternative is running RF-DETR Nano on-device — Apache 2.0, small enough to
+export and run without a server, zero marginal cost. More work up front, no
+monthly floor. Correct eventually; wrong as a first step.
+
+### What not to build
+
+**Not a camera watching the shelf in real time.** RF-DETR is fast enough for it,
+and it is the obvious next thought: a live count of what leaves versus what was
+paid for, shrinkage caught as it happens. It is also a camera, a GPU or edge
+device, and someone to maintain both, in every client's shop. That is precisely
+the hardware burden the self-checkout design removed on purpose, and it turns a
+software subscription into a field-service business. The periodic count already
+answers the same question a day later for nothing.
+
+**Not per-client models.** See above.
+
+**Not the batch photo before the delivery note.** The note is OCR on printed
+text, it works today, and it removes the most taps. Ship that alone and the
+photo features are already worth having.
+
+### Verify before committing
+
+1. **How many labelled images the container detector actually needs.** No
+   published per-class minimum exists; Roboflow's own reference point is 2,000
+   images trained in about an hour on an A100. Establish the real number on the
+   pilot client's shelf before quoting this to anyone.
+2. **Whether one container class generalises across clients**, or whether
+   clamshells, foil trays and cups need separate classes. This decides whether
+   "one model for everyone" holds.
+3. **What the Public plan's open-source requirement covers** — a generic
+   container dataset is probably fine to publish, a photo of a named client's
+   shelf is not.
+4. **Occlusion rate on a real shelf.** The demos assume roughly one item in six
+   comes back uncounted. If it is one in two, the feature is not worth the tap
+   it saves.
