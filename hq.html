@@ -85,6 +85,9 @@
   .tip li{margin-bottom:5px;padding-left:2px}
   .tip code{background:#100d0c;padding:1px 5px;border-radius:4px;color:var(--gold);font-size:13px}
 
+  .tip.idea{border-left-color:var(--good)}
+  .tip .warnline{color:var(--accent);display:block;margin-top:8px}
+  .tip .warnline b{color:var(--accent)}
   .miss{color:var(--accent)}
   footer{text-align:center;color:#6d6155;font-size:12px;margin-top:26px;line-height:1.7}
 </style>
@@ -186,6 +189,24 @@
       phone, so treat these as estimates.</p>
   </div>
 
+  <div class="tip idea">
+    <b>Idea: count customers, not just food</b>
+    <p>The same camera that counts boxes can count people. Not faces, not names, just bodies and where they
+      stop. It answers the one thing stock tracking never will: <b>how many walked out without buying, and
+      whether the queue caused it.</b></p>
+    <p style="margin-top:8px;color:var(--ink)">"You lost 14 customers last Friday between 12:30 and 1:10,
+      because the queue hit eight people."</p>
+    <p style="margin-top:8px">That is a more-customers problem, which beats every stock problem on the list.
+      It also needs a camera and a small computer in each shop, which is the hardware you have avoided
+      everywhere else. So look for a client who <b>already has security cameras</b>: the software can read
+      an existing feed, and the install disappears.</p>
+    <span class="warnline"><b>Never add face recognition.</b> Counting bodies stays outside biometric law.
+      Matching faces between visits does not, and Illinois damages run per person. If a client asks you to
+      spot their regulars, the answer is no.</span>
+    <p style="margin-top:8px;font-size:13px">Do not quote a price until it exists. When it does, it sits
+      above the <span data-addonprice>$99</span> add-on, not inside it.</p>
+  </div>
+
   <div class="tip" style="border-left-color:var(--accent)">
     <b>Sell the first one as a pilot</b>
     <p>It is not built yet, so do not offer it to everybody. Offer it to <b>one</b> restaurant, and say this:</p>
@@ -279,6 +300,10 @@
     <a class="row ext" href="https://github.com/Ultrabull/replyplate/blob/main/README.md" target="_blank" rel="noopener">
       <span class="ico">🧭</span>
       <span class="txt"><b>How it all fits together</b><span>Every file and what it does</span></span>
+      <span class="go"></span></a>
+    <a class="row ext" href="https://github.com/Ultrabull/replyplate/blob/main/BACKEND-PLAN.md" target="_blank" rel="noopener">
+      <span class="ico">🗺</span>
+      <span class="txt"><b>The build plan</b><span>Costs, phases, and what the camera ideas would really take</span></span>
       <span class="go"></span></a>
   </div>
 
