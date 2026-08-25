@@ -1014,3 +1014,91 @@ above $99, because it is worth more and costs more to run.
 4. **Occlusion rate on a real shelf.** The demos assume roughly one item in six
    comes back uncounted. If it is one in two, the feature is not worth the tap
    it saves.
+
+---
+
+## 12. Finding clients: the Google Maps filter
+
+The thing this business sells is **visible from the outside**. A restaurant that
+does not answer its reviews is showing you that, publicly, before you ever
+speak to them. That makes lead-finding a filtering problem rather than a
+research one, and it means the list can be built by eye.
+
+### The filter
+
+| Signal | Want | Why |
+|---|---|---|
+| **Owner replies** | Few or none in the last 20 reviews | The whole pitch. If they answer everything, they have already solved it |
+| **Star rating** | 3.7 – 4.4 | Below ~3.5 the problem is the food, and replies will not fix it. Above 4.5 they feel no pain |
+| **Review count** | 40+, with 3 or more in the last month | Under that there is not enough volume for the service to matter, and no recent ones means a dying business |
+| **On a delivery app** | Yes | Opens the commission conversation, which is the strongest number on the site |
+| **Website** | None, or plainly broken | Flags the one-off build without having to ask |
+| **Ownership** | Independent, single site | A franchise store cannot buy this. Corporate already decides their marketing |
+| **Distance** | Drivable | The pitch lands better in person, and a photo shoot or a website build needs a visit anyway |
+
+### Scoring, so the list sorts itself
+
+- No owner replies in the last 20 reviews — **+3**
+- Rating between 3.7 and 4.4 — **+2**
+- 40+ reviews *and* 3+ in the last month — **+2**
+- Listed on DoorDash or Uber Eats — **+2**
+- No website, or one that fails on a phone — **+1**
+
+**7 or more: call this week.** Independent and drivable are gates rather than
+points — fail either and the lead is not a lead.
+
+### Do this by hand first
+
+The temptation is to buy a tool. Clay's cheapest paid plan is $185/mo, which is
+most of one client, and every tool in that category is priced for a sales team
+that needs 10,000 leads a month.
+
+**The ceiling in §6 is 12–15 clients.** That means roughly **100 good names,
+once** — not a pipeline. An hour of Google Maps produces about 20 usable ones,
+and reading their actual reviews while you do it is better preparation than any
+enrichment tool hands you.
+
+Search the category and area, open each listing, and look at three things: the
+rating, whether recent reviews have owner responses underneath, and whether
+there is a website link. That is the whole method.
+
+Buy a tool only after the pitch has closed someone, and only if the answer to
+"do I need 500 more of these" is genuinely yes. If it ever is, the cheap path is
+a Maps scraper for one month rather than an enrichment subscription — the
+Maps data *is* the signal here, and the LinkedIn-shaped enrichment those
+platforms are built around does not exist for a restaurant owner.
+
+### The first line writes itself
+
+The filter hands you the opening. A place with 60 reviews and 2 responses does
+not need to be told it has a problem; it needs to be shown you noticed:
+
+> "You've had 14 reviews since March and answered one of them. Here are five
+> replies I've already written for the ones you missed — use them or don't."
+
+That is the existing five-free-replies hook, aimed by the filter rather than
+sprayed. Pair it with the delivery-commission estimate already in the `.payback`
+section of `index.html` for anyone scoring the delivery-app point, and mark it
+as an estimate, per the copy rules in `CLAUDE.md`.
+
+### Compliance, briefly
+
+Cold **email to a business** is lawful in the US under CAN-SPAM provided the
+message identifies who you are, carries a real physical postal address, uses an
+honest subject line, and honours an opt-out. That is a low bar and worth
+clearing exactly.
+
+**None of this extends to SMS.** §6 and §10 already say do not build diner SMS;
+the same reasoning applies to texting prospects, and the damages there are
+per-message.
+
+### Verify before leaning on this
+
+1. **Whether the "no owner replies" signal actually predicts a sale.** It is the
+   whole premise and it is untested. Track it from lead one: score, contacted,
+   replied, closed. Twenty leads is enough to see whether the score means
+   anything.
+2. **Whether 3.7–4.4 is the right band.** It is a guess. The first ten
+   conversations will say whether the pain sits higher or lower.
+3. **Rate of usable finds per hour by hand**, before assuming a tool would be
+   faster. If it is 20/hour, the entire client ceiling is five hours of work.
