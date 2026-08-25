@@ -1177,15 +1177,47 @@ A small independent doing 15 calls a day at ~90 seconds is roughly **675
 minutes a month, or about $135 in raw cost**. That is not a rounding error, and
 unlike every other line in this business it **rises when the client does well**.
 
-So:
+### What the market already charges
 
-- **Never bundle it into a flat price.** The busiest client would be the one
-  losing you money.
-- **Meter it.** Base plus included minutes plus a rate over.
-- A workable shape: **$300 setup, $249/mo including 800 minutes, $0.40/min
-  after.** At 800 minutes the cost is ~$160, so the base carries a thin margin
-  and the overage is where it earns. Treat those numbers as a starting point,
-  not a quote.
+Checked August 2026, and it settles the pricing question:
+
+| Who | Price |
+|---|---|
+| **Slang.ai** | from **$399/mo**, quoted **$450–$600** per location |
+| **Loman AI** | roughly **$199–$399/mo**, ~$299 for the tier with POS ordering, $149 setup |
+| **Popmenu** | AI answering is an add-on **on top of** their platform fee, not published |
+
+Two things follow, and the second corrects an earlier instinct in this document.
+
+**One: the floor is $200 and the ceiling is $600.** Anything under $200 is
+leaving money on the table, and undercutting on a product with a real per-minute
+cost is the worst place to compete on price.
+
+**Two: every one of them charges FLAT, not metered**, despite the same
+per-minute cost underneath. That is not an oversight. Metering means building
+metering, watching usage, and arguing about bills — three jobs a one-person
+business should not take on. The market's answer is simpler: **price high enough
+to absorb the minutes**, and cap the outliers in writing.
+
+So the earlier "never bundle it into a flat price" instinct was wrong for this
+product. The correct version is **never bundle it into the $199** — it needs its
+own line, priced to carry its own cost.
+
+### The number
+
+**$299/mo, flat, plus $300 setup**, with a fair-use ceiling written into the
+agreement (say 1,500 minutes, revisit above that).
+
+- Sits under Slang's $399 floor and level with Loman's ordering tier.
+- At ~$135 of expected minutes, that is roughly **$164/mo of margin** — thin
+  against the $199 line, which is nearly all margin, but real.
+- The ceiling exists for the one client who turns out to take 3,000 minutes.
+  Without it, a single outlier eats the margin on three others.
+
+**The sales line is the bundle, not the price.** Slang sells one thing for $399.
+At $199 + $299 the client gets review replies, social posts, the ordering link,
+the monthly report **and** the phone, for $498. That comparison is the pitch, and
+it is checkable.
 
 ### The three price shapes, and why mixing them kills you
 
@@ -1219,9 +1251,10 @@ that killed diner SMS in §6 applies.
 
 ### Verify before quoting anyone
 
-1. **Real call volume at one real client, for a month.** Every number above rests
-   on 15 calls a day and 90 seconds, both invented. Ask a client to count, or
-   read their phone bill.
+1. **Real call volume at one real client, for a month.** The cost estimate rests
+   on 15 calls a day at 90 seconds, both invented. Ask a client to count, or read
+   their phone bill. This is the number that decides whether $299 flat is
+   comfortable or tight.
 2. **What share of calls are answerable without touching an order.** If it is
    50% rather than 80%, the narrow scope does not remove enough pain to sell.
 3. **The all-in per-minute rate on a real account**, not the headline.

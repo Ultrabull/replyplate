@@ -197,9 +197,14 @@
     <p style="margin-top:8px">Answer questions and take a message. <b>Do not let it take food orders</b> —
       allergies and substitutions are where it goes wrong, and a wrong order makes the customer angry at
       them, not at you.</p>
-    <span class="warnline"><b>This one costs you money per minute.</b> Roughly $135 a month in raw cost for a
-      small place, and it goes up when they get busy. Never put it in a flat price. Base plus included
-      minutes plus a rate over, or your best client is the one you lose money on.</span>
+    <p style="margin-top:8px"><b>Charge <span data-phoneprice>$299</span> a month, flat, plus
+      <span data-phonesetup>$300</span> to set up.</b> Slang.ai charges from $399 and quotes $450 to $600.
+      Loman runs about $200 to $400. You would be the cheap one, and the pitch is the bundle: they get replies,
+      posts, ordering, the report <b>and</b> the phone for <span data-bundle>$498</span>, where Slang sells
+      the phone alone for $399.</p>
+    <span class="warnline"><b>It costs you about $135 a month in minutes</b>, and more when they get busy. So
+      it never goes inside the <span data-price>$199</span>, and put a fair-use ceiling in writing, say 1,500
+      minutes. One client taking 3,000 minutes would eat the margin on three others.</span>
     <p style="margin-top:8px;font-size:13px">It must say it is an AI and that the call is recorded, in the
       first sentence. Several states require it. Details in the build plan.</p>
   </div>
@@ -361,15 +366,26 @@
      change a price there and it changes here and on the public site together,
      rather than leaving this page quoting last year's number. */
   var CONFIG = { price: "$199", webPrice: "$1,200", photoPrice: "$750",
-                 addonPrice: "$99", addonSetup: "$300", pilotPrice: "$49" };
+                 addonPrice: "$99", addonSetup: "$300", pilotPrice: "$49",
+                 phonePrice: "$299", phoneSetup: "$300" };
   if (window.RP_CONFIG) Object.keys(window.RP_CONFIG).forEach(function (k) {
     if (window.RP_CONFIG[k] !== "" && window.RP_CONFIG[k] != null) CONFIG[k] = window.RP_CONFIG[k];
   });
   var SLOTS = { price: "data-price", webPrice: "data-webprice", photoPrice: "data-photoprice",
                 addonPrice: "data-addonprice", addonSetup: "data-addonsetup",
-                pilotPrice: "data-pilotprice" };
+                pilotPrice: "data-pilotprice", phonePrice: "data-phoneprice",
+                phoneSetup: "data-phonesetup" };
   Object.keys(SLOTS).forEach(function (k) {
     document.querySelectorAll("[" + SLOTS[k] + "]").forEach(function (n) { n.textContent = CONFIG[k]; });
+  });
+
+  /* The bundle figure is the argument, so it is added up rather than typed:
+     a hardcoded total is the number that silently goes wrong the day either
+     price moves, and it is the one an owner would be quoted out loud. */
+  var num = function (v) { return Number(String(v).replace(/[^0-9.]/g, "")) || 0; };
+  var bundle = num(CONFIG.price) + num(CONFIG.phonePrice);
+  document.querySelectorAll("[data-bundle]").forEach(function (n) {
+    n.textContent = "$" + bundle.toLocaleString("en-US");
   });
 
   /* A quiet nudge rather than a dashboard. It reads the same storage the

@@ -31,6 +31,16 @@ window.RP_CONFIG = {
      the restaurant runs entirely on Square, and it needs hardware. Yours runs
      on any till and on the customer's own phone. Checked August 2026, list
      prices, and they mostly quote by phone.                                */
+  /* ── Answering the phone ──────────────────────────────────────────────────
+     ALSO NOT BUILT. Priced against what this actually sells for: Slang.ai from
+     $399 and quoted $450-600, Loman roughly $199-399. Flat, not metered, the
+     way all of them do it, because metering is three jobs (build it, watch it,
+     argue about it) a one-person business should not take on. It carries a real
+     per-minute cost of roughly $135/mo, so it never goes inside the base price,
+     and the agreement needs a fair-use ceiling. Checked August 2026.        */
+  phonePrice: "$299",     // answering the phone, every month, flat
+  phoneSetup: "$300",     // script, menu, hours, number, testing. Charged once
+
   addonPrice: "$99",      // stock tracking + self checkout, every month
   addonSetup: "$300",     // menu, payment link, QR sign. Charged once, up front
   pilotPrice: "$49",      // first client only, six months, for being the guinea pig
