@@ -665,6 +665,52 @@ posts per month"** to a number you can hand-deliver for 6+ months, or **split
 into two SKUs** (reviews-only at $199, reviews+social higher) so the manual half
 is paid for.
 
+### The cheapest test of that: a multi-brand scheduler
+
+Before cutting the deliverable or splitting the SKU, try buying the problem away.
+Tools in this category — RobinReach is one, Metricool and Publer are the same
+shape — schedule and publish across Facebook, Instagram, TikTok, X, LinkedIn and
+**Google Business Profile** from one dashboard, with brands separated and an
+approval step.
+
+RobinReach's tiers run free / $9 / $24 / **$49**, and the $49 one covers **15
+brands and 40 profiles with a shared approval workflow**. Fifteen brands is the
+client ceiling from §6 exactly.
+
+At the realistic ceiling the arithmetic is: 15 clients × 8 posts = **120 posts a
+month**. Hand-delivered across fifteen separate logins that is the 10+ hrs/month
+this section is warning about. Batched in one dashboard a month ahead it is
+plausibly two or three. **$49 against ~$2,985 of revenue at 15 clients is 1.6%**,
+which makes it the cheapest experiment available anywhere in this document.
+
+Two things it genuinely fixes:
+
+- **The clicking.** Fifteen logins becomes one.
+- **Possibly all of Phase 5.** These tools already hold Meta app approval. If
+  publishing through one is acceptable, the App Review calendar risk in Phase 5
+  stops being on the critical path for *posting* — it would still apply to
+  anything ReplyPlate wants to do natively.
+
+Three things it does not:
+
+- **The thinking.** Deciding what a specific Indian restaurant should post this
+  week is the actual work, and generic AI captions are worse than no post. The
+  tool removes the tedium, not the judgement.
+- **Onboarding friction.** The client still has to connect their accounts to a
+  third party, which is another approval step in a flow §"Operational gaps"
+  already flags as fragile.
+- **Dependency.** Posting is a contracted deliverable. If the vendor folds or
+  loses an API, the obligation stays.
+
+On the AppSumo lifetime deals ($69 upward): **do not buy one until three months
+of real use**. A lifetime deal is often a young company buying runway, and the
+failure mode is rebuilding the workflow mid-contract.
+
+**And the reframe worth holding:** if a $49 tool makes eight posts a month cheap
+to deliver, the deliverable does not need cutting at all. It stops being the
+line that eats the margin and becomes a reason to buy — which is the better
+outcome than either option this section originally offered.
+
 ### Jurisdiction: **US — decided 2026-07-29**
 
 This resolves the plan's largest unpriced ambiguity. The consequences, now fixed:
@@ -1129,6 +1175,14 @@ per-message.
    conversations will say whether the pain sits higher or lower.
 3. **Rate of usable finds per hour by hand**, before assuming a tool would be
    faster. If it is 20/hour, the entire client ceiling is five hours of work.
+
+**A note on tools generally**, having now looked at several: the pattern that
+keeps repeating is that these platforms are priced for teams needing volume this
+business will never need. The exception is anything priced *per brand* rather
+than per seat or per lead — a multi-brand scheduler at $49 for 15 brands maps
+onto the client ceiling exactly, where a $185/mo lead platform does not map onto
+100 names bought once. **Per-brand pricing fits this shape; per-seat and
+per-credit pricing does not.** Use that as the first filter on any tool.
 
 ---
 
